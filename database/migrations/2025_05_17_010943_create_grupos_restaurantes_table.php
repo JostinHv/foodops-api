@@ -25,6 +25,9 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        if (app()->environment('production')) {
+            throw new Exception('The "down" method is disabled in production.');
+        }
         Schema::dropIfExists('grupos_restaurantes');
     }
 };

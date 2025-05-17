@@ -5,6 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
+
     /**
      * Run the migrations.
      */
@@ -24,6 +25,9 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        if (app()->environment('production')) {
+            throw new Exception('The "down" method is disabled in production.');
+        }
         Schema::dropIfExists('roles');
     }
 };
