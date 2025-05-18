@@ -2,9 +2,35 @@
 
 namespace App\Models;
 
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
+/**
+ *
+ *
+ * @property int $id
+ * @property int|null $logo_id
+ * @property string $dominio
+ * @property array<array-key, mixed>|null $datos_contacto
+ * @property bool $activo
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Imagen|null $logo
+ * @method static Builder<static>|Tenant newModelQuery()
+ * @method static Builder<static>|Tenant newQuery()
+ * @method static Builder<static>|Tenant query()
+ * @method static Builder<static>|Tenant whereActivo($value)
+ * @method static Builder<static>|Tenant whereCreatedAt($value)
+ * @method static Builder<static>|Tenant whereDatosContacto($value)
+ * @method static Builder<static>|Tenant whereDominio($value)
+ * @method static Builder<static>|Tenant whereId($value)
+ * @method static Builder<static>|Tenant whereLogoId($value)
+ * @method static Builder<static>|Tenant whereUpdatedAt($value)
+ * @mixin Eloquent
+ */
 class Tenant extends Model
 {
     protected $table = 'tenants';

@@ -2,9 +2,44 @@
 
 namespace App\Models;
 
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
+/**
+ *
+ *
+ * @property int $id
+ * @property int $plan_suscripcion_id
+ * @property int $metodo_pago_id
+ * @property Carbon|null $fecha_inicio
+ * @property Carbon|null $fecha_fin
+ * @property string $estado
+ * @property numeric|null $precio_acordado
+ * @property bool $renovacion_automatica
+ * @property string|null $notas
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read MetodoPago $metodoPago
+ * @property-read PlanSuscripcion $planSuscripcion
+ * @method static Builder<static>|TenantSuscripcion newModelQuery()
+ * @method static Builder<static>|TenantSuscripcion newQuery()
+ * @method static Builder<static>|TenantSuscripcion query()
+ * @method static Builder<static>|TenantSuscripcion whereCreatedAt($value)
+ * @method static Builder<static>|TenantSuscripcion whereEstado($value)
+ * @method static Builder<static>|TenantSuscripcion whereFechaFin($value)
+ * @method static Builder<static>|TenantSuscripcion whereFechaInicio($value)
+ * @method static Builder<static>|TenantSuscripcion whereId($value)
+ * @method static Builder<static>|TenantSuscripcion whereMetodoPagoId($value)
+ * @method static Builder<static>|TenantSuscripcion whereNotas($value)
+ * @method static Builder<static>|TenantSuscripcion wherePlanSuscripcionId($value)
+ * @method static Builder<static>|TenantSuscripcion wherePrecioAcordado($value)
+ * @method static Builder<static>|TenantSuscripcion whereRenovacionAutomatica($value)
+ * @method static Builder<static>|TenantSuscripcion whereUpdatedAt($value)
+ * @mixin Eloquent
+ */
 class TenantSuscripcion extends Model
 {
     protected $table = 'tenants_suscripciones';

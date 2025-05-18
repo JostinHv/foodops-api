@@ -2,9 +2,49 @@
 
 namespace App\Models;
 
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
+/**
+ *
+ *
+ * @property int $id
+ * @property int $orden_id
+ * @property int $metodo_pago_id
+ * @property int $igv_id
+ * @property string|null $nro_factura
+ * @property numeric|null $monto_total
+ * @property numeric|null $monto_total_igv
+ * @property string|null $estado_pago
+ * @property Carbon|null $fecha_pago
+ * @property Carbon|null $hora_pago
+ * @property string|null $notas
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Igv $igv
+ * @property-read MetodoPago $metodoPago
+ * @property-read Orden $orden
+ * @method static Builder<static>|Factura newModelQuery()
+ * @method static Builder<static>|Factura newQuery()
+ * @method static Builder<static>|Factura query()
+ * @method static Builder<static>|Factura whereCreatedAt($value)
+ * @method static Builder<static>|Factura whereEstadoPago($value)
+ * @method static Builder<static>|Factura whereFechaPago($value)
+ * @method static Builder<static>|Factura whereHoraPago($value)
+ * @method static Builder<static>|Factura whereId($value)
+ * @method static Builder<static>|Factura whereIgvId($value)
+ * @method static Builder<static>|Factura whereMetodoPagoId($value)
+ * @method static Builder<static>|Factura whereMontoTotal($value)
+ * @method static Builder<static>|Factura whereMontoTotalIgv($value)
+ * @method static Builder<static>|Factura whereNotas($value)
+ * @method static Builder<static>|Factura whereNroFactura($value)
+ * @method static Builder<static>|Factura whereOrdenId($value)
+ * @method static Builder<static>|Factura whereUpdatedAt($value)
+ * @mixin Eloquent
+ */
 class Factura extends Model
 {
     protected $table = 'facturas';

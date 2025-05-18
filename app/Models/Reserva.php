@@ -2,9 +2,50 @@
 
 namespace App\Models;
 
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
+/**
+ *
+ *
+ * @property int $id
+ * @property int $mesa_id
+ * @property int $recepcionista_id
+ * @property string|null $nombre_cliente
+ * @property string|null $email_cliente
+ * @property string|null $telefono_cliente
+ * @property int|null $tamanio_grupo
+ * @property Carbon|null $fecha_reserva
+ * @property Carbon|null $hora_inicio
+ * @property Carbon|null $hora_fin
+ * @property string|null $notas
+ * @property string|null $estado
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Mesa $mesa
+ * @property-read Usuario $recepcionista
+ * @method static Builder<static>|Reserva newModelQuery()
+ * @method static Builder<static>|Reserva newQuery()
+ * @method static Builder<static>|Reserva query()
+ * @method static Builder<static>|Reserva whereCreatedAt($value)
+ * @method static Builder<static>|Reserva whereEmailCliente($value)
+ * @method static Builder<static>|Reserva whereEstado($value)
+ * @method static Builder<static>|Reserva whereFechaReserva($value)
+ * @method static Builder<static>|Reserva whereHoraFin($value)
+ * @method static Builder<static>|Reserva whereHoraInicio($value)
+ * @method static Builder<static>|Reserva whereId($value)
+ * @method static Builder<static>|Reserva whereMesaId($value)
+ * @method static Builder<static>|Reserva whereNombreCliente($value)
+ * @method static Builder<static>|Reserva whereNotas($value)
+ * @method static Builder<static>|Reserva whereRecepcionistaId($value)
+ * @method static Builder<static>|Reserva whereTamanioGrupo($value)
+ * @method static Builder<static>|Reserva whereTelefonoCliente($value)
+ * @method static Builder<static>|Reserva whereUpdatedAt($value)
+ * @mixin Eloquent
+ */
 class Reserva extends Model
 {
     protected $table = 'reservas';

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Repositories\Interfaces;
+namespace App\Repositories\Implementations;
 
+use App\Repositories\Interfaces\IBaseRepository;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -9,11 +10,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
-abstract class BaseRepository implements BaseRepositoryInterface
+abstract class BaseRepository implements IBaseRepository
 {
+    /** @var Model&Builder */
     protected Model $modelo;
 
+    /**
+     * @param Model&Builder $modelo
+     */
     public function __construct(Model $modelo)
     {
         $this->modelo = $modelo;
@@ -31,7 +37,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
     /**
      * Obtiene un registro del modelo por su ID.
-     *
+     * @template TModel of Model
      * @param int $id
      * @return Model|null
      */
@@ -45,6 +51,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
      *
      * @param array $datos
      * @return Model
+     * @throws Throwable
      */
     public function crear(array $datos): Model
     {
@@ -66,6 +73,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @param int $id
      * @param array $datos
      * @return bool
+     * @throws Throwable
      */
     public function actualizar(int $id, array $datos): bool
     {
@@ -92,6 +100,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
      *
      * @param int $id
      * @return bool
+     * @throws Throwable
      */
     public function eliminar(int $id): bool
     {
@@ -117,6 +126,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
      *
      * @param array $datos
      * @return int
+     * @throws Throwable
      */
     public function insertarObtenerId(array $datos): int
     {
