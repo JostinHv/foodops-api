@@ -2,10 +2,11 @@
 
 namespace App\Repositories\Implementations;
 
+use App\Repositories\Interfaces\IActivoBoolRepository;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
-abstract class ActivoBoolRepository extends BaseRepository
+abstract class ActivoBoolRepository extends BaseRepository implements IActivoBoolRepository
 {
     public function __construct(Model $modelo)
     {

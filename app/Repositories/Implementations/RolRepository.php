@@ -6,7 +6,7 @@ use App\Models\Rol;
 use App\Repositories\Interfaces\IRolRepository;
 use Illuminate\Database\Eloquent\Builder;
 
-class RolRepository extends ActivoBoolRepository
+class RolRepository extends ActivoBoolRepository implements IRolRepository
 {
     public function __construct(Rol $modelo)
     {
