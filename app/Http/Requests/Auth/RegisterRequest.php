@@ -14,9 +14,12 @@ class RegisterRequest extends ValidacionRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|string|email|max:255|unique:usuarios',
-            'password' => 'required|string',
+            'email' => 'required|string|email|max:255|unique:usuarios,email',
+            'password' => 'required|string|confirmed',
             //Para Cliente
+            'nombres' => 'required|string|max:255',
+            'apellidos' => 'required|string|max:255',
+            'nro_celular' => 'nullable|string|max:20',
 //            'tipo_documento_id' => 'nullable|integer',
 //            'nombres' => 'required|string|max:255',
 //            'apellidos' => 'required|string|max:255',
