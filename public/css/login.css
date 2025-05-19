@@ -1,0 +1,42 @@
+body {
+    background-color: #FBF3F4;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.login-container {
+    max-width: 400px;
+    margin: 60px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+.login-container h2 {
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.login-container .form-label {
+    font-weight: 500;
+}
+
+.login-container .btn-login {
+    background-color: #1f2937;
+    color: white;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.login-container .btn-login:hover {
+    background-color: #374151;
+}
+
+.text-link {
+    font-size: 0.9rem;
+}
+
+.text-danger {
+    font-size: 0.9rem;
+}

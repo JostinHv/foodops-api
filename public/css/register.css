@@ -1,0 +1,9 @@
+body {
+    background-color: #FBF3F4;
+}
+
+.register-container {
+    max-width: 400px;
+    background-color: white;
+    border-radius: 12px;
+}
