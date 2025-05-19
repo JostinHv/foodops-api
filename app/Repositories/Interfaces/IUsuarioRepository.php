@@ -24,4 +24,6 @@ interface IUsuarioRepository
     public function obtenerActivos(): Collection;
 
     public function obtenerUltimoActivo(): Collection;
+
+    public function registrarUsuarioConRol(array $datos): Model;
 }

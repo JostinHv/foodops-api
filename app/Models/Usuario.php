@@ -5,10 +5,14 @@ namespace App\Models;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Laravel\Sanctum\HasApiTokens;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
 /**
  *
@@ -51,17 +55,18 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|Usuario whereUpdatedAt($value)
  * @mixin Eloquent
  */
-class Usuario extends Model
+class Usuario extends Authenticatable implements JWTSubject
 {
     protected $table = 'usuarios';
+
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
         'tenant_id',
         'foto_perfil_id',
         'restaurante_id',
-        'nombre_usuario',
         'email',
-        'hash_contrasenia',
+        'password',
         'nombres',
         'apellidos',
         'celular',
@@ -73,9 +78,8 @@ class Usuario extends Model
         'tenant_id' => 'integer',
         'foto_perfil_id' => 'integer',
         'restaurante_id' => 'integer',
-        'nombre_usuario' => 'string',
         'email' => 'string',
-        'hash_contrasenia' => 'string',
+        'password' => 'string',
         'nombres' => 'string',
         'apellidos' => 'string',
         'celular' => 'string',
@@ -84,7 +88,7 @@ class Usuario extends Model
     ];
 
     protected $hidden = [
-        'hash_contrasenia',
+        'password',
         'created_at',
         'updated_at'
     ];
@@ -107,6 +111,16 @@ class Usuario extends Model
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Rol::class, 'usuarios_roles', 'usuario_id', 'rol_id');
+    }
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims(): array
+    {
+        return [];
     }
 
 }

@@ -53,6 +53,8 @@ use App\Repositories\Interfaces\ITenantSuscripcionRepository;
 use App\Repositories\Interfaces\IUsuarioRepository;
 use App\Repositories\Interfaces\IUsuarioRolRepository;
 use App\Services\Implementations\AsignacionPersonalService;
+use App\Services\Implementations\Auth\AuthService;
+use App\Services\Implementations\Auth\JwtManager;
 use App\Services\Implementations\CategoriaMenuService;
 use App\Services\Implementations\EstadoMesaService;
 use App\Services\Implementations\EstadoOrdenService;
@@ -77,6 +79,7 @@ use App\Services\Implementations\TenantSuscripcionService;
 use App\Services\Implementations\UsuarioRolService;
 use App\Services\Implementations\UsuarioService;
 use App\Services\Interfaces\IAsignacionPersonalService;
+use App\Services\Interfaces\IAuthService;
 use App\Services\Interfaces\ICategoriaMenuService;
 use App\Services\Interfaces\IEstadoMesaService;
 use App\Services\Interfaces\IEstadoOrdenService;
@@ -87,6 +90,7 @@ use App\Services\Interfaces\IIgvService;
 use App\Services\Interfaces\IImagenService;
 use App\Services\Interfaces\IItemMenuService;
 use App\Services\Interfaces\IItemOrdenService;
+use App\Services\Interfaces\IJwtManager;
 use App\Services\Interfaces\ILimiteUsoService;
 use App\Services\Interfaces\IMesaService;
 use App\Services\Interfaces\IMetodoPagoService;
@@ -111,6 +115,14 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         // Registra los servicios en el contenedor de servicios
+        $this->app->bind(
+            IAuthService::class,
+            AuthService::class,
+        );
+        $this->app->bind(
+            IJwtManager::class,
+            JwtManager::class,
+        );
         $this->app->bind(
             IAsignacionPersonalService::class,
             AsignacionPersonalService::class,

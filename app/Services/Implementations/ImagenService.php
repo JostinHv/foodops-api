@@ -2,6 +2,7 @@
 
 namespace App\Services\Implementations;
 
+use App\Repositories\Interfaces\IImagenRepository;
 use App\Services\Interfaces\IImagenService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -10,7 +11,7 @@ readonly class ImagenService implements IImagenService
 {
 
     public function __construct(
-        private IImagenService $repository
+        private IImagenRepository $repository
     )
     {
     }

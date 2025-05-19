@@ -12,9 +12,9 @@ return new class extends Migration {
     {
         Schema::create('categorias_menus', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->foreignId('tenant_id')->constrained('tenants');
-            $table->foreignId('sucursal_id')->constrained('sucursales');
-            $table->foreignId('imagen_id')->constrained('imagenes');
+            $table->foreignId('tenant_id')->nullable()->constrained('tenants');
+            $table->foreignId('sucursal_id')->nullable()->constrained('sucursales');
+            $table->foreignId('imagen_id')->nullable()->constrained('imagenes');
             $table->string('nombre')->nullable();
             $table->string('descripcion')->nullable();
             $table->unsignedInteger('orden_visualizacion')->nullable();
