@@ -24,4 +24,6 @@ interface IPlanSuscripcionService extends IActivoBoolService
     public function obtenerActivos(): Collection;
 
     public function obtenerUltimoActivo(): Collection;
+
+    public function obtenerPlanesSegunIntervalo(String $intervalo): Collection;
 }

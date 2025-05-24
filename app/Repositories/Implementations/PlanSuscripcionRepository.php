@@ -5,6 +5,7 @@ namespace App\Repositories\Implementations;
 use App\Models\PlanSuscripcion;
 use App\Repositories\Interfaces\IPlanSuscripcionRepository;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class PlanSuscripcionRepository extends ActivoBoolRepository implements IPlanSuscripcionRepository
 {
@@ -51,5 +52,19 @@ class PlanSuscripcionRepository extends ActivoBoolRepository implements IPlanSus
         } else {
             $consulta->orderBy('precio', 'asc');
         }
+    }
+
+    public function obtenerPlanesSegunIntervalo(string $intervalo): Collection
+    {
+        return $this->modelo
+            ->where('intervalo', $intervalo)
+            ->where('activo', true)
+            ->get()
+            ->map(function ($plan) {
+                if (is_string($plan->caracteristicas)) {
+                    $plan->caracteristicas = json_decode($plan->caracteristicas, false, 512, JSON_THROW_ON_ERROR);
+                }
+                return $plan;
+            });
     }
 }

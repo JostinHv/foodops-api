@@ -24,4 +24,6 @@ interface IPlanSuscripcionRepository
     public function obtenerActivos(): Collection;
 
     public function obtenerUltimoActivo(): Collection;
+
+    public function obtenerPlanesSegunIntervalo(string $intervalo): Collection;
 }

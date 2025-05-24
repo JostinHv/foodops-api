@@ -19,7 +19,7 @@ return new class extends Migration {
             $table->string('password');
             $table->string('nombres')->nullable();
             $table->string('apellidos')->nullable();
-            $table->string('celular')->nullable();
+            $table->string('nro_celular')->nullable();
             $table->date('ultimo_acceso')->nullable();
             $table->boolean('activo')->default(true);
             $table->timestamps();

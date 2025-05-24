@@ -60,4 +60,9 @@ readonly class PlanSuscripcionService implements IPlanSuscripcionService
     {
         return $this->repository->obtenerUltimoActivo();
     }
+
+    public function obtenerPlanesSegunIntervalo(string $intervalo): Collection
+    {
+        return $this->repository->obtenerPlanesSegunIntervalo($intervalo);
+    }
 }

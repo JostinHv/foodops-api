@@ -1,14 +1,11 @@
 <?php
 
 use App\Http\Controllers\Api\OrdenController;
-
 use App\Http\Controllers\Web\AuthController;
+use App\Http\Controllers\Web\HomeController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('home');
-})->name('home');
-
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login-submit');

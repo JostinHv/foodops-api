@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration {
     /**
@@ -15,11 +16,66 @@ return new class extends Migration {
             $table->string('nombre')->unique()->nullable();
             $table->string('descripcion')->nullable();
             $table->decimal('precio', 10, 2)->nullable();
-            $table->string('intervalo')->unique()->nullable();
+            $table->string('intervalo')->nullable();
             $table->json('caracteristicas')->nullable();
             $table->boolean('activo')->default(true);
             $table->timestamps();
         });
+
+        // Insertar planes predefinidos
+        DB::table('planes_suscripciones')->insert([
+            [
+                'nombre' => 'Plan Básico',
+                'descripcion' => 'Ideal para restaurantes pequeños',
+                'precio' => 29.99,
+                'intervalo' => 'mes',
+                'caracteristicas' => json_encode([
+                    'Hasta 5 mesas',
+                    'Gestión de órdenes básica',
+                    'Reportes mensuales',
+                    'Soporte por email'
+                ]),
+                'activo' => true,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nombre' => 'Plan Profesional',
+                'descripcion' => 'Para restaurantes en crecimiento',
+                'precio' => 59.99,
+                'intervalo' => 'mes',
+                'caracteristicas' => json_encode([
+                    'Hasta 15 mesas',
+                    'Gestión de órdenes avanzada',
+                    'Reportes semanales',
+                    'Soporte prioritario',
+                    'Gestión de reservas',
+                    'Panel de análisis'
+                ]),
+                'activo' => true,
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'nombre' => 'Plan Enterprise',
+                'descripcion' => 'Solución completa para cadenas de restaurantes',
+                'precio' => 99.99,
+                'intervalo' => 'mes',
+                'caracteristicas' => json_encode([
+                    'Mesas ilimitadas',
+                    'Gestión multi-sucursal',
+                    'Reportes en tiempo real',
+                    'Soporte 24/7',
+                    'API personalizada',
+                    'Análisis predictivo',
+                    'Backup automático',
+                    'Personalización completa'
+                ]),
+                'activo' => true,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]
+        ]);
     }
 
     /**

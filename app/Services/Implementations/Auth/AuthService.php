@@ -219,6 +219,9 @@ class AuthService implements IAuthService
         return [
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'nombres' => $data['nombres'],
+            'apellidos' => $data['apellidos'],
+            'nro_celular' => $data['nro_celular'] ?? null,
 //            'cliente_id' => $clienteId
         ];
     }
