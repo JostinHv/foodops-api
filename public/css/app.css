@@ -1,0 +1,21 @@
+/* Sidebar estilo fijo */
+#sidebar {
+    width: 250px;
+    min-height: calc(100vh - 60px);
+    transition: all 0.3s ease;
+}
+
+/* Ocultar sidebar */
+#sidebar.hidden {
+    margin-left: -250px;
+}
+
+#mainContent {
+    padding: 1rem;
+    overflow-x: hidden;
+}
+
+
+#mainContent.expanded {
+    margin-left: -250px; /* solo si necesitas compensar el espacio */
+}

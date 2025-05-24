@@ -96,4 +96,23 @@ class OrdenController extends Controller
             return ApiResponse::error($e->getMessage());
         }
     }
+
+    /**
+     * VALORES DE PRUEBA PARA LA VISTA DEL MESERO
+     */
+    public function create()
+    {
+        $mesas = [
+            (object)['id' => 1, 'numero' => 'Mesa 1'],
+            (object)['id' => 2, 'numero' => 'Mesa 2'],
+        ];
+
+        $productos = [
+            (object)['id' => 1, 'nombre' => 'Ensalada', 'precio' => 10.00],
+            (object)['id' => 2, 'nombre' => 'Sopa', 'precio' => 8.50],
+        ];
+
+        return view('mesero.nuevaorden', compact('mesas', 'productos'));
+    }
+
 }

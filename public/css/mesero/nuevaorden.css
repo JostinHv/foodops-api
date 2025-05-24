@@ -1,0 +1,12 @@
+.card-header {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+.table thead th {
+    text-align: center;
+}
+
+.table td, .table th {
+    vertical-align: middle;
+}
