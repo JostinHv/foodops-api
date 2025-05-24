@@ -7,6 +7,7 @@ use App\Services\Interfaces\IAuthService;
 use App\Services\Interfaces\IJwtManager;
 use Exception;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
@@ -48,6 +49,7 @@ class AuthService implements IAuthService
 
     public function login(array $credentials): array
     {
+        Log::log('info', 'AuthService: ', $credentials);
         $rateLimitCheck = $this->rateLimiter->tooManyAttempts($credentials['email']);
 
         if ($rateLimitCheck['blocked']) {
@@ -115,7 +117,7 @@ class AuthService implements IAuthService
         }
     }
 
-    public function comprobarEmail(mixed $email): bool
+    public function comprobarEmail(string $email): bool
     {
         return $this->usuarioRepository->existeEmailRegistrado($email);
     }
@@ -212,7 +214,7 @@ class AuthService implements IAuthService
         ];
     }
 
-    private function prepareUsuarioData(array $data ): array
+    private function prepareUsuarioData(array $data): array
     {
         return [
             'email' => $data['email'],

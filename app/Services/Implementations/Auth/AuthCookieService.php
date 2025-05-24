@@ -30,7 +30,7 @@ class AuthCookieService
             $minutes,
             '/',
             null,
-            config('app.env') === 'production',
+            true,
             true,
             false,
             'none'

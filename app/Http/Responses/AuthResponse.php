@@ -5,7 +5,7 @@ namespace App\Http\Responses;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-class AuthResponse
+readonly class AuthResponse
 {
 
     public static function success(string $message, array $data = [], int $code = Response::HTTP_OK): JsonResponse

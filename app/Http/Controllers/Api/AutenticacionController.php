@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Responses\AuthResponse;
 use App\Services\Implementations\Auth\AuthCookieService;
@@ -56,9 +57,9 @@ class AutenticacionController extends Controller
     }
 
 
-    public function login(): JsonResponse
+    public function login(LoginRequest $request): JsonResponse
     {
-        $credentials = request(['email', 'password']);
+        $credentials = $request->validated();
         $result = $this->authService->login($credentials);
 
         if ($result['error']) {

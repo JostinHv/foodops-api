@@ -14,7 +14,7 @@ interface IAuthService
 
     public function refresh(array $data): array;
 
-    public function comprobarEmail(mixed $email);
+    public function comprobarEmail(string $email): bool;
 
     public function autenticarse(array $credentials);
 }

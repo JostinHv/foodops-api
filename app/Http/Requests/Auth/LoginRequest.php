@@ -15,8 +15,19 @@ class LoginRequest extends ValidacionRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|string|email|max:255|exists:usuarios,email',
+            'email' => 'required|string|email|max:255',
             'password' => 'required|string',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'email.required' => 'El campo correo es obligatorio.',
+            'email.email' => 'El campo correo debe ser una dirección de correo electrónico válida.',
+            'password.required' => 'El campo contraseña es obligatorio.',
+        ];
+    }
+
+
 }

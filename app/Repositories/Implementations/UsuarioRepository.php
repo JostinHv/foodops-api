@@ -62,4 +62,10 @@ class UsuarioRepository extends ActivoBoolRepository implements IUsuarioReposito
             $consulta->orderBy($sortField, $sortOrder);
         }
     }
+
+    public function existeEmailRegistrado(string $email): bool
+    {
+        return $this->modelo->where('email', $email)->exists();
+    }
+
 }
