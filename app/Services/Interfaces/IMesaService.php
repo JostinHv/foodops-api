@@ -17,4 +17,6 @@ interface IMesaService extends IBaseService
 
     public function eliminar(int $id): bool;
 
+    public function obtenerMesasDisponibles(): Collection;
+
 }

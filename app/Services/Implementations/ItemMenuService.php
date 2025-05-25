@@ -41,4 +41,8 @@ readonly class ItemMenuService implements IItemMenuService
         return $this->repository->eliminar($id);
     }
 
+    public function obtenerTodosItemsDisponibles(): Collection
+    {
+        return $this->repository->obtenerTodosItemsDisponibles();
+    }
 }

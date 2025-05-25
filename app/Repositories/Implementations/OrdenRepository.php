@@ -33,4 +33,10 @@ class OrdenRepository extends BaseRepository implements IOrdenRepository
             $consulta->orderBy($sortField, $sortOrder);
         }
     }
+
+    public function obtenerUltimoNumeroOrden(): int
+    {
+        $ultimoNumero = $this->modelo->max('nro_orden');
+        return $ultimoNumero ?: 0; // Retorna 0 si no hay órdenes
+    }
 }

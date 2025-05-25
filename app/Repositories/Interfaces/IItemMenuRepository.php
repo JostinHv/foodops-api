@@ -17,4 +17,6 @@ interface IItemMenuRepository
 
     public function eliminar(int $id): bool;
 
+    public function obtenerTodosItemsDisponibles(): Collection;
+
 }

@@ -12,13 +12,13 @@ return new class extends Migration {
     {
         Schema::create('ordenes', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->foreignId('tenant_id')->constrained('tenants');
-            $table->foreignId('restaurante_id')->constrained('restaurantes');
-            $table->foreignId('sucursal_id')->constrained('sucursales');
+            $table->foreignId('tenant_id')->nullable()->constrained('tenants');
+            $table->foreignId('restaurante_id')->nullable()->constrained('restaurantes');
+            $table->foreignId('sucursal_id')->nullable()->constrained('sucursales');
             $table->foreignId('mesa_id')->constrained('mesas');
-            $table->foreignId('estado_orden_id')->constrained('estados_ordenes');
-            $table->foreignId('mesero_id')->constrained('usuarios');
-            $table->foreignId('cajero_id')->constrained('usuarios');
+            $table->foreignId('estado_orden_id')->default(1)->constrained('estados_ordenes');
+            $table->foreignId('mesero_id')->nullable()->constrained('usuarios');
+            $table->foreignId('cajero_id')->nullable()->constrained('usuarios');
             $table->string('nro_orden')->unique()->nullable();
             $table->string('nombre_cliente')->nullable();
             $table->string('peticiones_especiales')->nullable();

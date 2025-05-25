@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\Authenticate;
+use App\Http\Middleware\CheckAuth;
 use App\Http\Middleware\ThrottleRequests;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -24,6 +25,8 @@ return Application::configure(basePath: dirname(__DIR__))
 //        );
         $middleware->alias(['throttle' => ThrottleRequests::class]);
         $middleware->alias(['auth' => Authenticate::class]);
+        $middleware->alias(['auth.web' => Authenticate::class]);
+        $middleware->alias(['auth.check' => CheckAuth::class]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

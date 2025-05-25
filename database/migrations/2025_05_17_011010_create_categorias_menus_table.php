@@ -21,6 +21,12 @@ return new class extends Migration {
             $table->boolean('activo')->default(true);
             $table->timestamps();
         });
+        DB::table('categorias_menus')->insert([
+            ['tenant_id' => null, 'sucursal_id' => null, 'imagen_id' => null, 'nombre' => 'Entradas', 'descripcion' => 'Entradas del menú', 'orden_visualizacion' => 1, 'activo' => true],
+            ['tenant_id' => null, 'sucursal_id' => null, 'imagen_id' => null, 'nombre' => 'Platos Principales', 'descripcion' => 'Platos principales del menú', 'orden_visualizacion' => 2, 'activo' => true],
+            ['tenant_id' => null, 'sucursal_id' => null, 'imagen_id' => null, 'nombre' => 'Postres', 'descripcion' => 'Postres del menú', 'orden_visualizacion' => 3, 'activo' => true],
+            ['tenant_id' => null, 'sucursal_id' => null, 'imagen_id' => null, 'nombre' => 'Bebidas', 'descripcion' => 'Bebidas del menú', 'orden_visualizacion' => 4, 'activo' => true],
+        ]);
     }
 
     /**

@@ -5,21 +5,18 @@ namespace App\Http\Middleware;
 use Closure;
 use Exception;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-class Authenticate extends Middleware
+class WebAuthenticate extends Middleware
 {
     private const UNAUTHORIZED = Response::HTTP_UNAUTHORIZED;
 
-    /**
-     * Handle an unauthenticated user.
-     */
-    protected function unauthenticated($request, array $guards): void
+    protected function redirectTo(Request $request): string
     {
-        abort($this->buildErrorResponse('No autenticado'));
+        return route('login');
     }
 
     public function handle($request, Closure $next, ...$guards)
@@ -30,7 +27,7 @@ class Authenticate extends Middleware
             $this->authenticate($request, $guards);
             return $next($request);
         } catch (Exception $e) {
-            return $this->buildErrorResponse('Token inválido');
+            return $this->buildErrorResponse();
         }
     }
 
@@ -45,17 +42,12 @@ class Authenticate extends Middleware
     private function validateBearerToken(Request $request): void
     {
         if (!$request->bearerToken()) {
-            abort($this->buildErrorResponse('Token no proporcionado'));
+            $this->buildErrorResponse();
         }
     }
 
-    private function buildErrorResponse(string $message): JsonResponse
+    private function buildErrorResponse(): RedirectResponse
     {
-        return response()->json([
-            'status' => 'error',
-            'message' => $message,
-            'code' => self::UNAUTHORIZED
-        ], self::UNAUTHORIZED);
+        return redirect()->route('login')->with('error', 'Por favor inicie sesión para continuar');
     }
-
 }

@@ -10,7 +10,7 @@ class AuthCookieService
     {
         return [
             'access' => $this->createCookie(
-                'jwt',
+                'access_token',
                 $accessToken,
                 config('jwt.ttl')
             ),

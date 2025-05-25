@@ -17,4 +17,6 @@ interface IOrdenRepository
 
     public function eliminar(int $id): bool;
 
+    public function obtenerUltimoNumeroOrden(): int;
+
 }

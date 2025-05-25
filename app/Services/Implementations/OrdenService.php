@@ -2,9 +2,7 @@
 
 namespace App\Services\Implementations;
 
-use App\Repositories\Interfaces\IMetodoPagoRepository;
 use App\Repositories\Interfaces\IOrdenRepository;
-use App\Services\Interfaces\IMetodoPagoService;
 use App\Services\Interfaces\IOrdenService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -43,4 +41,12 @@ readonly class OrdenService implements IOrdenService
         return $this->repository->eliminar($id);
     }
 
+    public function generarNumeroOrden(): int
+    {
+        $ultimoNumero = $this->repository->obtenerUltimoNumeroOrden();
+        if ($ultimoNumero) {
+            return $ultimoNumero + 1;
+        }
+        return 1; // Si no hay órdenes, comenzamos con el número 1
+    }
 }

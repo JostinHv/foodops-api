@@ -41,4 +41,8 @@ readonly class MesaService implements IMesaService
         return $this->repository->eliminar($id);
     }
 
+    public function obtenerMesasDisponibles(): Collection
+    {
+        return $this->repository->obtenerMesasDisponibles();
+    }
 }

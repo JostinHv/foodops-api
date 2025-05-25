@@ -16,4 +16,6 @@ interface IItemMenuService extends IBaseService
     public function actualizar(int $id, array $datos): bool;
 
     public function eliminar(int $id): bool;
+
+    public function obtenerTodosItemsDisponibles(): Collection;
 }

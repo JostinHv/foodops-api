@@ -7,7 +7,6 @@ use App\Services\Interfaces\IAuthService;
 use App\Services\Interfaces\IJwtManager;
 use Exception;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
@@ -49,7 +48,6 @@ class AuthService implements IAuthService
 
     public function login(array $credentials): array
     {
-        Log::log('info', 'AuthService: ', $credentials);
         $rateLimitCheck = $this->rateLimiter->tooManyAttempts($credentials['email']);
 
         if ($rateLimitCheck['blocked']) {
@@ -131,12 +129,11 @@ class AuthService implements IAuthService
             $resultadoLogin['code'] = 1;
             $resultadoLogin['type'] = 'login';
             return $resultadoLogin;
-        } else {
-            $resultadoRegistro = $this->register($credentials);
-            $resultadoRegistro['code'] = 2;
-            $resultadoRegistro['type'] = 'register';
-            return $resultadoRegistro;
         }
+        $resultadoRegistro = $this->register($credentials);
+        $resultadoRegistro['code'] = 2;
+        $resultadoRegistro['type'] = 'register';
+        return $resultadoRegistro;
     }
 
     private function handleFailedLogin(string $email): array
@@ -196,21 +193,6 @@ class AuthService implements IAuthService
             'error' => false,
             'message' => $message,
             'data' => $data
-        ];
-    }
-
-    private function prepareClienteData(array $data): array
-    {
-        return [
-            'tipo_documento_id' => $data['tipo_documento_id'] ?? null,
-            'nombres' => $data['nombres'],
-            'apellidos' => $data['apellidos'],
-            'nro_celular' => $data['nro_celular'] ?? null,
-            'nro_documento' => $data['nro_documento'] ?? null,
-            'genero' => $data['genero'] ?? 'SIN ESPECIFICAR',
-            'fecha_cumpleanios' => $data['fecha_cumpleanios'] ?? null,
-            'created_at' => now(),
-            'updated_at' => now(),
         ];
     }
 

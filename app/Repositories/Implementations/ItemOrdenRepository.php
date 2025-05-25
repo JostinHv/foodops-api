@@ -33,4 +33,42 @@ class ItemOrdenRepository extends BaseRepository implements IItemOrdenRepository
             $consulta->orderBy($sortField, $sortOrder);
         }
     }
+
+    /**
+     * @throws \RuntimeException
+     */
+    public function crearItemsOrden(array $itemsOrden): bool
+    {
+        if (empty($itemsOrden)) {
+            \Log::warning('Intento de crear items de orden con array vacío');
+            return false;
+        }
+
+        try {
+            return \DB::transaction(function () use ($itemsOrden) {
+                $this->modelo->insert($itemsOrden);
+
+                \Log::info('Items de orden creados exitosamente', [
+                    'cantidad_items' => count($itemsOrden),
+                    'orden_id' => $itemsOrden[0]['orden_id'] ?? null
+                ]);
+                return true;
+            });
+        } catch (\Exception $e) {
+            \Log::error('Error al crear items de orden', [
+                'error' => $e->getMessage(),
+                'items' => array_map(function ($item) {
+                    return [
+                        'orden_id' => $item['orden_id'] ?? null,
+                        'item_menu_id' => $item['item_menu_id'] ?? null
+                    ];
+                }, $itemsOrden)
+            ]);
+
+            throw new \RuntimeException('Error al crear los items de la orden: ' . $e->getMessage());
+        } catch (\Throwable $e) {
+            \Log::log('error', 'Error al crear items de orden');
+        }
+        return false;
+    }
 }

@@ -17,4 +17,6 @@ interface IMesaRepository
 
     public function eliminar(int $id): bool;
 
+    public function obtenerMesasDisponibles(): Collection;
+
 }

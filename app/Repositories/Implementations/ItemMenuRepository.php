@@ -5,6 +5,7 @@ namespace App\Repositories\Implementations;
 use App\Models\ItemMenu;
 use App\Repositories\Interfaces\IItemMenuRepository;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class ItemMenuRepository extends BaseRepository implements IItemMenuRepository
 {
@@ -32,5 +33,14 @@ class ItemMenuRepository extends BaseRepository implements IItemMenuRepository
         if ($sortField && $sortOrder) {
             $consulta->orderBy($sortField, $sortOrder);
         }
+    }
+
+    public function obtenerTodosItemsDisponibles(): Collection
+    {
+        return $this->modelo
+            ->where('disponible', true)
+            ->where('activo', true)
+            ->orderBy('orden_visualizacion', 'desc')
+            ->get();
     }
 }

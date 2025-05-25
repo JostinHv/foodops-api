@@ -5,6 +5,7 @@ namespace App\Repositories\Implementations;
 use App\Models\Mesa;
 use App\Repositories\Interfaces\IMesaRepository;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class MesaRepository extends BaseRepository implements IMesaRepository
 {
@@ -43,9 +44,16 @@ class MesaRepository extends BaseRepository implements IMesaRepository
     protected function aplicarOrdenamiento(Builder $consulta, ?string $sortField, ?string $sortOrder): void
     {
         if ($sortField) {
-            $consulta->orderBy($sortField, $sortField == 'capacidad' ? 'desc' : ($sortOrder ?? 'asc'));
+            $consulta->orderBy($sortField, $sortField === 'capacidad' ? 'desc' : ($sortOrder ?? 'asc'));
         } else {
             $consulta->orderBy('nombre', 'asc');
         }
+    }
+
+    public function obtenerMesasDisponibles(): Collection
+    {
+        return $this->modelo
+            ->where('estado_mesa_id', 1) // Estado 1 representa "Libre"
+            ->get();
     }
 }

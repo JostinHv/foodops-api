@@ -17,4 +17,6 @@ interface IItemOrdenService extends IBaseService
 
     public function eliminar(int $id): bool;
 
+    public function crearItemsOrden(array $itemsOrden): bool;
+
 }

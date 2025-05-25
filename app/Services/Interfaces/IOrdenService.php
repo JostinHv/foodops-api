@@ -17,4 +17,6 @@ interface IOrdenService extends IBaseService
 
     public function eliminar(int $id): bool;
 
+    public function generarNumeroOrden(): int;
+
 }

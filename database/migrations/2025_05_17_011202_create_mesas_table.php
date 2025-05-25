@@ -12,12 +12,18 @@ return new class extends Migration {
     {
         Schema::create('mesas', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->foreignId('estado_mesa_id')->constrained('estados_mesas');
-            $table->foreignId('sucursal_id')->constrained('sucursales');
+            $table->foreignId('estado_mesa_id')->default(1)->constrained('estados_mesas');
+            $table->foreignId('sucursal_id')->nullable()->constrained('sucursales');
             $table->string('nombre')->nullable();
             $table->unsignedInteger('capacidad')->nullable();
             $table->timestamps();
         });
+        DB::table('mesas')->insert([
+            ['estado_mesa_id' => 1, 'sucursal_id' => null, 'nombre' => 'Mesa 1', 'capacidad' => 1],
+            ['estado_mesa_id' => 1, 'sucursal_id' => null, 'nombre' => 'Mesa 2', 'capacidad' => 2],
+            ['estado_mesa_id' => 1, 'sucursal_id' => null, 'nombre' => 'Mesa 3', 'capacidad' => 3],
+            ['estado_mesa_id' => 1, 'sucursal_id' => null, 'nombre' => 'Mesa 4', 'capacidad' => 4],
+        ]);
     }
 
     /**

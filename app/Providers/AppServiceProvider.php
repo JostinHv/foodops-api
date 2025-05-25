@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Http\Middleware\CheckAuth;
 use App\Repositories\Implementations\AsignacionPersonalRepository;
 use App\Repositories\Implementations\BaseRepository;
 use App\Repositories\Implementations\CategoriaMenuRepository;
@@ -104,6 +105,7 @@ use App\Services\Interfaces\ITenantService;
 use App\Services\Interfaces\ITenantSuscripcionService;
 use App\Services\Interfaces\IUsuarioRolService;
 use App\Services\Interfaces\IUsuarioService;
+use Illuminate\Foundation\Support\Providers\RouteServiceProvider;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider

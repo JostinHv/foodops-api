@@ -33,6 +33,7 @@ class AuthController extends Controller
     public function register(RegisterRequest $request): RedirectResponse
     {
         $validatedData = $request->validated();
+
         $emailExists = $this->authService->comprobarEmail($validatedData['email']);
 
         if ($emailExists === true) {
@@ -64,8 +65,6 @@ class AuthController extends Controller
     public function login(LoginRequest $request): RedirectResponse
     {
         $validatedData = $request->validated();
-
-        \Log::log('info', 'Login request: ', $validatedData);
 
         $response = $this->authService->login($validatedData);
 

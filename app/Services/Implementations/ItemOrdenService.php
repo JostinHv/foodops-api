@@ -40,4 +40,8 @@ readonly class ItemOrdenService implements IItemOrdenService
         return $this->repository->eliminar($id);
     }
 
+    public function crearItemsOrden(array $itemsOrden): bool
+    {
+        return $this->repository->crearItemsOrden($itemsOrden);
+    }
 }

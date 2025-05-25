@@ -17,6 +17,16 @@ return new class extends Migration {
             $table->boolean('activo')->default(true);
             $table->timestamps();
         });
+        DB::table('estados_ordenes')->insert([
+            ['nombre' => 'En Proceso', 'descripcion' => 'Orden en proceso', 'activo' => true],
+            ['nombre' => 'Preparada', 'descripcion' => 'Orden preparada', 'activo' => true],
+            ['nombre' => 'Cancelada', 'descripcion' => 'Orden cancelada', 'activo' => true],
+            ['nombre' => 'Servida', 'descripcion' => 'Orden servida', 'activo' => true],
+            ['nombre' => 'Solicitando Pago', 'descripcion' => 'Orden solicitando pago', 'activo' => true],
+            ['nombre' => 'Pagada', 'descripcion' => 'Orden pagada', 'activo' => true],
+            ['nombre' => 'En disputa', 'descripcion' => 'Orden en disputa', 'activo' => true],
+            ['nombre' => 'Cerrada', 'descripcion' => 'Orden cerrada', 'activo' => true],
+        ]);
     }
 
     /**
