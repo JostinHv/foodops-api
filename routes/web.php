@@ -1,11 +1,15 @@
 <?php
 
+use App\Http\Controllers\Web\AdminController;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Middleware\WebAuthenticate;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/', function () {
+    return view('home');
+})->name('home');
+
 
 // Rutas de autenticación
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -13,6 +17,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login-submit');
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register-submit');
 Route::post('/check-email', [AuthController::class, 'checkEmail'])->name('check.email');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::prefix('mesero')->group(function () {
 // Rutas protegidas por autenticación
@@ -39,5 +44,17 @@ Route::prefix('mesero')->group(function () {
 //    });
 
     // Otras rutas protegidas aquí...
+
 });
+
+Route::prefix('tenant')->group(function(){
+    Route::get('/dashboard', [AdminController::class,'dashboard'])
+         ->name('tenant.dashboard');
+
+    Route::get('/grupos', [AdminController::class, 'grupos'])
+        ->name('tenant.grupo-restaurant');
+    Route::post('/grupos', [AdminController::class, 'store'])->name('grupos.store');
+
+});
+
 

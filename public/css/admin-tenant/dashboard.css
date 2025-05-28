@@ -1,0 +1,15 @@
+.card h6 {
+    font-weight: 600;
+}
+
+.nav-link.active {
+    font-weight: 600;
+    color: #dc3545 !important;
+}
+
+.bg-light{
+    height:200px; 
+    display:flex; 
+    align-items:center; 
+    justify-content:center;
+}
