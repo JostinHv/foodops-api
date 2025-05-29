@@ -17,4 +17,9 @@ class AdminController extends Controller
         return view('admin-tenant/grupo-restaurant');
     }
 
+    public function restaurants()
+    {
+        return view('admin-tenant/restaurants');
+    }
+
 }
