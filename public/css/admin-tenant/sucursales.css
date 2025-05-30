@@ -1,0 +1,24 @@
+.table-responsive {
+    overflow-x: auto;
+}
+    
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+    
+.badge {
+    font-size: 0.85em;
+    font-weight: 500;
+}
+    
+.gap-2 {
+    gap: 0.5rem;
+}
+    
+.text-warning {
+    color: #ffc107 !important;
+}
+    
+.bg-light {
+    background-color: #f8f9fa !important;
+}

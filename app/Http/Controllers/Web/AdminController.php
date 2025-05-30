@@ -22,4 +22,13 @@ class AdminController extends Controller
         return view('admin-tenant/restaurants');
     }
 
+    public function sucursales()
+    {
+        return view('admin-tenant/sucursales');
+    }
+
+    public function usuarios()
+    {
+        return view('admin-tenant/usuarios');
+    }
 }
