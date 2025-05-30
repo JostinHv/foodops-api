@@ -55,7 +55,30 @@ Route::prefix('tenant')->group(function () {
     Route::get('/grupos', [AdminController::class, 'grupos'])
         ->name('tenant.grupo-restaurant');
     Route::post('/grupos', [AdminController::class, 'store'])->name('grupos.store');
-
+    Route::get('/restaurants', [AdminController::class, 'restaurants'])
+        ->name('tenant.restaurantes');
+    Route::get('/sucursales', [AdminController::class, 'sucursales'])
+        ->name('tenant.sucursales');
+    Route::get('/usuarios', [AdminController::class, 'usuarios'])
+        ->name('tenant.usuarios');
 });
 
+//Rutas de gerente de sucursal
+Route::prefix('gerente')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('gerente-sucursal.dashboard');
+    })->name('gerente.dashboard');
+    Route::get('/menu', function () {
+        return view('gerente-sucursal.menu');
+    })->name('gerente.menu');
+    Route::get('/mesas', function () {
+        return view('gerente-sucursal.mesas');
+    })->name('gerente.mesas');
+    Route::get('/personal', function () {
+        return view('gerente-sucursal.personal');
+    })->name('gerente.personal');
+    Route::get('/facturacion', function () {
+        return view('gerente-sucursal.facturacion');
+    })->name('gerente.facturacion');
+});
 
