@@ -9,21 +9,21 @@
 @section('content')
 <div class="row g-3 mb-4">
     <div class="col-md-3">
-        <div class="card shadow-sm p-3">
+        <div class="card shadow-sm p-3 h-100">
             <small>Total Restaurantes</small>
             <h3>12</h3>
             <small class="text-success">+2 desde el mes pasado</small>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card shadow-sm p-3">
+        <div class="card shadow-sm p-3 h-100">
             <small>Ingresos Mensuales</small>
             <h3>$24,565.00</h3>
             <small class="text-success">+15.2% desde el mes pasado</small>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card shadow-sm p-3">
+        <div class="card shadow-sm p-3 h-100">
             <small>Plan Actual</small>
             <h3>Premium</h3>
             <small>Renovación: 15/06/2025</small>
