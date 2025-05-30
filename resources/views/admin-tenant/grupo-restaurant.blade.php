@@ -54,13 +54,14 @@
 
         {{-- Lista de Grupos --}}
         <div class="card">
-            <div class="card-body">
+            <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="card-title">Lista de Grupos</h5>
-                <p class="text-muted">3 grupos encontrados</p>
-
+                <span class="badge bg-primary">3 grupos encontrados</span>
+            </div>
+            <div class="card-body">
                 <div class="table-responsive">
                     <table class="table align-middle">
-                        <thead class="table-light">
+                        <thead >
                             <tr>
                                 <th>Grupo</th>
                                 <th>Gerente</th>
@@ -86,12 +87,18 @@
                                 <td>$125.000</td>
                                 <td><span class="badge bg-success">Activo</span></td>
                                 <td>
-    <button type="button" class="btn btn-link p-0" data-bs-toggle="modal" data-bs-target="#accionesGrupoModal" onclick="setGrupoId(1)">
-        <i class="bi bi-three-dots"></i>
-    </button>
-</td>
-
-
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-outline-primary" title="Ver detalles" data-bs-toggle="modal" data-bs-target="#verItemModal">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary" title="Editar" data-bs-toggle="modal" data-bs-target="#editarItemModal">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" title="Eliminar" data-bs-toggle="modal" data-bs-target="#eliminarItemModal">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
                             </tr>
                             <tr>
                                 <td>
@@ -106,7 +113,19 @@
                                 <td>15</td>
                                 <td>$89.000</td>
                                 <td><span class="badge bg-success">Activo</span></td>
-                                <td><i class="bi bi-three-dots"></i></td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-outline-primary" title="Ver detalles" data-bs-toggle="modal" data-bs-target="#verItemModal">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary" title="Editar" data-bs-toggle="modal" data-bs-target="#editarItemModal">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" title="Eliminar" data-bs-toggle="modal" data-bs-target="#eliminarItemModal">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
                             </tr>
                             <tr>
                                 <td>
@@ -121,7 +140,19 @@
                                 <td>4</td>
                                 <td>$45.000</td>
                                 <td><span class="badge bg-warning text-dark">Pendiente</span></td>
-                                <td><i class="bi bi-three-dots"></i></td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-outline-primary" title="Ver detalles" data-bs-toggle="modal" data-bs-target="#verItemModal">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary" title="Editar" data-bs-toggle="modal" data-bs-target="#editarItemModal">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" title="Eliminar" data-bs-toggle="modal" data-bs-target="#eliminarItemModal">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -184,23 +215,29 @@
         </div>
     </div>
 
-<!-- Modal Acciones -->
-<div class="modal fade" id="accionesGrupoModal" tabindex="-1" aria-labelledby="accionesGrupoModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-sm modal-dialog-centered">
+<!-- Modal: Confirmar Eliminación -->
+<div class="modal fade" id="eliminarItemModal" tabindex="-1" aria-labelledby="eliminarItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Acciones del Grupo</h5>
+                <h5 class="modal-title" id="eliminarItemModalLabel">Confirmar Eliminación</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
-            <div class="modal-body text-center">
-                <button class="btn btn-outline-secondary w-100 mb-2" id="btnVerDetalle">Ver Detalle</button>
-                <button class="btn btn-outline-primary w-100 mb-2" id="btnEditarGrupo">Editar</button>
-                <button class="btn btn-outline-danger w-100" id="btnEliminarGrupo">Eliminar</button>
+            <div class="modal-body">
+                <p>¿Estás seguro que deseas eliminar el grupo de restaurante?</p>
+                <p class="text-danger">Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                <form id="formEliminarItem" action="#" method="POST" class="d-inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">Eliminar Ítem</button>
+                </form>
             </div>
         </div>
     </div>
 </div>
-
 
 @endsection
 
