@@ -1,0 +1,40 @@
+/* Estilos para el modal de factura */
+#nuevaFacturaModal .modal-dialog {
+    max-width: 800px;
+}
+
+#nuevaFacturaModal .modal-body {
+    padding: 1.5rem;
+}
+
+#nuevaFacturaModal .table-sm td {
+    padding: 0.3rem 0.5rem;
+}
+
+#nuevaFacturaModal .table-borderless td {
+    border: none;
+}
+
+#nuevaFacturaModal hr {
+    border-top: 1px solid #dee2e6;
+    opacity: 1;
+}
+
+/* Adaptabilidad para móviles */
+@media (max-width: 768px) {
+    #nuevaFacturaModal .modal-body {
+        padding: 1rem;
+    }
+    
+    #nuevaFacturaModal .row.g-3 {
+        margin-bottom: -0.5rem !important;
+    }
+    
+    #nuevaFacturaModal .row.g-3 > [class^="col-"] {
+        margin-bottom: 0.5rem;
+    }
+    
+    #nuevaFacturaModal .table-responsive {
+        font-size: 0.9rem;
+    }
+}
