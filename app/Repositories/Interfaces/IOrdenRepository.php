@@ -19,4 +19,9 @@ interface IOrdenRepository
 
     public function obtenerUltimoNumeroOrden(): int;
 
+    public function obtenerPorIdConRelaciones(int $id, array $relaciones = []): ?Model;
+
+    public function obtenerOrdenesPorSucursal(mixed $sucursal_id);
+
+
 }

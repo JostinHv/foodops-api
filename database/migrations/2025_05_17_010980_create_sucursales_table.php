@@ -12,8 +12,8 @@ return new class extends Migration {
     {
         Schema::create('sucursales', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->foreignId('restaurante_id')->constrained('restaurantes');
-            $table->foreignId('usuario_id')->constrained('usuarios');
+            $table->foreignId('restaurante_id')->nullable()->constrained('restaurantes');
+            $table->foreignId('usuario_id')->nullable()->constrained('usuarios');
             $table->string('nombre')->nullable();
             $table->string('tipo')->nullable();
             $table->decimal('latitud', 10, 8)->nullable();

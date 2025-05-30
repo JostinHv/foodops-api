@@ -50,7 +50,6 @@ class UsuarioController extends Controller
     {
         try {
             $usuario = $this->usuarioService->obtenerPorId($id);
-
             if (!$usuario) {
                 return ApiResponse::error('Usuario no encontrado', null, 404);
             }

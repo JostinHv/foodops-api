@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('items_menus', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->foreignId('categoria_menu_id')->constrained('categorias_menus');
+            $table->foreignId('categoria_menu_id')->nullable()->constrained('categorias_menus');
             $table->foreignId('imagen_id')->nullable()->constrained('imagenes');
             $table->string('nombre')->nullable();
             $table->string('descripcion')->nullable();

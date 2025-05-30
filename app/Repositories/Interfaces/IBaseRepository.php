@@ -16,4 +16,7 @@ interface IBaseRepository
     public function actualizar(int $id, array $datos): bool;
 
     public function eliminar(int $id): bool;
+
+    public function obtenerPorIdConRelaciones(int $id, array $relaciones = []): ?Model;
+
 }

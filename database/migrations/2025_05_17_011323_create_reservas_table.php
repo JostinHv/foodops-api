@@ -12,8 +12,8 @@ return new class extends Migration {
     {
         Schema::create('reservas', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->foreignId('mesa_id')->constrained('mesas');
-            $table->foreignId('recepcionista_id')->constrained('usuarios');
+            $table->foreignId('mesa_id')->nullable()->constrained('mesas');
+            $table->foreignId('recepcionista_id')->nullable()->constrained('usuarios');
             $table->string('nombre_cliente')->nullable();
             $table->string('email_cliente')->nullable();
             $table->string('telefono_cliente')->nullable();

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\Auditable;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -60,6 +61,8 @@ class Usuario extends Authenticatable implements JWTSubject
     protected $table = 'usuarios';
 
     use HasApiTokens, HasFactory, Notifiable;
+
+    use Auditable;
 
     protected $fillable = [
         'tenant_id',

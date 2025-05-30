@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-class Authenticate extends Middleware
+class ApiAuthenticate extends Middleware
 {
     private const UNAUTHORIZED = Response::HTTP_UNAUTHORIZED;
 

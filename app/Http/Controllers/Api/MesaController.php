@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Responses\ApiResponse;
 use App\Services\Interfaces\IMesaService;
+use App\Traits\AuthenticatedUserTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class MesaController extends Controller
 {
     private IMesaService $mesaService;
+    use AuthenticatedUserTrait;
 
     public function __construct(IMesaService $mesaService)
     {
@@ -96,4 +98,38 @@ class MesaController extends Controller
             return ApiResponse::error($e->getMessage());
         }
     }
+
+    public function obtenerMesasPorSucursal(): JsonResponse
+    {
+        try {
+            $usuarioId = $this->getCurrentUser()->getAuthIdentifier();
+            $mesas = $this->mesaService->obtenerMesasPorSucursal($usuarioId);
+            return ApiResponse::success($mesas, 'Mesas recuperadas exitosamente');
+        } catch (\Exception $e) {
+            return ApiResponse::error($e->getMessage());
+        }
+    }
+
+    /**
+     * Cambiar estado de una mesa
+     */
+    public function cambiarEstadoMesa(Request $request, int $id): JsonResponse
+    {
+        try {
+            $request->validate([
+                'estado_mesa_id' => 'required|integer|exists:estados_mesas,id',
+            ]);
+            $estadoMesaId = $request->input('estado_mesa_id');
+            $actualizado = $this->mesaService->cambiarEstadoMesa($id, $estadoMesaId);
+
+            if (!$actualizado) {
+                return ApiResponse::error('No se pudo cambiar el estado de la mesa', null, 404);
+            }
+
+            return ApiResponse::success(null, 'Estado de la mesa actualizado exitosamente');
+        } catch (\Exception $e) {
+            return ApiResponse::error($e->getMessage());
+        }
+    }
+
 }

@@ -5,6 +5,7 @@ namespace App\Repositories\Implementations;
 use App\Models\Orden;
 use App\Repositories\Interfaces\IOrdenRepository;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class OrdenRepository extends BaseRepository implements IOrdenRepository
 {
@@ -38,5 +39,15 @@ class OrdenRepository extends BaseRepository implements IOrdenRepository
     {
         $ultimoNumero = $this->modelo->max('nro_orden');
         return $ultimoNumero ?: 0; // Retorna 0 si no hay órdenes
+    }
+
+    public function obtenerOrdenesPorSucursal(mixed $sucursal_id): Collection
+    {
+        return $this->modelo->where('sucursal_id', $sucursal_id)
+            ->with('estadoOrden', 'sucursal', 'itemsOrdenes')
+            ->where('estado_orden_id', '!=', 4)
+            ->where('estado_orden_id', '!=', 8)
+            ->orderBy('nro_orden', 'asc')
+            ->get();
     }
 }

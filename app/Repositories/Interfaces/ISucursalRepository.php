@@ -24,4 +24,7 @@ interface ISucursalRepository
     public function obtenerActivos(): Collection;
 
     public function obtenerUltimoActivo(): Collection;
+
+    public function obtenerPorIdConRelaciones(int $id, array $relaciones = []): ?Model;
+
 }

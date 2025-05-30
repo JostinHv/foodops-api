@@ -3,11 +3,12 @@
 namespace App\Traits;
 
 use App\Models\Usuario;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Log;
 
 trait AuthenticatedUserTrait
 {
-    protected function getCurrentUser(): ?Usuario
+    protected function getCurrentUser(): Authenticatable
     {
         return auth()->user();
     }

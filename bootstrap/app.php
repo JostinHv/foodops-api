@@ -1,8 +1,11 @@
 <?php
 
-use App\Http\Middleware\Authenticate;
+use App\Http\Middleware\ApiAuthenticate;
+use App\Http\Middleware\ApiCheckRole;
 use App\Http\Middleware\CheckAuth;
 use App\Http\Middleware\ThrottleRequests;
+use App\Http\Middleware\WebAuthenticate;
+use App\Http\Middleware\WebCheckRole;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -16,18 +19,17 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
 //        $middleware->api(
-//            append: [Authenticate::class,]
-//        )->alias(['auth' => Authenticate::class]
+//            append: [ApiAuthenticate::class,]
+//        )->alias(['auth' => ApiAuthenticate::class]
 //        );
-//        $middleware->api(
 //            append: [ThrottleRequests::class]
 //        )->alias(['throttle' => ThrottleRequests::class]
-//        );
         $middleware->alias(['throttle' => ThrottleRequests::class]);
-        $middleware->alias(['auth' => Authenticate::class]);
-        $middleware->alias(['auth.web' => Authenticate::class]);
+        $middleware->alias(['auth.api' => ApiAuthenticate::class]);
+        $middleware->alias(['auth.web' => WebAuthenticate::class]);
         $middleware->alias(['auth.check' => CheckAuth::class]);
+        $middleware->alias(['role.api' => ApiCheckRole::class]);
+        $middleware->alias(['role.web' => WebCheckRole::class]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
     })->create();

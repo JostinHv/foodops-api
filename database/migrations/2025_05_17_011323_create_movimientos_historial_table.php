@@ -10,14 +10,14 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('items_ordenes', function (Blueprint $table) {
-            $table->id()->autoIncrement();
-            $table->foreignId('orden_id')->nullable()->constrained('ordenes');
-            $table->foreignId('item_menu_id')->nullable()->constrained('items_menus');
-            $table->unsignedInteger('cantidad');
-            $table->decimal('monto', 10, 2)->nullable();
+        Schema::create('movimientos_historial', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('usuario_id')->nullable()->constrained('usuarios')->nullOnDelete();
+            $table->enum('tipo', ['INSERT', 'UPDATE', 'DELETE'])->comment('Tipo de operación realizada');
+            $table->string('tabla_modificada');
+            $table->json('valor_anterior')->nullable();
+            $table->json('valor_actual')->nullable();
             $table->timestamps();
-
         });
     }
 
@@ -29,6 +29,6 @@ return new class extends Migration {
         if (app()->environment('production')) {
             throw new Exception('The "down" method is disabled in production.');
         }
-        Schema::dropIfExists('items_ordenes');
+        Schema::dropIfExists('movimientos_historial');
     }
 };

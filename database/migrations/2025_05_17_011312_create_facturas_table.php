@@ -12,9 +12,9 @@ return new class extends Migration {
     {
         Schema::create('facturas', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->foreignId('orden_id')->constrained('ordenes');
-            $table->foreignId('metodo_pago_id')->constrained('metodos_pagos');
-            $table->foreignId('igv_id')->constrained('igv');
+            $table->foreignId('orden_id')->nullable()->constrained('ordenes');
+            $table->foreignId('metodo_pago_id')->nullable()->constrained('metodos_pagos');
+            $table->foreignId('igv_id')->nullable()->constrained('igv');
             $table->string('nro_factura')->unique()->nullable();
             $table->decimal('monto_total', 10, 2)->nullable();
             $table->decimal('monto_total_igv', 10, 2)->nullable();

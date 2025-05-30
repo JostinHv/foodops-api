@@ -5,6 +5,7 @@ namespace App\Repositories\Implementations;
 use App\Models\AsignacionPersonal;
 use App\Repositories\Interfaces\IAsignacionPersonalRepository;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class AsignacionPersonalRepository extends ActivoBoolRepository implements IAsignacionPersonalRepository
 {
@@ -30,5 +31,10 @@ class AsignacionPersonalRepository extends ActivoBoolRepository implements IAsig
         if ($sortField && $sortOrder) {
             $consulta->orderBy($sortField, $sortOrder);
         }
+    }
+
+    public function buscarPorUsuarioId(mixed $usuarioId): ?Model
+    {
+        return $this->modelo->where('usuario_id', $usuarioId)->where('activo', true)->first();
     }
 }

@@ -12,11 +12,11 @@ return new class extends Migration {
     {
         Schema::create('tenants_suscripciones', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->foreignId('plan_suscripcion_id')->constrained('planes_suscripciones');
-            $table->foreignId('metodo_pago_id')->constrained('metodos_pagos');
+            $table->foreignId('plan_suscripcion_id')->nullable()->constrained('planes_suscripciones');
+            $table->foreignId('metodo_pago_id')->nullable()->constrained('metodos_pagos');
             $table->date('fecha_inicio')->nullable();
             $table->date('fecha_fin')->nullable();
-            $table->string('estado');
+            $table->string('estado')->nullable();
             $table->decimal('precio_acordado', 10, 2)->nullable();
             $table->boolean('renovacion_automatica')->default(true);
             $table->text('notas')->nullable();

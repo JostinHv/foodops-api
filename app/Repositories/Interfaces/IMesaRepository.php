@@ -19,4 +19,10 @@ interface IMesaRepository
 
     public function obtenerMesasDisponibles(): Collection;
 
+    public function obtenerPorIdConRelaciones(int $id, array $relaciones = []): ?Model;
+
+    public function obtenerMesasPorSucursal(int $sucursalId);
+
+    public function cambiarEstadoMesa(int $id, int $estadoMesaId): bool;
+
 }

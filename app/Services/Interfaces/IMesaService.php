@@ -19,4 +19,8 @@ interface IMesaService extends IBaseService
 
     public function obtenerMesasDisponibles(): Collection;
 
+    public function obtenerMesasPorSucursal(mixed $usuarioId);
+
+    public function cambiarEstadoMesa(int $id, int $estadoMesaId);
+
 }

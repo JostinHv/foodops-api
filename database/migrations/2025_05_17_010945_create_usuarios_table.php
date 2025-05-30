@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('usuarios', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->foreignId('tenant_id')->nullable()->constrained('tenants_suscripciones');
+            $table->foreignId('tenant_id')->nullable()->constrained('tenants');
             $table->foreignId('foto_perfil_id')->nullable()->constrained('imagenes');
             $table->foreignId('restaurante_id')->nullable()->constrained('restaurantes');
             $table->string('email')->unique();

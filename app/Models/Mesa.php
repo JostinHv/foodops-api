@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\Auditable;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -35,6 +36,8 @@ use Illuminate\Support\Carbon;
 class Mesa extends Model
 {
     protected $table = 'mesas';
+
+    use Auditable;
 
     protected $fillable = [
         'estado_mesa_id',

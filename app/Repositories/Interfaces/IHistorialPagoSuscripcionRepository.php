@@ -17,4 +17,7 @@ interface IHistorialPagoSuscripcionRepository
 
     public function eliminar(int $id): bool;
 
+    public function obtenerPorIdConRelaciones(int $id, array $relaciones = []): ?Model;
+
+
 }

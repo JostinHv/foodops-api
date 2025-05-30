@@ -19,4 +19,6 @@ interface IItemOrdenRepository
 
     public function crearItemsOrden(array $itemsOrden): bool;
 
+    public function obtenerPorIdConRelaciones(int $id, array $relaciones = []): ?Model;
+
 }

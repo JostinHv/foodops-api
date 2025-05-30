@@ -259,4 +259,15 @@ abstract class BaseRepository implements IBaseRepository
             $this->unirTabla($query, $table, ...$conditions);
         }
     }
+
+    public function obtenerPorIdConRelaciones(int $id, array $relaciones = []): ?Model
+    {
+        $consulta = $this->modelo->newQuery()->where('id', $id);
+
+        if (!empty($relaciones)) {
+            $consulta->with($relaciones);
+        }
+
+        return $consulta->first();
+    }
 }

@@ -3,13 +3,17 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CrearOrdenRequest;
 use App\Http\Responses\ApiResponse;
 use App\Services\Interfaces\IOrdenService;
+use App\Traits\AuthenticatedUserTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class OrdenController extends Controller
 {
+    use AuthenticatedUserTrait;
+
     private IOrdenService $ordenService;
 
     public function __construct(IOrdenService $ordenService)
@@ -50,7 +54,6 @@ class OrdenController extends Controller
     {
         try {
             $orden = $this->ordenService->obtenerPorId($id);
-
             if (!$orden) {
                 return ApiResponse::error('Orden no encontrada', null, 404);
             }
@@ -68,6 +71,7 @@ class OrdenController extends Controller
     {
         try {
             $actualizado = $this->ordenService->actualizar($id, $request->all());
+            $usuario = $this->getCurrentUser();
 
             if (!$actualizado) {
                 return ApiResponse::error('Orden no encontrada', null, 404);
@@ -97,22 +101,25 @@ class OrdenController extends Controller
         }
     }
 
-    /**
-     * VALORES DE PRUEBA PARA LA VISTA DEL MESERO
-     */
-    public function create()
+    public function crearOrden(CrearOrdenRequest $request): JsonResponse
     {
-        $mesas = [
-            (object)['id' => 1, 'numero' => 'Mesa 1'],
-            (object)['id' => 2, 'numero' => 'Mesa 2'],
-        ];
+        try {
+            $orden = $this->ordenService->crearOrden($request->validated(), $this->getCurrentUser()->getAuthIdentifier());
+            return ApiResponse::success($orden, 'Orden creada exitosamente', 201);
+        } catch (\Exception $e) {
+            return ApiResponse::error($e->getMessage());
+        }
 
-        $productos = [
-            (object)['id' => 1, 'nombre' => 'Ensalada', 'precio' => 10.00],
-            (object)['id' => 2, 'nombre' => 'Sopa', 'precio' => 8.50],
-        ];
+    }
 
-        return view('mesero.nuevaorden', compact('mesas', 'productos'));
+    public function obtenerOrdenesPorSucursal(): JsonResponse
+    {
+        try {
+            $ordenes = $this->ordenService->obtenerOrdenesPorSucursal($this->getCurrentUser()->getAuthIdentifier());
+            return ApiResponse::success($ordenes, 'Órdenes recuperadas exitosamente');
+        } catch (\Exception $e) {
+            return ApiResponse::error($e->getMessage());
+        }
     }
 
 }

@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('grupos_restaurantes', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->foreignId('tenant_id')->constrained('tenants');
+            $table->foreignId('tenant_id')->nullable()->constrained('tenants');
             $table->string('nombre')->nullable();
             $table->string('descripcion')->nullable();
 //            $table->boolean('activo')->default(true);

@@ -23,7 +23,7 @@ class EstadoMesaController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $estados = $this->estadoMesaService->obtenerTodos();
+            $estados = $this->estadoMesaService->obtenerTodos()->where('activo', true);
             return ApiResponse::success($estados, 'Estados de mesa recuperados exitosamente');
         } catch (\Exception $e) {
             return ApiResponse::error($e->getMessage());
@@ -100,7 +100,7 @@ class EstadoMesaController extends Controller
     /**
      * Cambiar estado automático de un estado de mesa
      */
-    public function cambiarEstadoAutomatico(int $id): JsonResponse
+    public function cambiarActivoAutomatico(int $id): JsonResponse
     {
         try {
             $actualizado = $this->estadoMesaService->cambiarEstadoAutomatico($id);
@@ -114,4 +114,6 @@ class EstadoMesaController extends Controller
             return ApiResponse::error($e->getMessage());
         }
     }
+
+
 }

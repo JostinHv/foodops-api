@@ -12,8 +12,8 @@ return new class extends Migration {
     {
         Schema::create('historial_pagos_suscripciones', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->foreignId('tenant_id')->constrained('tenants');
-            $table->foreignId('tenant_suscripcion_id')->constrained('tenants_suscripciones');
+            $table->foreignId('tenant_id')->nullable()->constrained('tenants');
+            $table->foreignId('tenant_suscripcion_id')->nullable()->constrained('tenants_suscripciones');
             $table->decimal('monto', 10, 2)->nullable();
             $table->date('fecha_pago')->nullable();
             $table->string('estado')->nullable();

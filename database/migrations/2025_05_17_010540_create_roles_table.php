@@ -18,6 +18,16 @@ return new class extends Migration {
             $table->boolean('activo')->default(true);
             $table->timestamps();
         });
+
+        DB::table('roles')->insert([
+            ['nombre' => 'superadmin', 'descripcion' => 'Rol de super administrador del sistema', 'activo' => true],
+            ['nombre' => 'administrador', 'descripcion' => 'Rol de administrador del sistema', 'activo' => true],
+            ['nombre' => 'gerente', 'descripcion' => 'Rol de gerente del restaurante', 'activo' => true],
+            ['nombre' => 'cajero', 'descripcion' => 'Rol de cajero', 'activo' => true],
+            ['nombre' => 'cocinero', 'descripcion' => 'Rol de cocinero', 'activo' => true],
+            ['nombre' => 'mesero', 'descripcion' => 'Rol de mesero', 'activo' => true],
+            ['nombre' => 'cliente', 'descripcion' => 'Rol de cliente', 'activo' => true],
+        ]);
     }
 
     /**

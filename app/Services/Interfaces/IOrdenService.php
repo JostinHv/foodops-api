@@ -2,6 +2,7 @@
 
 namespace App\Services\Interfaces;
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
@@ -18,5 +19,9 @@ interface IOrdenService extends IBaseService
     public function eliminar(int $id): bool;
 
     public function generarNumeroOrden(): int;
+
+    public function crearOrden(array $datos, mixed $usuarioId);
+
+    public function obtenerOrdenesPorSucursal(mixed $usuarioId);
 
 }

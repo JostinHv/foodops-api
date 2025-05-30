@@ -12,12 +12,12 @@ return new class extends Migration {
     {
         Schema::create('restaurantes', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->foreignId('tenant_id')->constrained('tenants');
-            $table->foreignId('grupo_restaurant_id')->constrained('grupos_restaurantes');
-            $table->foreignId('logo_id')->constrained('imagenes');
-            $table->string('nro_ruc')->unique()->nullable();
+            $table->foreignId('tenant_id')->nullable()->constrained('tenants');
+            $table->foreignId('grupo_restaurant_id')->nullable()->constrained('grupos_restaurantes');
+            $table->foreignId('logo_id')->nullable()->constrained('imagenes');
+            $table->string('nro_ruc')->nullable();
             $table->string('nombre_legal')->nullable();
-            $table->string('email')->unique()->nullable();
+            $table->string('email')->nullable();
             $table->string('direccion')->nullable();
             $table->decimal('latitud', 10, 8)->nullable();
             $table->decimal('longitud', 11, 8)->nullable();

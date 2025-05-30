@@ -12,14 +12,14 @@ return new class extends Migration {
     {
         Schema::create('asignaciones_personal', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->foreignId('tenant_id')->constrained('tenants');
-            $table->foreignId('usuario_id')->constrained('usuarios');
-            $table->foreignId('sucursal_id')->constrained('sucursales');
+            $table->foreignId('tenant_id')->nullable()->constrained('tenants');
+            $table->foreignId('usuario_id')->nullable()->constrained('usuarios');
+            $table->foreignId('sucursal_id')->nullable()->constrained('sucursales');
             $table->string('tipo')->nullable();
             $table->text('notas')->nullable();
             $table->date('fecha_asignacion')->nullable();
             $table->date('fecha_fin')->nullable();
-            $table->boolean('activo')->default(false);
+            $table->boolean('activo')->default(true);
         });
     }
 

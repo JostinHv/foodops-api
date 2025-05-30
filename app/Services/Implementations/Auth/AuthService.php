@@ -213,7 +213,7 @@ class AuthService implements IAuthService
         return (new UserDataBuilder())
             ->withBasicInfo($user)
             ->withRoles($user->roles)
-//            ->withClientData($user->cliente)
+            ->withBusinessLogic($user)
             ->build();
     }
 }

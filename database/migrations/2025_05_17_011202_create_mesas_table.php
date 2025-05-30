@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('mesas', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->foreignId('estado_mesa_id')->default(1)->constrained('estados_mesas');
+            $table->foreignId('estado_mesa_id')->default(1)->nullable()->constrained('estados_mesas');
             $table->foreignId('sucursal_id')->nullable()->constrained('sucursales');
             $table->string('nombre')->nullable();
             $table->unsignedInteger('capacidad')->nullable();

@@ -28,4 +28,6 @@ interface IUsuarioRepository
     public function registrarUsuarioConRol(array $datos): Model;
 
     public function existeEmailRegistrado(string $email): bool;
+
+    public function obtenerPorIdConRelaciones(int   $id, array $relaciones = []): ?Model;
 }

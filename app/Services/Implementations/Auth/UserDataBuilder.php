@@ -24,11 +24,17 @@ class UserDataBuilder
         return $this;
     }
 
-    public function withClientData($cliente): self
+    public function withBusinessLogic($usuario): self
     {
-        $this->userData['cliente'] = $cliente->only([
-            'id', 'nombres', 'apellidos', 'genero'
-        ]);
+        $usuario->load(['tenant', 'restaurante']);
+        $this->userData['tenant'] = $usuario->tenant ? [
+            'tenant_id' => $usuario->tenant->id,
+            'dominio' => $usuario->tenant->dominio
+        ] : null;
+        $this->userData['restaurante'] = $usuario->restaurante ? [
+            'restaurante_id' => $usuario->restaurante->id,
+            'nombre' => $usuario->restaurante->nombre_legal
+        ] : null;
         return $this;
     }
 

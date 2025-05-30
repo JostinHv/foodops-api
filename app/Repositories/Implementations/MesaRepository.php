@@ -56,4 +56,22 @@ class MesaRepository extends BaseRepository implements IMesaRepository
             ->where('estado_mesa_id', 1) // Estado 1 representa "Libre"
             ->get();
     }
+
+    public function obtenerMesasPorSucursal(int $sucursalId): Collection
+    {
+        return $this->modelo
+            ->where('sucursal_id')
+            ->get();
+    }
+
+    public function cambiarEstadoMesa(int $id, int $estadoMesaId): bool
+    {
+        $mesa = $this->obtenerPorId($id);
+        if (!$mesa) {
+            return false;
+        }
+
+        $mesa->estado_mesa_id = $estadoMesaId;
+        return $mesa->save();
+    }
 }

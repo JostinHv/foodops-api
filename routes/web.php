@@ -4,6 +4,7 @@ use App\Http\Controllers\Web\AdminController;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Middleware\WebAuthenticate;
+use App\Http\Middleware\WebCheckRole;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -21,7 +22,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::prefix('mesero')->group(function () {
 // Rutas protegidas por autenticación
-    Route::middleware([WebAuthenticate::class])->group(function () {
+    Route::middleware([WebAuthenticate::class, WebCheckRole::class . ':mesero'])->group(function () {
         Route::get('/', function () {
             return view('mesero.dashboard');
         })->name('mesero.dashboard');
@@ -47,9 +48,9 @@ Route::prefix('mesero')->group(function () {
 
 });
 
-Route::prefix('tenant')->group(function(){
-    Route::get('/dashboard', [AdminController::class,'dashboard'])
-         ->name('tenant.dashboard');
+Route::prefix('tenant')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])
+        ->name('tenant.dashboard');
 
     Route::get('/grupos', [AdminController::class, 'grupos'])
         ->name('tenant.grupo-restaurant');

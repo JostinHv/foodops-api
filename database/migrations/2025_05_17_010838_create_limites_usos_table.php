@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('limites_usos', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->foreignId('tenant_suscripcion_id')->constrained('tenants_suscripciones');
+            $table->foreignId('tenant_suscripcion_id')->nullable()->constrained('tenants_suscripciones');
             $table->string('tipo_recurso')->nullable();
             $table->unsignedInteger('limite_maximo')->nullable();
             $table->unsignedInteger('uso_actual')->nullable();

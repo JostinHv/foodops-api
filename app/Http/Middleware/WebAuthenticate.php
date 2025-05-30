@@ -12,7 +12,6 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class WebAuthenticate extends Middleware
 {
-    private const UNAUTHORIZED = Response::HTTP_UNAUTHORIZED;
 
     protected function redirectTo(Request $request): string
     {

@@ -6,6 +6,7 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -123,4 +124,8 @@ class Orden extends Model
         return $this->belongsTo(Usuario::class, 'cajero_id');
     }
 
+    public function itemsOrdenes(): HasMany
+    {
+        return $this->hasMany(ItemOrden::class, 'orden_id');
+    }
 }
