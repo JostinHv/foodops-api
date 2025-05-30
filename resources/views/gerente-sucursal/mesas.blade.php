@@ -11,8 +11,8 @@
     <!-- Encabezado -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 mb-0">Gestión de Menú</h1>
-            <p class="mb-0 text-muted">Administra categorías, ítems y precios del menú</p>
+            <h1 class="h3 mb-0">Gestión de Mesas</h1>
+            <p class="mb-0 text-muted">Administra el estado y configuración de mesas</p>
         </div>
         <a href="#" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#nuevaMesaModal">
             <i class="bi bi-plus-circle me-2"></i>Nueva Mesa
