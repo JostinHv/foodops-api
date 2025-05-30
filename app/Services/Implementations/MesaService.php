@@ -17,9 +17,6 @@ readonly class MesaService implements IMesaService
 
     public function __construct(
         private IMesaRepository               $repository,
-        private IOrdenRepository              $ordenRepo,
-        private IItemMenuRepository           $itemMenuRepo,
-        private IItemOrdenRepository          $itemOrdenRepo,
         private IAsignacionPersonalRepository $asignacionPersonalRepo,
         private IUsuarioRepository            $usuarioRepo,
     )

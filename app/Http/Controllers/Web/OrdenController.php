@@ -9,6 +9,7 @@ use App\Services\Interfaces\IItemOrdenService;
 use App\Services\Interfaces\IMesaService;
 use App\Services\Interfaces\IOrdenService;
 use App\Traits\AuthenticatedUserTrait;
+use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\ValidationException;
