@@ -3,6 +3,7 @@
 use App\Http\Controllers\Web\AdminController;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\HomeController;
+use App\Http\Controllers\Web\MesaController;
 use App\Http\Middleware\WebAuthenticate;
 use App\Http\Middleware\WebCheckRole;
 use Illuminate\Support\Facades\Route;
@@ -65,21 +66,34 @@ Route::prefix('tenant')->group(function () {
 
 //Rutas de gerente de sucursal
 Route::prefix('gerente')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('gerente-sucursal.dashboard');
-    })->name('gerente.dashboard');
-    Route::get('/menu', function () {
-        return view('gerente-sucursal.menu');
-    })->name('gerente.menu');
-    Route::get('/mesas', function () {
-        return view('gerente-sucursal.mesas');
-    })->name('gerente.mesas');
-    Route::get('/personal', function () {
-        return view('gerente-sucursal.personal');
-    })->name('gerente.personal');
-    Route::get('/facturacion', function () {
-        return view('gerente-sucursal.facturacion');
-    })->name('gerente.facturacion');
+    Route::middleware([WebAuthenticate::class, WebCheckRole::class . ':gerente'])->group(function () {
+        Route::get('/dashboard', static function () {
+            return view('gerente-sucursal.dashboard');
+        })->name('gerente.dashboard');
+        Route::get('/menu', static function () {
+            return view('gerente-sucursal.menu');
+        })->name('gerente.menu');
+        Route::get('/mesas', [MesaController::class, 'index'])
+            ->name('gerente.mesas');
+        Route::post('/mesas', [MesaController::class, 'store'])
+            ->name('gerente.mesas.store');
+        Route::get('/mesas/{id}', [MesaController::class, 'show'])
+            ->name('gerente.mesas.show');
+        Route::get('/mesas/{id}/edit', [MesaController::class, 'edit'])
+            ->name('gerente.mesas.edit');
+        Route::put('/mesas/{id}', [MesaController::class, 'update'])
+            ->name('gerente.mesas.update');
+        Route::delete('/mesas/{id}', [MesaController::class, 'destroy'])
+            ->name('gerente.mesas.destroy');
+        Route::post('/mesas/{id}/estado', [MesaController::class, 'cambiarEstado'])
+            ->name('gerente.mesas.cambiar-estado');
+        Route::get('/personal', static function () {
+            return view('gerente-sucursal.personal');
+        })->name('gerente.personal');
+        Route::get('/facturacion', function () {
+            return view('gerente-sucursal.facturacion');
+        })->name('gerente.facturacion');
+    });
 });
 
 // Rutas de super administrador

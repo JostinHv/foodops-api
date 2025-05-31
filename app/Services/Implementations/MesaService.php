@@ -3,10 +3,7 @@
 namespace App\Services\Implementations;
 
 use App\Repositories\Interfaces\IAsignacionPersonalRepository;
-use App\Repositories\Interfaces\IItemMenuRepository;
-use App\Repositories\Interfaces\IItemOrdenRepository;
 use App\Repositories\Interfaces\IMesaRepository;
-use App\Repositories\Interfaces\IOrdenRepository;
 use App\Repositories\Interfaces\IUsuarioRepository;
 use App\Services\Interfaces\IMesaService;
 use Illuminate\Database\Eloquent\Collection;
@@ -71,8 +68,13 @@ readonly class MesaService implements IMesaService
                 'estado' => $mesa->estadoMesa->nombre,
             ];
         });
+    }
 
-
+    public function crearMesaPorSucursal(int $usuarioId, array $datos): Model
+    {
+        $asignacionPersonal = $this->asignacionPersonalRepo->buscarPorUsuarioId($usuarioId);
+        $datos['sucursal_id'] = $asignacionPersonal?->sucursal?->id ?? null;
+        return $this->repository->crear($datos);
     }
 
     public function cambiarEstadoMesa(int $id, mixed $estadoMesaId): bool

@@ -60,7 +60,8 @@ class MesaRepository extends BaseRepository implements IMesaRepository
     public function obtenerMesasPorSucursal(int $sucursalId): Collection
     {
         return $this->modelo
-            ->where('sucursal_id')
+            ->where('sucursal_id', $sucursalId)
+            ->with('estadoMesa')
             ->get();
     }
 

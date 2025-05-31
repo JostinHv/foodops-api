@@ -21,6 +21,8 @@ interface IMesaService extends IBaseService
 
     public function obtenerMesasPorSucursal(mixed $usuarioId);
 
+    public function crearMesaPorSucursal(int $usuarioId, array $datos): Model;
+
     public function cambiarEstadoMesa(int $id, int $estadoMesaId);
 
 }
