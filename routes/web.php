@@ -121,5 +121,10 @@ Route::prefix('superadmin')->group(function () {
                 return view('super-admin.tenant');
             })->name('superadmin.tenant');
         });
+        Route::prefix('planes')->group(function () {
+            Route::get('/', static function () {
+                return view('super-admin.planes');
+            })->name('superadmin.planes');
+        });
     });
 });
