@@ -1,0 +1,19 @@
+#editarIGVModal .modal-content {
+        border-radius: 10px;
+    }
+    
+    #editarIGVModal .modal-header {
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    #editarIGVModal .modal-footer {
+        border-top: 1px solid #dee2e6;
+    }
+    
+    #editarIGVModal .alert {
+        margin-top: 1rem;
+    }
+    
+    #resultadosCalculo {
+        border-left: 4px solid #0d6efd;
+    }
