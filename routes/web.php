@@ -24,7 +24,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::prefix('mesero')->group(function () {
 // Rutas protegidas por autenticación
     Route::middleware([WebAuthenticate::class, WebCheckRole::class . ':mesero'])->group(function () {
-        Route::get('/', function () {
+        Route::get('/', static function () {
             return view('mesero.dashboard');
         })->name('mesero.dashboard');
 
@@ -50,18 +50,28 @@ Route::prefix('mesero')->group(function () {
 });
 
 Route::prefix('tenant')->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'dashboard'])
-        ->name('tenant.dashboard');
-
-    Route::get('/grupos', [AdminController::class, 'grupos'])
-        ->name('tenant.grupo-restaurant');
-    Route::post('/grupos', [AdminController::class, 'store'])->name('grupos.store');
-    Route::get('/restaurants', [AdminController::class, 'restaurants'])
-        ->name('tenant.restaurantes');
-    Route::get('/sucursales', [AdminController::class, 'sucursales'])
-        ->name('tenant.sucursales');
-    Route::get('/usuarios', [AdminController::class, 'usuarios'])
-        ->name('tenant.usuarios');
+    Route::middleware([WebAuthenticate::class, WebCheckRole::class . ':administrador'])->group(function () {
+        Route::get('/dashboard', [AdminController::class, 'dashboard'])
+            ->name('tenant.dashboard');
+        Route::prefix('grupos')->group(function () {
+            Route::get('/', [AdminController::class, 'grupos'])
+                ->name('tenant.grupo-restaurant');
+            Route::post('/', [AdminController::class, 'store'])
+                ->name('grupos.store');
+        });
+        Route::prefix('restaurantes')->group(function () {
+            Route::get('/', [AdminController::class, 'restaurants'])
+                ->name('tenant.restaurantes');
+        });
+        Route::prefix('sucursales')->group(function () {
+            Route::get('/', [AdminController::class, 'sucursales'])
+                ->name('tenant.sucursales');
+        });
+        Route::prefix('usuarios')->group(function () {
+            Route::get('/', [AdminController::class, 'usuarios'])
+                ->name('tenant.usuarios');
+        });
+    });
 });
 
 //Rutas de gerente de sucursal
@@ -73,23 +83,27 @@ Route::prefix('gerente')->group(function () {
         Route::get('/menu', static function () {
             return view('gerente-sucursal.menu');
         })->name('gerente.menu');
-        Route::get('/mesas', [MesaController::class, 'index'])
-            ->name('gerente.mesas');
-        Route::post('/mesas', [MesaController::class, 'store'])
-            ->name('gerente.mesas.store');
-        Route::get('/mesas/{id}', [MesaController::class, 'show'])
-            ->name('gerente.mesas.show');
-        Route::get('/mesas/{id}/edit', [MesaController::class, 'edit'])
-            ->name('gerente.mesas.edit');
-        Route::put('/mesas/{id}', [MesaController::class, 'update'])
-            ->name('gerente.mesas.update');
-        Route::delete('/mesas/{id}', [MesaController::class, 'destroy'])
-            ->name('gerente.mesas.destroy');
-        Route::post('/mesas/{id}/estado', [MesaController::class, 'cambiarEstado'])
-            ->name('gerente.mesas.cambiar-estado');
-        Route::get('/personal', static function () {
-            return view('gerente-sucursal.personal');
-        })->name('gerente.personal');
+        Route::group(['prefix' => 'mesas'], function () {
+            Route::get('/', [MesaController::class, 'index'])
+                ->name('gerente.mesas');
+            Route::post('/', [MesaController::class, 'store'])
+                ->name('gerente.mesas.store');
+            Route::get('/{id}', [MesaController::class, 'show'])
+                ->name('gerente.mesas.show');
+            Route::get('/{id}/edit', [MesaController::class, 'edit'])
+                ->name('gerente.mesas.edit');
+            Route::put('/{id}', [MesaController::class, 'update'])
+                ->name('gerente.mesas.update');
+            Route::delete('/{id}', [MesaController::class, 'destroy'])
+                ->name('gerente.mesas.destroy');
+            Route::post('/{id}/estado', [MesaController::class, 'cambiarEstado'])
+                ->name('gerente.mesas.cambiar-estado');
+        });
+        Route::prefix('personal')->group(function () {
+            Route::get('/', static function () {
+                return view('gerente-sucursal.personal');
+            })->name('gerente.personal');
+        });
         Route::get('/facturacion', function () {
             return view('gerente-sucursal.facturacion');
         })->name('gerente.facturacion');
@@ -98,10 +112,14 @@ Route::prefix('gerente')->group(function () {
 
 // Rutas de super administrador
 Route::prefix('superadmin')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('super-admin.dashboard');
-    })->name('superadmin.dashboard');
-    Route::get('/tenant', function () {
-        return view('super-admin.tenant');
-    })->name('superadmin.tenant');
+    Route::middleware([WebAuthenticate::class, WebCheckRole::class . ':superadmin'])->group(function () {
+        Route::get('/dashboard', static function () {
+            return view('super-admin.dashboard');
+        })->name('superadmin.dashboard');
+        Route::prefix('tenant')->group(function () {
+            Route::get('/', static function () {
+                return view('super-admin.tenant');
+            })->name('superadmin.tenant');
+        });
+    });
 });
