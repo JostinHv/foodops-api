@@ -18,6 +18,9 @@ return new class extends Migration {
             $table->boolean('activo')->default(true);
             $table->timestamps();
         });
+        DB::table('igv')->insert([
+            ['anio' => 2025, 'valor_decimal' => 0.18, 'valor_porcentaje' => 18.00, 'activo' => true],
+        ]);
     }
 
     /**

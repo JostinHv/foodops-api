@@ -4,6 +4,7 @@ use App\Http\Controllers\Web\AdminController;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\MesaController;
+use App\Http\Controllers\Web\TenantController;
 use App\Http\Middleware\WebAuthenticate;
 use App\Http\Middleware\WebCheckRole;
 use Illuminate\Support\Facades\Route;
@@ -116,11 +117,26 @@ Route::prefix('superadmin')->group(function () {
         Route::get('/dashboard', static function () {
             return view('super-admin.dashboard');
         })->name('superadmin.dashboard');
+
         Route::prefix('tenant')->group(function () {
-            Route::get('/', static function () {
-                return view('super-admin.tenant');
-            })->name('superadmin.tenant');
+            Route::get('/', [TenantController::class, 'index'])->name('superadmin.tenant');
+            Route::post('/', [TenantController::class, 'store'])->name('superadmin.tenant.store');
+            Route::get('/{id}', [TenantController::class, 'show'])->name('superadmin.tenant.show');
+            Route::put('/{id}', [TenantController::class, 'update'])->name('superadmin.tenant.update');
+            Route::delete('/{id}', [TenantController::class, 'destroy'])->name('superadmin.tenant.destroy');
+            Route::put('/{id}/toggle-activo', [TenantController::class, 'toggleActivo'])->name('superadmin.tenant.toggle-activo');
+
+
+            // Rutas para gestión de usuarios del tenant
+            Route::post('/{id}/usuarios', [TenantController::class, 'agregarUsuario'])
+                ->name('superadmin.tenant.usuarios.store');
+            Route::delete('/{tenantId}/usuarios/{usuarioId}', [TenantController::class, 'desactivarUsuario'])
+                ->name('superadmin.tenant.usuarios.destroy');
+            Route::put('/{tenantId}/usuarios/{usuarioId}/rol', [TenantController::class, 'cambiarRolUsuario'])
+                ->name('superadmin.tenant.usuarios.cambiar-rol');
         });
+
+
         Route::prefix('planes')->group(function () {
             Route::get('/', static function () {
                 return view('super-admin.planes');

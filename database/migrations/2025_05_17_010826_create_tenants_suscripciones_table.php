@@ -10,9 +10,10 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('tenants_suscripciones', function (Blueprint $table) {
+        Schema::create('tenants_suscripciones', static function (Blueprint $table) {
             $table->id()->autoIncrement();
             $table->foreignId('plan_suscripcion_id')->nullable()->constrained('planes_suscripciones');
+            $table->foreignId('tenant_id')->nullable()->constrained('tenants');
             $table->foreignId('metodo_pago_id')->nullable()->constrained('metodos_pagos');
             $table->date('fecha_inicio')->nullable();
             $table->date('fecha_fin')->nullable();

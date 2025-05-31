@@ -6,6 +6,7 @@ use App\Models\Rol;
 use App\Models\Usuario;
 use App\Repositories\Interfaces\IUsuarioRepository;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -68,4 +69,10 @@ class UsuarioRepository extends ActivoBoolRepository implements IUsuarioReposito
         return $this->modelo->where('email', $email)->exists();
     }
 
+    public function obtenerPorTenantId(int $tenantId): Collection
+    {
+        return $this->modelo->where('tenant_id', $tenantId)
+            ->with(['roles', 'fotoPerfil', 'restaurante'])
+            ->get();
+    }
 }

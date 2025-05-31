@@ -30,113 +30,116 @@
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
-                            <tr>
-                                <th>Tenant</th>
-                                <th>Plan</th>
-                                <th>Restaurantes</th>
-                                <th>Usuarios</th>
-                                <th>Estado</th>
-                                <th>Último Acceso</th>
-                                <th>Acciones</th>
-                            </tr>
+                        <tr>
+                            <th>Tenant</th>
+                            <th>Plan</th>
+                            <th>Restaurantes</th>
+                            <th>Usuarios</th>
+                            <th>Estado</th>
+                            <th>Último Acceso</th>
+                            <th>Acciones</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>
-                                    <strong>Grupo Gastronómico Lima</strong><br>
-                                    <small class="text-muted">admin@gruppogastronomicolima.com</small>
-                                </td>
-                                <td>
-                                    <span class="badge bg-success">Premium</span>
-                                </td>
-                                <td>8</td>
-                                <td>45</td>
-                                <td>
-                                    <span class="badge bg-success">Active</span>
-                                </td>
-                                <td>13/5/2025</td>
-                                <td>
-                                    <div class="d-flex gap-2">
-                                        <button class="btn btn-sm btn-outline-primary" title="Ver detalles"
+                        <tr>
+                            <td>
+                                <strong>Grupo Gastronómico Lima</strong><br>
+                                <small class="text-muted">admin@gruppogastronomicolima.com</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-success">Premium</span>
+                            </td>
+                            <td>8</td>
+                            <td>45</td>
+                            <td>
+                                <span class="badge bg-success">Active</span>
+                            </td>
+                            <td>13/5/2025</td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-primary" title="Ver detalles"
                                             data-bs-toggle="modal" data-bs-target="#detallesTenantModal">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-secondary" title="Editar"
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" title="Editar"
                                             data-bs-toggle="modal" data-bs-target="#editarTenantModal">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-danger" title="Eliminar">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-danger" title="Desactivar"  data-bs-toggle="modal" data-bs-target="#desactivarItemModal">
-                                            <i class="bi bi-person-dash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <strong>Restaurantes del Norte</strong><br>
-                                    <small class="text-muted">contacto@restaurantesdelnorte.com</small>
-                                </td>
-                                <td>
-                                    <span class="badge bg-primary">Estándar</span>
-                                </td>
-                                <td>3</td>
-                                <td>18</td>
-                                <td>
-                                    <span class="badge bg-success">Active</span>
-                                </td>
-                                <td>12/5/2025</td>
-                                <td>
-                                    <div class="d-flex gap-2">
-                                        <button class="btn btn-sm btn-outline-primary" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-secondary" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-danger" title="Eliminar"
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" title="Desactivar"
+                                            data-bs-toggle="modal" data-bs-target="#desactivarItemModal">
+                                        <i class="bi bi-person-dash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Restaurantes del Norte</strong><br>
+                                <small class="text-muted">contacto@restaurantesdelnorte.com</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-primary">Estándar</span>
+                            </td>
+                            <td>3</td>
+                            <td>18</td>
+                            <td>
+                                <span class="badge bg-success">Active</span>
+                            </td>
+                            <td>12/5/2025</td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-primary" title="Ver detalles">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" title="Eliminar"
                                             data-bs-toggle="modal" data-bs-target="#eliminarItemModal">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-danger" title="Desactivar"  data-bs-toggle="modal" data-bs-target="#desactivarItemModal">
-                                            <i class="bi bi-person-dash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <strong>Sabores Tradicionales</strong><br>
-                                    <small class="text-muted">info@saborestadionales.com</small>
-                                </td>
-                                <td>
-                                    <span class="badge bg-secondary">Básico</span>
-                                </td>
-                                <td>1</td>
-                                <td>5</td>
-                                <td>
-                                    <span class="badge bg-warning text-dark">Pending</span>
-                                </td>
-                                <td>10/5/2025</td>
-                                <td>
-                                    <div class="d-flex gap-2">
-                                        <button class="btn btn-sm btn-outline-primary" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-secondary" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-danger" title="Eliminar">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-danger" title="Desactivar"  data-bs-toggle="modal" data-bs-target="#desactivarItemModal">
-                                            <i class="bi bi-person-dash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" title="Desactivar"
+                                            data-bs-toggle="modal" data-bs-target="#desactivarItemModal">
+                                        <i class="bi bi-person-dash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Sabores Tradicionales</strong><br>
+                                <small class="text-muted">info@saborestadionales.com</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">Básico</span>
+                            </td>
+                            <td>1</td>
+                            <td>5</td>
+                            <td>
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            </td>
+                            <td>10/5/2025</td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-primary" title="Ver detalles">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" title="Desactivar"
+                                            data-bs-toggle="modal" data-bs-target="#desactivarItemModal">
+                                        <i class="bi bi-person-dash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
@@ -145,7 +148,8 @@
     </div>
 
     <!-- Modal: Nuevo Tenant -->
-    <div class="modal fade" id="nuevoTenantModal" tabindex="-1" aria-labelledby="nuevoTenantModalLabel" aria-hidden="true">
+    <div class="modal fade" id="nuevoTenantModal" tabindex="-1" aria-labelledby="nuevoTenantModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <form id="formNuevoTenant" action="#" method="POST">
@@ -160,16 +164,14 @@
                             <div class="col-md-6">
                                 <label for="nombre_empresa" class="form-label">Nombre</label>
                                 <input type="text" class="form-control" id="nombre_empresa" name="nombre_empresa"
-                                    placeholder="Ej: Grupo Gastronómico Lima" required>
+                                       placeholder="Ej: Grupo Gastronómico Lima" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="email" class="form-label">Email</label>
                                 <input type="email" class="form-control" id="email" name="email"
-                                    placeholder="admin@empresa.com" required>
+                                       placeholder="admin@empresa.com" required>
                             </div>
                         </div>
-
-                        <h6 class="mb-3">Plan de Suscripción</h6>
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="plan" class="form-label">Plan</label>
@@ -183,7 +185,7 @@
                             <div class="col-md-6">
                                 <label for="telefono" class="form-label">Teléfono</label>
                                 <input type="tel" class="form-control" id="telefono" name="telefono"
-                                    placeholder="+51 999 888 777" required>
+                                       placeholder="+51 999 888 777" required>
                             </div>
                         </div>
 
@@ -191,12 +193,13 @@
                         <div class="mb-3">
                             <label for="direccion" class="form-label">Dirección completa</label>
                             <textarea class="form-control" id="direccion" name="direccion" rows="2"
-                                placeholder="Ingrese la dirección completa de la empresa" required></textarea>
+                                      placeholder="Ingrese la dirección completa de la empresa" required></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary"
-                            data-bs-dismiss="modal">Cancelar</button>
+                                data-bs-dismiss="modal">Cancelar
+                        </button>
                         <button type="submit" class="btn btn-primary">Crear Tenant</button>
                     </div>
                 </form>
@@ -206,7 +209,7 @@
 
     <!-- Modal: Detalles del Tenant -->
     <div class="modal fade" id="detallesTenantModal" tabindex="-1" aria-labelledby="detallesTenantModalLabel"
-        aria-hidden="true">
+         aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -290,7 +293,7 @@
 
     <!-- Modal: Confirmar Eliminación -->
     <div class="modal fade" id="eliminarItemModal" tabindex="-1" aria-labelledby="eliminarItemModalLabel"
-        aria-hidden="true">
+         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -315,7 +318,7 @@
 
     <!-- Modal: Confirmar Desactivar -->
     <div class="modal fade" id="desactivarItemModal" tabindex="-1" aria-labelledby="eliminarItemModalLabel"
-        aria-hidden="true">
+         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">

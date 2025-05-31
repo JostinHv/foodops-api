@@ -17,6 +17,13 @@ return new class extends Migration {
             $table->boolean('activo')->default(true);
             $table->timestamps();
         });
+        DB::table('metodos_pagos')->insert([
+            ['nombre' => 'Efectivo', 'descripcion' => 'Pago en efectivo al momento de la compra'],
+            ['nombre' => 'Tarjeta de Crédito', 'descripcion' => 'Pago con tarjeta de crédito'],
+            ['nombre' => 'Tarjeta de Débito', 'descripcion' => 'Pago con tarjeta de débito'],
+            ['nombre' => 'Transferencia Bancaria', 'descripcion' => 'Pago mediante transferencia bancaria'],
+            ['nombre' => 'PayPal', 'descripcion' => 'Pago a través de PayPal'],
+        ]);
     }
 
     /**

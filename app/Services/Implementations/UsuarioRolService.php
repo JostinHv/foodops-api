@@ -60,4 +60,9 @@ readonly class UsuarioRolService implements IUsuarioRolService
     {
         return $this->repository->obtenerUltimoActivo();
     }
+
+    public function actualizarRolUsuario(int $usuarioId, mixed $rol_id): bool
+    {
+        return $this->repository->actualizarRolUsuario($usuarioId, $rol_id);
+    }
 }

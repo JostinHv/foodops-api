@@ -24,4 +24,6 @@ interface IUsuarioRolService extends IActivoBoolService
     public function obtenerActivos(): Collection;
 
     public function obtenerUltimoActivo(): Collection;
+
+    public function actualizarRolUsuario(int $usuarioId, mixed $rol_id): bool;
 }
