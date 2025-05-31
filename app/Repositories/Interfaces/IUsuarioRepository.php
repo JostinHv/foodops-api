@@ -29,5 +29,7 @@ interface IUsuarioRepository
 
     public function existeEmailRegistrado(string $email): bool;
 
-    public function obtenerPorIdConRelaciones(int   $id, array $relaciones = []): ?Model;
+    public function obtenerPorIdConRelaciones(int $id, array $relaciones = []): ?Model;
+
+    public function obtenerPorTenantId(int $tenantId): Collection;
 }

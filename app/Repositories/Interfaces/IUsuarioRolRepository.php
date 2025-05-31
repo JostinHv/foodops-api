@@ -27,4 +27,6 @@ interface IUsuarioRolRepository
 
     public function obtenerPorIdConRelaciones(int $id, array $relaciones = []): ?Model;
 
+    public function actualizarRolUsuario(int $usuarioId, mixed $rol_id): bool;
+
 }

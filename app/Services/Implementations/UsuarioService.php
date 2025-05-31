@@ -60,4 +60,9 @@ readonly class UsuarioService implements IUsuarioService
     {
         return $this->repository->obtenerUltimoActivo();
     }
+
+    public function obtenerPorTenantId(int $tenantId): Collection
+    {
+        return $this->repository->obtenerPorTenantId($tenantId);
+    }
 }

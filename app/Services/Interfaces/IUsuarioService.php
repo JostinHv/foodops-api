@@ -25,4 +25,6 @@ interface IUsuarioService extends IActivoBoolService
 
     public function obtenerUltimoActivo(): Collection;
 
+    public function obtenerPorTenantId(int $tenantId): Collection;
+
 }

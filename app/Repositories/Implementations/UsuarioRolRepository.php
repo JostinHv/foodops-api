@@ -34,4 +34,11 @@ class UsuarioRolRepository extends ActivoBoolRepository implements IUsuarioRolRe
             $consulta->orderBy($sortField, $sortOrder);
         }
     }
+
+    public function actualizarRolUsuario(int $usuarioId, mixed $rol_id): bool
+    {
+        return $this->modelo
+            ->where('usuario_id', $usuarioId)
+            ->update(['rol_id' => $rol_id]);
+    }
 }
