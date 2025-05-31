@@ -82,3 +82,12 @@ Route::prefix('gerente')->group(function () {
     })->name('gerente.facturacion');
 });
 
+// Rutas de super administrador
+Route::prefix('superadmin')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('super-admin.dashboard');
+    })->name('superadmin.dashboard');
+    Route::get('/tenant', function () {
+        return view('super-admin.tenant');
+    })->name('superadmin.tenant');
+});
