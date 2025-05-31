@@ -142,5 +142,15 @@ Route::prefix('superadmin')->group(function () {
                 return view('super-admin.planes');
             })->name('superadmin.planes');
         });
+        Route::prefix('pago')->group(function () {
+            Route::get('/', static function () {
+                return view('super-admin.pago');
+            })->name('superadmin.pago');
+        });
+        Route::prefix('igv')->group(function () {
+            Route::get('/', static function () {
+                return view('super-admin.igv');
+            })->name('superadmin.igv');
+        });
     });
 });
