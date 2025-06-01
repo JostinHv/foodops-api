@@ -37,7 +37,7 @@
                     </div>
                     <a href="#" class="d-block dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"></a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#">Perfil</a></li>
+                        <li><a class="dropdown-item" href="{{ route('perfil') }}">Perfil</a></li>
                         <li>
                             <form method="POST" action="">
                                 @csrf
