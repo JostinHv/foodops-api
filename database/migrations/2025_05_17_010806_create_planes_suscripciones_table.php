@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     /**
@@ -30,10 +30,16 @@ return new class extends Migration {
                 'precio' => 29.99,
                 'intervalo' => 'mes',
                 'caracteristicas' => json_encode([
-                    'Hasta 5 mesas',
-                    'Gestión de órdenes básica',
-                    'Reportes mensuales',
-                    'Soporte por email'
+                    'limites' => [
+                        'usuarios' => 3,
+                        'restaurantes' => 1,
+                        'sucursales' => 1
+                    ],
+                    'adicionales' => [
+                        'Gestión de órdenes básica',
+                        'Reportes mensuales',
+                        'Soporte por email'
+                    ]
                 ]),
                 'activo' => true,
                 'created_at' => now(),
@@ -45,12 +51,18 @@ return new class extends Migration {
                 'precio' => 59.99,
                 'intervalo' => 'mes',
                 'caracteristicas' => json_encode([
-                    'Hasta 15 mesas',
-                    'Gestión de órdenes avanzada',
-                    'Reportes semanales',
-                    'Soporte prioritario',
-                    'Gestión de reservas',
-                    'Panel de análisis'
+                    'limites' => [
+                        'usuarios' => 10,
+                        'restaurantes' => 3,
+                        'sucursales' => 5
+                    ],
+                    'adicionales' => [
+                        'Gestión de órdenes avanzada',
+                        'Panel de análisis',
+                        'Reportes semanales',
+                        'Soporte prioritario',
+                        'Sistema de reservas'
+                    ]
                 ]),
                 'activo' => true,
                 'created_at' => now(),
@@ -62,14 +74,20 @@ return new class extends Migration {
                 'precio' => 99.99,
                 'intervalo' => 'mes',
                 'caracteristicas' => json_encode([
-                    'Mesas ilimitadas',
-                    'Gestión multi-sucursal',
-                    'Reportes en tiempo real',
-                    'Soporte 24/7',
-                    'API personalizada',
-                    'Análisis predictivo',
-                    'Backup automático',
-                    'Personalización completa'
+                    'limites' => [
+                        'usuarios' => 50,
+                        'restaurantes' => 10,
+                        'sucursales' => 20
+                    ],
+                    'adicionales' => [
+                        'Gestión multi-sucursal',
+                        'API personalizada',
+                        'Reportes en tiempo real',
+                        'Soporte 24/7',
+                        'Backup automático',
+                        'Panel administrativo avanzado',
+                        'Personalización completa'
+                    ]
                 ]),
                 'activo' => true,
                 'created_at' => now(),

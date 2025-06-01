@@ -21,8 +21,15 @@ class HomeController extends Controller
     public function index(Request $request): View|Application|Factory
     {
         $intervalo = $request->get('intervalo', 'mes');
-
-        $planes = $this->planSuscripcionService->obtenerPlanesSegunIntervalo($intervalo)->where('activo', true);
+        $planes = $this->planSuscripcionService->obtenerPlanesSegunIntervalo($intervalo)
+            ->where('activo', true)
+            ->map(function ($plan) {
+                // Asegurarse de que las características estén en el formato correcto
+                if (is_string($plan->caracteristicas)) {
+                    $plan->caracteristicas = json_decode($plan->caracteristicas, true);
+                }
+                return $plan;
+            });
 
         return view('home', compact('planes'));
     }

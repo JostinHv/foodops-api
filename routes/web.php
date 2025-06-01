@@ -172,9 +172,10 @@ Route::prefix('superadmin')->group(function () {
         Route::prefix('planes')->group(function () {
             Route::get('/', [PlanSuscripcionController::class, 'index'])->name('planes');
             Route::post('/', [PlanSuscripcionController::class, 'store'])->name('superadmin.planes.store');
-            Route::get('/{plan}', [PlanSuscripcionController::class, 'show'])->name('planes.show');
-            Route::put('/{plan}', [PlanSuscripcionController::class, 'update'])->name('planes.update');
-            Route::put('/{plan}/toggle-activo', [PlanSuscripcionController::class, 'toggleActivo'])->name('superadmin.planes.toggle-activo');
+            Route::get('/{plan}', [PlanSuscripcionController::class, 'show'])
+                ->name('superadmin.planes.show');
+            Route::post('/{plan}', [PlanSuscripcionController::class, 'update'])->name('planes.update');
+            Route::post('/{plan}/toggle-activo', [PlanSuscripcionController::class, 'toggleActivo'])->name('superadmin.planes.toggle-activo');
         });
         Route::prefix('pago')->group(function () {
             Route::get('/', static function () {
