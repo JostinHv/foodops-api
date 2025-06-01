@@ -14,13 +14,8 @@
     @stack('scripts')
 </head>
 <body>
-    {{--Prueba--}}
-    @php
-    $user = $user ?? Auth::user();
-    @endphp
-
-   @if($user)
-        {{-- Encabezado superior (fuera del sidebar) --}}
+@auth
+        {{-- Encabezado superior --}}
         <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-3 py-2">
             <div class="container-fluid d-flex justify-content-between align-items-center">
                 <button class="btn btn-outline-secondary me-3" id="toggleMenuBtn" type="button">
@@ -34,16 +29,21 @@
 
                 <div class="dropdown d-flex align-items-center">
                     <i class="bi bi-person-circle"></i>
-                    <img src="{{ $user->foto ?? asset('images/default-user.png') }}" alt="Avatar"
+                    <img src="{{ Auth::user()->foto ?? asset('images/default-user.png') }}" alt="Avatar"
                         class="rounded-circle" width="40" height="40">
                     <div class="text-end me-2 d-none d-sm-block">
-                        <div class="fw-semibold">{{ $user->name }}</div>
-                        <div class="text-muted small">{{ ucfirst($user->role) }}</div>
+                        <div class="fw-semibold">{{ Auth::user()->name }}</div>
+                        <div class="text-muted small">{{ ucfirst(Auth::user()->role) }}</div>
                     </div>
                     <a href="#" class="d-block dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"></a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="{{ route('perfil') }}">Perfil</a></li>
-                        <li><a class="dropdown-item" href="#">Cerrar sesión</a></li>
+                        <li><a class="dropdown-item" href="#">Perfil</a></li>
+                        <li>
+                            <form method="POST" action="">
+                                @csrf
+                                <button type="submit" class="dropdown-item">Cerrar sesión</button>
+                            </form>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -53,13 +53,10 @@
         <div class="d-flex" id="mainWrapper">
             {{-- Sidebar vertical --}}
             <nav id="sidebar" class="bg-light border-end">
-                @if($user->role === 'mesero')
-                    @include('components.navbar_mesero')
-                @elseif($user->role === 'cocinero')
-                    @include('partials.navbar_cocinero')
-                @elseif($user->role === 'admin')
-                    @include('partials.navbar_admin')
-                @endif
+                @includeWhen(Auth::user()->role === 'mesero', 'components.navbar_mesero')
+                @includeWhen(Auth::user()->role === 'admin', 'components.navbar_admin')
+                @includeWhen(Auth::user()->role === 'gerente', 'components.navbar_gerente')
+                @includeWhen(Auth::user()->role === 'superadmin', 'components.navbar_superadmin')
             </nav>
 
             {{-- Contenido principal --}}
@@ -72,7 +69,7 @@
         <main class="container py-4">
             @yield('content')
         </main>
-    @endif
+    @endauth
 
     </body>
 </html>
