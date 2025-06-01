@@ -152,7 +152,9 @@ Route::prefix('superadmin')->group(function () {
         Route::get('/dashboard', static function () {
             return view('super-admin.dashboard');
         })->name('superadmin.dashboard');
-
+        Route::get('/perfil', static function () {
+            return view('perfil');
+        })->name('perfil');
         Route::prefix('tenant')->group(function () {
             Route::get('/', [TenantController::class, 'index'])->name('superadmin.tenant');
             Route::post('/', [TenantController::class, 'store'])->name('superadmin.tenant.store');
