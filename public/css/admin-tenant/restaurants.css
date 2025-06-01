@@ -1,11 +1,12 @@
 /* Estilos específicos para la vista de restaurantes */
 .card {
-    border-radius: 0.5rem;
+    transition: transform 0.2s ease-in-out;
+    border: none;
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    transition: all 0.3s ease;
 }
 
 .card:hover {
+    transform: translateY(-2px);
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
 
@@ -15,10 +16,7 @@
 
 .table th {
     font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
-    color: #6c757d;
+    background-color: #f8f9fa;
 }
 
 .table td {
@@ -79,4 +77,209 @@
     .table td:nth-of-type(6):before { content: "Ingresos"; }
     .table td:nth-of-type(7):before { content: "Rating"; }
     .table td:nth-of-type(8):before { content: "Acciones"; }
+}
+
+/* Estilos para los botones de acción */
+.btn-group .btn {
+    padding: 0.25rem 0.5rem;
+}
+
+/* Estilos para los modales */
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Estilos para los formularios */
+.form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Estilos para las imágenes de logo */
+.img-thumbnail {
+    padding: 0.25rem;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    max-width: 100%;
+    height: auto;
+}
+
+/* Estilos para los badges de estado */
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+}
+
+/* Estilos para los tooltips */
+[data-bs-toggle="tooltip"] {
+    cursor: pointer;
+}
+
+/* Estilos para los mensajes de alerta */
+.alert {
+    margin-bottom: 1rem;
+    border: none;
+    border-radius: 0.25rem;
+}
+
+/* Estilos para los campos requeridos */
+.required::after {
+    content: "*";
+    color: #dc3545;
+    margin-left: 0.25rem;
+}
+
+/* Estilos para los campos deshabilitados */
+.form-control:disabled,
+.form-control[readonly] {
+    background-color: #e9ecef;
+    opacity: 1;
+}
+
+/* Estilos para los mensajes de validación */
+.invalid-feedback {
+    display: none;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+    color: #dc3545;
+}
+
+.was-validated .form-control:invalid ~ .invalid-feedback {
+    display: block;
+}
+
+/* Estilos para los grupos de formulario */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+/* Estilos para los campos de coordenadas */
+.coordinates-group {
+    display: flex;
+    gap: 1rem;
+}
+
+.coordinates-group .form-control {
+    flex: 1;
+}
+
+/* Estilos para el contenedor de logo */
+.logo-container {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto;
+}
+
+.logo-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0.25rem;
+}
+
+.logo-container .remove-logo {
+    position: absolute;
+    top: -0.5rem;
+    right: -0.5rem;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+
+/* Estilos para el contenedor de detalles */
+.details-container {
+    background-color: #f8f9fa;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.details-container h6 {
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+/* Estilos para las listas de detalles */
+.details-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.details-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.details-list li:last-child {
+    border-bottom: none;
+}
+
+/* Estilos para los enlaces en los detalles */
+.details-list a {
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+.details-list a:hover {
+    text-decoration: underline;
+}
+
+/* Estilos para los botones de acción en la tabla */
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+/* Estilos para los tooltips personalizados */
+.custom-tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.custom-tooltip .tooltip-text {
+    visibility: hidden;
+    width: 120px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.custom-tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
 }

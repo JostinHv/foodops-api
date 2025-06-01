@@ -60,4 +60,19 @@ readonly class AsignacionPersonalService implements IAsignacionPersonalService
     {
         return $this->repository->eliminar($id);
     }
+
+    public function obtenerPorUsuarioId(int $usuarioId): ?Model
+    {
+        return $this->repository->obtenerPorUsuarioId($usuarioId);
+    }
+
+    public function obtenerPorSucursalId(int $sucursalId): Collection
+    {
+        return $this->repository->obtenerPorSucursalId($sucursalId);
+    }
+
+    public function obtenerPorTenantId(int $tenantId): Collection
+    {
+        return $this->repository->obtenerPorTenantId($tenantId);
+    }
 }

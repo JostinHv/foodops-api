@@ -54,4 +54,9 @@ class GrupoRestaurantes extends Model
         return $this->belongsTo(Tenant::class, 'tenant_id');
     }
 
+    public function restaurantes()
+    {
+        return $this->hasMany(Restaurante::class, 'grupo_restaurant_id');
+    }
+
 }

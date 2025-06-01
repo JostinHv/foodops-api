@@ -5,6 +5,7 @@ namespace App\Repositories\Implementations;
 use App\Models\Restaurante;
 use App\Repositories\Interfaces\IRestauranteRepository;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class RestauranteRepository extends ActivoBoolRepository implements IRestauranteRepository
 {
@@ -32,5 +33,13 @@ class RestauranteRepository extends ActivoBoolRepository implements IRestaurante
         if ($sortField && $sortOrder) {
             $consulta->orderBy($sortField, $sortOrder);
         }
+    }
+
+    public function obtenerRestaurantesPorTenant(int $tenantId): Collection
+    {
+        return $this->modelo
+            ->with(['grupoRestaurantes', 'logo'])
+            ->where('tenant_id', $tenantId)
+            ->get();
     }
 }

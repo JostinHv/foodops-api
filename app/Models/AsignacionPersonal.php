@@ -60,23 +60,23 @@ class AsignacionPersonal extends Model
         'sucursal_id' => 'integer',
         'tipo' => 'string',
         'notas' => 'string',
-        'fecha_asignacion' => 'date',
-        'fecha_fin' => 'date',
+        'fecha_asignacion' => 'datetime',
+        'fecha_fin' => 'datetime',
         'activo' => 'boolean'
     ];
 
     public function tenant(): BelongsTo
     {
-        return $this->belongsTo(Tenant::class, 'tenant_id');
+        return $this->belongsTo(Tenant::class);
     }
 
     public function usuario(): BelongsTo
     {
-        return $this->belongsTo(Usuario::class, 'usuario_id');
+        return $this->belongsTo(Usuario::class);
     }
 
     public function sucursal(): BelongsTo
     {
-        return $this->belongsTo(Sucursal::class, 'sucursal_id');
+        return $this->belongsTo(Sucursal::class);
     }
 }

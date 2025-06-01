@@ -40,5 +40,9 @@ readonly class GrupoRestaurantesService implements IGrupoRestaurantesService
     {
         return $this->repository->eliminar($id);
     }
-    
+
+    public function obtenerGrupoRestaurantesPorTenant(mixed $tenant_id): Collection
+    {
+        return $this->repository->obtenerGrupoRestaurantesPorTenant($tenant_id);
+    }
 }

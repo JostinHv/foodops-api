@@ -2,26 +2,21 @@
 
 namespace App\Services\Interfaces;
 
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-
-interface IAsignacionPersonalService extends IActivoBoolService
+interface IAsignacionPersonalService
 {
-    public function obtenerTodos(): Collection;
+    public function crear(array $datos);
 
-    public function obtenerPorId(int $id): ?Model;
+    public function actualizar(int $id, array $datos);
 
-    public function crear(array $datos): Model;
+    public function obtenerPorId(int $id);
 
-    public function actualizar(int $id, array $datos): bool;
+    public function obtenerPorUsuarioId(int $usuarioId);
 
-    public function eliminar(int $id): bool;
+    public function obtenerPorSucursalId(int $sucursalId);
 
-    public function cambiarEstadoAutomatico(int $id): bool;
+    public function obtenerPorTenantId(int $tenantId);
 
-    public function cambiarEstado(int $id, int $activo): bool;
+    public function eliminar(int $id);
 
-    public function obtenerActivos(): Collection;
-
-    public function obtenerUltimoActivo(): Collection;
+    public function cambiarEstado(int $id, int $activo);
 }

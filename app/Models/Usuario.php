@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -114,6 +115,11 @@ class Usuario extends Authenticatable implements JWTSubject
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Rol::class, 'usuarios_roles', 'usuario_id', 'rol_id');
+    }
+
+    public function asignacionesPersonal(): HasMany
+    {
+        return $this->hasMany(AsignacionPersonal::class);
     }
 
     public function getJWTIdentifier()

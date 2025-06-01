@@ -17,4 +17,6 @@ interface IGrupoRestaurantesRepository
 
     public function eliminar(int $id): bool;
 
+    public function obtenerGrupoRestaurantesPorTenant(mixed $tenant_id): Collection;
+
 }

@@ -17,4 +17,6 @@ interface IGrupoRestaurantesService extends IBaseService
 
     public function eliminar(int $id): bool;
 
+    public function obtenerGrupoRestaurantesPorTenant(mixed $tenant_id): Collection;
+
 }

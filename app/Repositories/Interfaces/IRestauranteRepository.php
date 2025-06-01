@@ -27,4 +27,6 @@ interface IRestauranteRepository
 
     public function obtenerPorIdConRelaciones(int $id, array $relaciones = []): ?Model;
 
+    public function obtenerRestaurantesPorTenant(int $tenantId): Collection;
+
 }

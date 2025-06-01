@@ -5,6 +5,7 @@ namespace App\Repositories\Implementations;
 use App\Models\GrupoRestaurantes;
 use App\Repositories\Interfaces\IGrupoRestaurantesRepository;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class GrupoRestaurantesRepository extends BaseRepository implements IGrupoRestaurantesRepository
 {
@@ -32,5 +33,12 @@ class GrupoRestaurantesRepository extends BaseRepository implements IGrupoRestau
         if ($sortField && $sortOrder) {
             $consulta->orderBy($sortField, $sortOrder);
         }
+    }
+
+    public function obtenerGrupoRestaurantesPorTenant(mixed $tenant_id): Collection
+    {
+        return $this->modelo
+            ->where('tenant_id', $tenant_id)
+            ->get();
     }
 }

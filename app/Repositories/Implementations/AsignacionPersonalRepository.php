@@ -5,6 +5,7 @@ namespace App\Repositories\Implementations;
 use App\Models\AsignacionPersonal;
 use App\Repositories\Interfaces\IAsignacionPersonalRepository;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 class AsignacionPersonalRepository extends ActivoBoolRepository implements IAsignacionPersonalRepository
@@ -36,5 +37,20 @@ class AsignacionPersonalRepository extends ActivoBoolRepository implements IAsig
     public function buscarPorUsuarioId(mixed $usuarioId): ?Model
     {
         return $this->modelo->where('usuario_id', $usuarioId)->where('activo', true)->first();
+    }
+
+    public function obtenerPorUsuarioId(int $usuarioId): ?Model
+    {
+        return $this->modelo->where('usuario_id', $usuarioId)->where('activo', true)->first();
+    }
+
+    public function obtenerPorSucursalId(int $sucursalId): Collection
+    {
+        return $this->modelo->where('sucursal_id', $sucursalId)->where('activo', true)->get();
+    }
+
+    public function obtenerPorTenantId(int $tenantId): Collection
+    {
+        return $this->modelo->where('tenant_id', $tenantId)->where('activo', true)->get();
     }
 }
