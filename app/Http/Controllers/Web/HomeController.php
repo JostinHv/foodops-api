@@ -22,7 +22,7 @@ class HomeController extends Controller
     {
         $intervalo = $request->get('intervalo', 'mes');
 
-        $planes = $this->planSuscripcionService->obtenerPlanesSegunIntervalo($intervalo);
+        $planes = $this->planSuscripcionService->obtenerPlanesSegunIntervalo($intervalo)->where('activo', true);
 
         return view('home', compact('planes'));
     }

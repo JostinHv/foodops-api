@@ -58,7 +58,6 @@ class PlanSuscripcionRepository extends ActivoBoolRepository implements IPlanSus
     {
         return $this->modelo
             ->where('intervalo', $intervalo)
-            ->where('activo', true)
             ->get()
             ->map(function ($plan) {
                 if (is_string($plan->caracteristicas)) {

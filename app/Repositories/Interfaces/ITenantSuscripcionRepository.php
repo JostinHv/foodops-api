@@ -19,4 +19,6 @@ interface ITenantSuscripcionRepository
 
     public function obtenerPorIdConRelaciones(int $id, array $relaciones = []): ?Model;
 
+    public function obtenerTenantsPorPlan($id);
+
 }

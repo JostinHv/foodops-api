@@ -5,6 +5,7 @@ namespace App\Repositories\Implementations;
 use App\Models\TenantSuscripcion;
 use App\Repositories\Interfaces\ITenantSuscripcionRepository;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class TenantSuscripcionRepository extends BaseRepository implements ITenantSuscripcionRepository
 {
@@ -32,5 +33,13 @@ class TenantSuscripcionRepository extends BaseRepository implements ITenantSuscr
         if ($sortField && $sortOrder) {
             $consulta->orderBy($sortField, $sortOrder);
         }
+    }
+
+    public function obtenerTenantsPorPlan($id): Collection
+    {
+        return $this->modelo
+            ->where('plan_suscripcion_id', $id)
+            ->with(['tenant'])
+            ->get();
     }
 }

@@ -41,4 +41,8 @@ readonly class TenantSuscripcionService implements ITenantSuscripcionService
         return $this->repository->eliminar($id);
     }
 
+    public function obtenerTenantsPorPlan($id)
+    {
+        return $this->repository->obtenerTenantsPorPlan($id);
+    }
 }

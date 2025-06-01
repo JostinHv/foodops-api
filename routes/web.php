@@ -2,12 +2,13 @@
 
 use App\Http\Controllers\Web\AdminController;
 use App\Http\Controllers\Web\AuthController;
+use App\Http\Controllers\Web\GrupoRestauranteController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\MesaController;
-use App\Http\Controllers\Web\TenantController;
+use App\Http\Controllers\Web\PlanSuscripcionController;
 use App\Http\Controllers\Web\RestauranteController;
-use App\Http\Controllers\Web\GrupoRestauranteController;
 use App\Http\Controllers\Web\SucursalController;
+use App\Http\Controllers\Web\TenantController;
 use App\Http\Controllers\Web\UsuarioController;
 use App\Http\Middleware\WebAuthenticate;
 use App\Http\Middleware\WebCheckRole;
@@ -169,9 +170,11 @@ Route::prefix('superadmin')->group(function () {
         });
 
         Route::prefix('planes')->group(function () {
-            Route::get('/', static function () {
-                return view('super-admin.planes');
-            })->name('superadmin.planes');
+            Route::get('/', [PlanSuscripcionController::class, 'index'])->name('planes');
+            Route::post('/', [PlanSuscripcionController::class, 'store'])->name('superadmin.planes.store');
+            Route::get('/{plan}', [PlanSuscripcionController::class, 'show'])->name('planes.show');
+            Route::put('/{plan}', [PlanSuscripcionController::class, 'update'])->name('planes.update');
+            Route::put('/{plan}/toggle-activo', [PlanSuscripcionController::class, 'toggleActivo'])->name('superadmin.planes.toggle-activo');
         });
         Route::prefix('pago')->group(function () {
             Route::get('/', static function () {
@@ -185,3 +188,4 @@ Route::prefix('superadmin')->group(function () {
         });
     });
 });
+
