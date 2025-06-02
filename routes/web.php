@@ -5,11 +5,15 @@ use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\GrupoRestauranteController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\MesaController;
+use App\Http\Controllers\Web\OrdenController;
+use App\Http\Controllers\Web\PerfilController;
 use App\Http\Controllers\Web\PlanSuscripcionController;
 use App\Http\Controllers\Web\RestauranteController;
 use App\Http\Controllers\Web\SucursalController;
 use App\Http\Controllers\Web\TenantController;
 use App\Http\Controllers\Web\UsuarioController;
+use App\Http\Controllers\Web\MetodoPagoController;
+use App\Http\Controllers\Web\IgvController;
 use App\Http\Middleware\WebAuthenticate;
 use App\Http\Middleware\WebCheckRole;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +29,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login-submit');
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register-submit');
 Route::post('/check-email', [AuthController::class, 'checkEmail'])->name('check.email');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::prefix('mesero')->group(function () {
@@ -35,23 +40,19 @@ Route::prefix('mesero')->group(function () {
         })->name('mesero.dashboard');
 
         Route::prefix('ordenes')->group(function () {
-            require __DIR__ . '/web/orden.php';
+            Route::get('/', [OrdenController::class, 'index'])->name('mesero.orden.index');
+            Route::get('/crear-orden', [OrdenController::class, 'create'])->name('mesero.orden.store');
+            Route::post('/crear-orden', [OrdenController::class, 'store'])->name('mesero.orden.store.submit');
+            Route::get('/{orden}', [OrdenController::class, 'show'])->name('mesero.orden.show');
+            Route::post('/ordenar', [OrdenController::class, 'ordenar'])->name('orden.ordenar');
+            Route::post('/{id}/cambiar-estado', [OrdenController::class, 'cambiarEstado'])
+                ->name('orden.cambiar-estado');
+            Route::post('/{id}/marcar-servida', [OrdenController::class, 'marcarServida'])->name('orden.marcar-servida');
         });
+
+        Route::get('/perfil', [PerfilController::class, 'index'])->name('mesero.perfil');
     });
 
-    // Rutas del cocinero
-//    Route::prefix('cocinero')->middleware(['role:cocinero'])->group(function () {
-//        Route::get('/', function () {
-//            return view('cocinero.dashboard', ['user' => auth()->user()]);
-//        })->name('cocinero.dashboard');
-//
-//        // Incluir rutas de órdenes bajo el prefijo 'ordenes'
-//        Route::prefix('ordenes')->group(function () {
-//            require __DIR__.'/web/orden.php';
-//        });
-//    });
-
-    // Otras rutas protegidas aquí...
 
 });
 
@@ -107,6 +108,9 @@ Route::prefix('tenant')->group(function () {
             Route::post('/{usuario}/toggle-activo', [UsuarioController::class, 'toggleActivo'])
                 ->name('tenant.usuarios.toggle-activo');
         });
+
+        // Rutas de perfil
+        Route::get('/perfil', [PerfilController::class, 'index'])->name('tenant.perfil');
     });
 });
 
@@ -143,6 +147,11 @@ Route::prefix('gerente')->group(function () {
         Route::get('/facturacion', function () {
             return view('gerente-sucursal.facturacion');
         })->name('gerente.facturacion');
+
+        // Rutas de perfil
+        Route::get('/perfil', [PerfilController::class, 'index'])->name('gerente.perfil');
+        Route::post('/perfil', [PerfilController::class, 'actualizar'])->name('gerente.perfil.actualizar');
+        Route::post('/perfil/contrasenia', [PerfilController::class, 'actualizarContrasenia'])->name('gerente.perfil.contrasenia');
     });
 });
 
@@ -152,9 +161,10 @@ Route::prefix('superadmin')->group(function () {
         Route::get('/dashboard', static function () {
             return view('super-admin.dashboard');
         })->name('superadmin.dashboard');
-        Route::get('/perfil', static function () {
-            return view('perfil');
-        })->name('perfil');
+
+        // Ruta de perfil
+        Route::get('/perfil', [PerfilController::class, 'index'])->name('perfil');
+
         Route::prefix('tenant')->group(function () {
             Route::get('/', [TenantController::class, 'index'])->name('superadmin.tenant');
             Route::post('/', [TenantController::class, 'store'])->name('superadmin.tenant.store');
@@ -180,14 +190,16 @@ Route::prefix('superadmin')->group(function () {
             Route::post('/{plan}/toggle-activo', [PlanSuscripcionController::class, 'toggleActivo'])->name('superadmin.planes.toggle-activo');
         });
         Route::prefix('pago')->group(function () {
-            Route::get('/', static function () {
-                return view('super-admin.pago');
-            })->name('superadmin.pago');
+            Route::get('/', [MetodoPagoController::class, 'index'])->name('superadmin.pago');
+            Route::post('/', [MetodoPagoController::class, 'store'])->name('superadmin.pago.store');
+            Route::put('/{id}', [MetodoPagoController::class, 'update'])->name('superadmin.pago.update');
+            Route::post('/{id}/toggle-activo', [MetodoPagoController::class, 'toggleActivo'])->name('superadmin.pago.toggle-activo');
         });
         Route::prefix('igv')->group(function () {
-            Route::get('/', static function () {
-                return view('super-admin.igv');
-            })->name('superadmin.igv');
+            Route::get('/', [IgvController::class, 'index'])->name('superadmin.igv');
+            Route::post('/', [IgvController::class, 'store'])->name('superadmin.igv.store');
+            Route::put('/{id}', [IgvController::class, 'update'])->name('superadmin.igv.update');
+            Route::post('/{id}/toggle-activo', [IgvController::class, 'toggleActivo'])->name('superadmin.igv.toggle-activo');
         });
     });
 });

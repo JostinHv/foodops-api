@@ -50,4 +50,5 @@ class OrdenRepository extends BaseRepository implements IOrdenRepository
             ->orderBy('nro_orden', 'asc')
             ->get();
     }
+
 }

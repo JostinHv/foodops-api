@@ -5,7 +5,7 @@ namespace App\Services\Interfaces;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
-interface IIgvService extends IActivoBoolService
+interface IIgvService
 {
     public function obtenerTodos(): Collection;
 
@@ -24,4 +24,8 @@ interface IIgvService extends IActivoBoolService
     public function obtenerActivos(): Collection;
 
     public function obtenerUltimoActivo(): Collection;
+
+    public function obtenerActivo(): ?Model;
+
+    public function desactivarTodos(): bool;
 }

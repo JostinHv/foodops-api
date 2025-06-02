@@ -1,27 +1,17 @@
-<ul class="nav flex-column p-3">
+<div class="d-flex flex-column flex-shrink-0 p-3">
+    <ul class="nav nav-pills flex-column mb-auto">
+{{--    <li class="nav-item">--}}
+{{--            <a href="{{ route('mesero.dashboard') }}" class="nav-link {{ request()->routeIs('mesero.dashboard') ? 'active' : '' }}">--}}
+{{--                <i class="bi bi-speedometer2 me-2"></i>--}}
+{{--                Dashboard--}}
+{{--            </a>--}}
+{{--    </li>--}}
     <li class="nav-item">
-        <a class="nav-link text-dark" href="#"><i class="bi bi-house-door me-2"></i>Órdenes</a>
+            <a href="{{ route('mesero.orden.index') }}"
+               class="nav-link {{ request()->routeIs('mesero.orden*') ? 'active' : '' }}">
+                <i class="bi bi-cart me-2"></i>
+                Órdenes
+            </a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link text-dark" data-bs-toggle="collapse" href="#mesasMenu" role="button" aria-expanded="false" aria-controls="mesasMenu">
-            <i class="bi bi-folder me-2"></i>Mesas
-        </a>
-        <div class="collapse" id="mesasMenu">
-            <ul class="list-unstyled ps-4">
-                <li><a class="nav-link text-dark" href="#">Ver Mesas</a></li>
-                <li><a class="nav-link text-dark" href="#">Asignar Mesa</a></li>
             </ul>
         </div>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link text-dark" data-bs-toggle="collapse" href="#menuOpciones" role="button" aria-expanded="false" aria-controls="menuOpciones">
-            <i class="bi bi-folder me-2"></i>Menú
-        </a>
-        <div class="collapse" id="menuOpciones">
-            <ul class="list-unstyled ps-4">
-                <li><a class="nav-link text-dark" href="#">Platos</a></li>
-                <li><a class="nav-link text-dark" href="#">Categorías</a></li>
-            </ul>
-        </div>
-    </li>
-</ul>

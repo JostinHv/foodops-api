@@ -24,4 +24,8 @@ interface IIgvRepository
     public function obtenerActivos(): Collection;
 
     public function obtenerUltimoActivo(): Collection;
+
+    public function desactivarTodos(): bool;
+
+    public function obtenerActivo(): ?Model;
 }

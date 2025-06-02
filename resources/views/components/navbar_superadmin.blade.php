@@ -1,14 +1,34 @@
-<ul class="nav flex-column p-3">
+<div class="d-flex flex-column flex-shrink-0 p-3">
+    <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item">
+            <a href="{{ route('superadmin.dashboard') }}" class="nav-link {{ request()->routeIs('superadmin.dashboard') ? 'active' : '' }}">
+                <i class="bi bi-speedometer2 me-2"></i>
+                Dashboard
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('superadmin.tenant') }}" class="nav-link {{ request()->routeIs('superadmin.tenant*') ? 'active' : '' }}">
+                <i class="bi bi-building me-2"></i>
+                Tenants
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('planes') }}" class="nav-link {{ request()->routeIs('planes*') ? 'active' : '' }}">
+                <i class="bi bi-credit-card me-2"></i>
+                Planes
+            </a>
+        </li>
     <li class="nav-item">
-        <a class="nav-link text-dark {{ request()->routeIs('gerente.dashboard') || request()->routeIs('mesero.ordenes*') ? 'active' : '' }}" 
-           href="{{ route('gerente.dashboard') }}">
-            <i class="bi bi-house me-2"></i>Dashboard
+            <a href="{{ route('superadmin.pago') }}" class="nav-link {{ request()->routeIs('superadmin.pago') ? 'active' : '' }}">
+                <i class="bi bi-cash-stack me-2"></i>
+                Pagos
         </a>
     </li>
      <li class="nav-item">
-        <a class="nav-link text-dark {{ request()->routeIs('gerente.menu') || request()->routeIs('mesero.mesas*') ? 'active' : '' }}" 
-           href="{{ route('gerente.menu') }}">
-            <i class="bi bi-ui-checks-grid me-2"></i>Menú
+            <a href="{{ route('superadmin.igv') }}" class="nav-link {{ request()->routeIs('superadmin.igv') ? 'active' : '' }}">
+                <i class="bi bi-percent me-2"></i>
+                IGV
         </a>
     </li>
 </ul>
+</div>

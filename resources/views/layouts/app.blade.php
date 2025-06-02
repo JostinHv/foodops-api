@@ -2,10 +2,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>@yield('title', 'FoodOps')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/navbar.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('js/app.js') }}"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -27,21 +31,43 @@
                     <span class="fw-bold text-danger">FoodOps</span>
                 </div>
 
-                <div class="dropdown d-flex align-items-center">
-                    <i class="bi bi-person-circle"></i>
-                    <img src="{{ Auth::user()->foto ?? asset('images/default-user.png') }}" alt="Avatar"
-                        class="rounded-circle" width="40" height="40">
-                    <div class="text-end me-2 d-none d-sm-block">
-                        <div class="fw-semibold">{{ Auth::user()->name }}</div>
-                        <div class="text-muted small">{{ ucfirst(Auth::user()->role) }}</div>
+                <div class="dropdown">
+                    <div class="user-menu d-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
+                        @if(Auth::user()->foto_perfil_id && Auth::user()->fotoPerfil)
+                            <img src="{{ asset('storage/' . Auth::user()->fotoPerfil->ruta) }}" 
+                                 alt="Avatar"
+                                 class="rounded-circle" 
+                                 width="40" height="40">
+                        @else
+                            <div class="user-avatar">
+                                <i class="bi bi-person-circle"></i>
+                            </div>
+                        @endif
+                        <div class="text-end me-2 d-none d-sm-block">
+                            <div class="fw-semibold">{{ Auth::user()->nombres }} {{ Auth::user()->apellidos }}</div>
+                            <div class="text-muted small">
+                                @foreach(Auth::user()->roles as $role)
+                                    {{ $role->nombre }}
+                                @endforeach
+                            </div>
+                        </div>
+                        <i class="bi bi-chevron-down ms-2"></i>
                     </div>
-                    <a href="#" class="d-block dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"></a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="{{ route('perfil') }}">Perfil</a></li>
                         <li>
-                            <form method="POST" action="">
+                            <a class="dropdown-item" href="{{ Auth::user()->roles->contains('nombre', 'mesero') ? route('mesero.perfil') : (Auth::user()->roles->contains('nombre', 'gerente') ? route('gerente.perfil') : (Auth::user()->roles->contains('nombre', 'administrador') ? route('tenant.perfil') : route('perfil'))) }}">
+                                <i class="bi bi-person me-2"></i>
+                                Mi Perfil
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button type="submit" class="dropdown-item">Cerrar sesión</button>
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="bi bi-box-arrow-right me-2"></i>
+                                    Cerrar sesión
+                                </button>
                             </form>
                         </li>
                     </ul>
@@ -53,10 +79,10 @@
         <div class="d-flex" id="mainWrapper">
             {{-- Sidebar vertical --}}
             <nav id="sidebar" class="bg-light border-end">
-                @includeWhen(Auth::user()->role === 'mesero', 'components.navbar_mesero')
-                @includeWhen(Auth::user()->role === 'admin', 'components.navbar_admin')
-                @includeWhen(Auth::user()->role === 'gerente', 'components.navbar_gerente')
-                @includeWhen(Auth::user()->role === 'superadmin', 'components.navbar_superadmin')
+                @includeWhen(Auth::user()->roles->contains('nombre', 'mesero'), 'components.navbar_mesero')
+                @includeWhen(Auth::user()->roles->contains('nombre', 'administrador'), 'components.navbar_admin')
+                @includeWhen(Auth::user()->roles->contains('nombre', 'gerente'), 'components.navbar_gerente')
+                @includeWhen(Auth::user()->roles->contains('nombre', 'superadmin'), 'components.navbar_superadmin')
             </nav>
 
             {{-- Contenido principal --}}
@@ -64,6 +90,35 @@
                 @yield('content')
             </main>
         </div>
+
+        <script>
+            document.getElementById('toggleMenuBtn').addEventListener('click', function() {
+                document.getElementById('sidebar').classList.toggle('collapsed');
+                document.getElementById('toggleIcon').classList.toggle('bi-list');
+                document.getElementById('toggleIcon').classList.toggle('bi-x');
+            });
+
+            document.addEventListener('DOMContentLoaded', function() {
+                if (window.performance && window.performance.navigation.type === window.performance.navigation.TYPE_BACK_FORWARD) {
+                    window.location.reload();
+                }
+
+                document.querySelector('form[action="{{ route('logout') }}"]').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    fetch(this.action, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        },
+                        credentials: 'same-origin'
+                    }).then(() => {
+                        window.location.replace('{{ route('login') }}');
+                    });
+                });
+            });
+        </script>
     @else
         {{-- Para login, registro y vistas públicas --}}
         <main class="container py-4">

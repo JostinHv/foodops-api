@@ -3,7 +3,66 @@
 @section('title', 'Métodos de Pago')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/super-admin/pago.css') }}">
+    <style>
+        .card {
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1;
+        }
+
+        .method-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #6c757d;
+            transition: color 0.2s;
+        }
+
+        .card:hover .method-icon {
+            color: #0d6efd;
+        }
+
+        .action-buttons {
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .card:hover .action-buttons {
+            opacity: 1;
+        }
+
+        .form-floating > .form-control {
+            padding-left: 2.5rem;
+        }
+
+        .form-floating > label {
+            padding-left: 2.5rem;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            z-index: 2;
+        }
+
+        .form-floating {
+            position: relative;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -12,204 +71,116 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h1 class="h3 mb-0">Métodos de Pago</h1>
+                <p class="text-muted">Gestiona los métodos de pago disponibles en el sistema</p>
             </div>
-            <a href="#" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#nuevoMetodoPagoModal">
-                <i class="bi bi-plus-circle me-2"></i>Nuevo Plan
-            </a>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevoMetodoPagoModal">
+                <i class="bi bi-plus-circle me-2"></i>Nuevo Método de Pago
+            </button>
         </div>
 
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
         <div class="row g-4">
-            <!-- Tarjeta Visa/Mastercard -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100">
-                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5 class="mb-0">Visa/Mastercard</h5>
-                            <small class="text-muted">Stripe - Tarjetas</small>
-                        </div>
-                        <span class="badge bg-success">Active</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <i class="bi bi-globe me-2"></i>
-                            <small>Disponible en 5 países</small>
-                        </div>
+            @forelse($metodosPago as $metodo)
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <span class="badge {{ $metodo->activo ? 'bg-success' : 'bg-danger' }} status-badge">
+                                <i class="bi {{ $metodo->activo ? 'bi-check-circle' : 'bi-x-circle' }} me-1"></i>
+                                {{ $metodo->activo ? 'Activo' : 'Inactivo' }}
+                            </span>
+                            
+                            <div class="text-center mb-3">
+                                <i class="bi bi-credit-card method-icon"></i>
+                                <h5 class="card-title mb-1">{{ $metodo->nombre }}</h5>
+                                @if($metodo->descripcion)
+                                    <p class="text-muted small mb-0">{{ $metodo->descripcion }}</p>
+                                @endif
+                            </div>
 
-                        <ul class="list-unstyled mb-0">
-                            <li class="mb-2"><strong>Comisión:</strong> 2.8% + USD 0.3</li>
-                            <li class="mb-2"><strong>Procesamiento:</strong> Inmediato</li>
-                            <li class="mb-2"><strong>Transacciones:</strong> 1,250</li>
-                            <li><strong>Volumen:</strong> $125,000</li>
-                        </ul>
-                    </div>
-                    <div class="card-footer bg-white border-0 d-flex justify-content-between">
-                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
-                            data-bs-target="#editarMetodoPagoModal">
-                            <i class="bi bi-pencil"></i> Editar
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
-                            data-bs-target="#desactivarModal">
-                            <i class="bi bi-power"></i> Desactivar
-                        </button>
+                            <div class="action-buttons d-flex justify-content-center gap-2">
+                                <button class="btn btn-sm btn-outline-primary" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#editarMetodoPagoModal"
+                                        data-id="{{ $metodo->id }}"
+                                        data-nombre="{{ $metodo->nombre }}"
+                                        data-descripcion="{{ $metodo->descripcion }}">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </button>
+                                <form action="{{ route('superadmin.pago.toggle-activo', $metodo->id) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm {{ $metodo->activo ? 'btn-outline-danger' : 'btn-outline-success' }}">
+                                        <i class="bi bi-power"></i> {{ $metodo->activo ? 'Desactivar' : 'Activar' }}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Tarjeta PayPal -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100">
-                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5 class="mb-0">PayPal</h5>
-                            <small class="text-muted">PayPal - Billetes</small>
-                        </div>
-                        <span class="badge bg-success">Active</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <i class="bi bi-globe me-2"></i>
-                            <small>Disponible en 7 países</small>
-                        </div>
-
-                        <ul class="list-unstyled mb-0">
-                            <li class="mb-2"><strong>Comisión:</strong> 3.4% + USD 0.3</li>
-                            <li class="mb-2"><strong>Procesamiento:</strong> 1-3 días hábiles</li>
-                            <li class="mb-2"><strong>Transacciones:</strong> 890</li>
-                            <li><strong>Volumen:</strong> $89,000</li>
-                        </ul>
-                    </div>
-                    <div class="card-footer bg-white border-0 d-flex justify-content-between">
-                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
-                            data-bs-target="#editarMetodoModal">
-                            <i class="bi bi-pencil"></i> Editar
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
-                            data-bs-target="#desactivarMetodoModal">
-                            <i class="bi bi-power"></i> Desactivar
-                        </button>
+            @empty
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        No hay métodos de pago registrados. ¡Crea uno nuevo!
                     </div>
                 </div>
-            </div>
-
-            <!-- Transferencia Bancaria -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100">
-                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5 class="mb-0">Transferencia Bancaria</h5>
-                            <small class="text-muted">Culqi - Transferencia</small>
-                        </div>
-                        <span class="badge bg-success">Active</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <i class="bi bi-globe me-2"></i>
-                            <small>Disponible en 1 país</small>
-                        </div>
-
-                        <ul class="list-unstyled mb-0">
-                            <li class="mb-2"><strong>Comisión:</strong> 1.5% + PEN 2</li>
-                            <li class="mb-2"><strong>Procesamiento:</strong> 1-2 días hábiles</li>
-                            <li class="mb-2"><strong>Transacciones:</strong> 456</li>
-                            <li><strong>Volumen:</strong> $45,600</li>
-                        </ul>
-                    </div>
-                    <div class="card-footer bg-white border-0 d-flex justify-content-between">
-                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
-                            data-bs-target="#editarMetodoModal">
-                            <i class="bi bi-pencil"></i> Editar
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
-                            data-bs-target="#desactivarMetodoModal">
-                            <i class="bi bi-power"></i> Desactivar
-                        </button>
-                    </div>
-                </div>
-            </div>
+            @endforelse
         </div>
     </div>
 
     <!-- Modal: Nuevo Método de Pago -->
-    <div class="modal fade" id="nuevoMetodoPagoModal" tabindex="-1" aria-labelledby="nuevoMetodoPagoModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+    <div class="modal fade" id="nuevoMetodoPagoModal" tabindex="-1">
+        <div class="modal-dialog">
             <div class="modal-content">
-                <form id="formNuevoMetodoPago" action="#" method="POST">
+                <form action="{{ route('superadmin.pago.store') }}" method="POST" class="needs-validation" novalidate>
                     @csrf
                     <div class="modal-header">
-                        <h5 class="modal-title" id="nuevoMetodoPagoModalLabel">Agregar Método de Pago</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        <h5 class="modal-title">
+                            <i class="bi bi-plus-circle me-2"></i>
+                            Nuevo Método de Pago
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <h6 class="mb-3">Nombre del Método</h6>
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <label for="nombre_metodo" class="form-label">Nombre</label>
-                                <input type="text" class="form-control" id="nombre_metodo" name="nombre_metodo"
-                                    placeholder="Ej: Visa/Mastercard" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="proveedor" class="form-label">Proveedor</label>
-                                <select class="form-select" id="proveedor" name="proveedor" required>
-                                    <option selected disabled>Selecciona un proveedor</option>
-                                    <option value="Stripe">Stripe</option>
-                                    <option value="PayPal">PayPal</option>
-                                    <option value="Culqi">Culqi</option>
-                                    <option value="Otro">Otro</option>
-                                </select>
-                            </div>
+                        <div class="form-floating mb-3">
+                            <i class="bi bi-credit-card input-icon"></i>
+                            <input type="text" 
+                                   class="form-control @error('nombre') is-invalid @enderror" 
+                                   id="nombre" 
+                                   name="nombre" 
+                                   placeholder="Nombre del método de pago"
+                                   required>
+                            <label for="nombre">Nombre</label>
+                            @error('nombre')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
-
-                        <h6 class="mb-3">Tipo de Método</h6>
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <label for="tipo_metodo" class="form-label">Tipo</label>
-                                <select class="form-select" id="tipo_metodo" name="tipo_metodo" required>
-                                    <option selected disabled>Selecciona un tipo</option>
-                                    <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
-                                    <option value="Transferencia Bancaria">Transferencia Bancaria</option>
-                                    <option value="Billetera Digital">Billetera Digital</option>
-                                    <option value="Efectivo">Efectivo</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Comisiones</label>
-                                <div class="input-group">
-                                    <input type="number" class="form-control" id="comision_porcentaje"
-                                        name="comision_porcentaje" placeholder="0" min="0" max="100"
-                                        step="0.01" required>
-                                </div>
-                            </div>
-                        </div>
-
-                        <h6 class="mb-3">Tiempo de Procesamiento</h6>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="tiempo_procesamiento" class="form-label">Tiempo</label>
-                                <select class="form-select" id="tiempo_procesamiento" name="tiempo_procesamiento"
-                                    required>
-                                    <option selected disabled>Selecciona un tiempo</option>
-                                    <option value="Inmediato">Inmediato</option>
-                                    <option value="1-2 días hábiles">1-2 días hábiles</option>
-                                    <option value="1-3 días hábiles">1-3 días hábiles</option>
-                                    <option value="3-5 días hábiles">3-5 días hábiles</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="moneda" class="form-label">Moneda Principal</label>
-                                <select class="form-select" id="moneda" name="moneda" required>
-                                    <option value="USD">USD (Dólares Americanos)</option>
-                                    <option value="EUR">EUR (Euros)</option>
-                                    <option value="PEN">PEN (Soles Peruanos)</option>
-                                    <option value="MXN">MXN (Pesos Mexicanos)</option>
-                                </select>
-                            </div>
+                        <div class="form-floating mb-3">
+                            <i class="bi bi-card-text input-icon"></i>
+                            <textarea class="form-control @error('descripcion') is-invalid @enderror" 
+                                      id="descripcion" 
+                                      name="descripcion" 
+                                      placeholder="Descripción del método de pago"
+                                      style="height: 100px"></textarea>
+                            <label for="descripcion">Descripción</label>
+                            @error('descripcion')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary"
-                            data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Crear Método</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle me-2"></i>Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-2"></i>Crear
+                        </button>
                     </div>
                 </form>
             </div>
@@ -217,121 +188,60 @@
     </div>
 
     <!-- Modal: Editar Método de Pago -->
-    <div class="modal fade" id="editarMetodoPagoModal" tabindex="-1" aria-labelledby="editarMetodoPagoModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <form id="formEditarMetodoPago" action="#" method="POST">
-                    @csrf
-                    @method('PUT')
-                    <input type="hidden" id="editar_metodo_id" name="id">
-
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editarMetodoPagoModalLabel">Editar Método de Pago</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                    </div>
-                    <div class="modal-body">
-                        <h6 class="mb-3">Nombre del Método</h6>
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <label for="editar_nombre_metodo" class="form-label">Nombre</label>
-                                <input type="text" class="form-control" id="editar_nombre_metodo"
-                                    name="nombre_metodo" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="editar_proveedor" class="form-label">Proveedor</label>
-                                <select class="form-select" id="editar_proveedor" name="proveedor" required>
-                                    <option value="Stripe">Stripe</option>
-                                    <option value="PayPal">PayPal</option>
-                                    <option value="Culqi">Culqi</option>
-                                    <option value="Otro">Otro</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <h6 class="mb-3">Tipo de Método</h6>
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <label for="editar_tipo_metodo" class="form-label">Tipo</label>
-                                <select class="form-select" id="editar_tipo_metodo" name="tipo_metodo" required>
-                                    <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
-                                    <option value="Transferencia Bancaria">Transferencia Bancaria</option>
-                                    <option value="Billetera Digital">Billetera Digital</option>
-                                    <option value="Efectivo">Efectivo</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Comisiones</label>
-                                <div class="input-group">
-                                    <input type="number" class="form-control" id="editar_comision_porcentaje"
-                                        name="comision_porcentaje" min="0" max="100" step="0.01"
-                                        required>
-                                </div>
-                            </div>
-                        </div>
-
-                        <h6 class="mb-3">Tiempo de Procesamiento</h6>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="editar_tiempo_procesamiento" class="form-label">Tiempo</label>
-                                <select class="form-select" id="editar_tiempo_procesamiento" name="tiempo_procesamiento"
-                                    required>
-                                    <option value="Inmediato">Inmediato</option>
-                                    <option value="1-2 días hábiles">1-2 días hábiles</option>
-                                    <option value="1-3 días hábiles">1-3 días hábiles</option>
-                                    <option value="3-5 días hábiles">3-5 días hábiles</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="editar_moneda" class="form-label">Moneda Principal</label>
-                                <select class="form-select" id="editar_moneda" name="moneda" required>
-                                    <option value="USD">USD (Dólares Americanos)</option>
-                                    <option value="EUR">EUR (Euros)</option>
-                                    <option value="PEN">PEN (Soles Peruanos)</option>
-                                    <option value="MXN">MXN (Pesos Mexicanos)</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary"
-                            data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal: Desactivar pago -->
-    <div class="modal fade" id="desactivarModal" tabindex="-1" aria-labelledby="suspenderPlanModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="editarMetodoPagoModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="formSuspenderPlan" action="#" method="POST">
+                <form id="formEditarMetodoPago" method="POST" class="needs-validation" novalidate>
                     @csrf
-                    @method('DELETE')
-                    <input type="hidden" id="suspender_plan_id" name="id">
-
+                    @method('PUT')
                     <div class="modal-header">
-                        <h5 class="modal-title" id="suspenderPlanModalLabel">Desactivar Método de Pago</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        <h5 class="modal-title">
+                            <i class="bi bi-pencil-square me-2"></i>
+                            Editar Método de Pago
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="alert alert-warning">
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                            <strong>Advertencia:</strong> Esta acción desactivará el método de pago seleccionado de manera
-                            permanente.
+                        <div class="form-floating mb-3">
+                            <i class="bi bi-credit-card input-icon"></i>
+                            <input type="text" 
+                                   class="form-control @error('nombre') is-invalid @enderror" 
+                                   id="editar_nombre" 
+                                   name="nombre" 
+                                   placeholder="Nombre del método de pago"
+                                   required>
+                            <label for="editar_nombre">Nombre</label>
+                            @error('nombre')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
-                        <p>¿Estás seguro que deseas desactivar el método de pago <strong
-                                id="nombre_plan_suspender"></strong>?</p>
+                        <div class="form-floating mb-3">
+                            <i class="bi bi-card-text input-icon"></i>
+                            <textarea class="form-control @error('descripcion') is-invalid @enderror" 
+                                      id="editar_descripcion" 
+                                      name="descripcion" 
+                                      placeholder="Descripción del método de pago"
+                                      style="height: 100px"></textarea>
+                            <label for="editar_descripcion">Descripción</label>
+                            @error('descripcion')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-danger">Confirmar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle me-2"></i>Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-2"></i>Guardar Cambios
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script src="{{ asset('js/metodo-pago.js') }}"></script>
+@endpush

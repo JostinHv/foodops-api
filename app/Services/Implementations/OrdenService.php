@@ -140,6 +140,72 @@ readonly class OrdenService implements IOrdenService
                 'estado' => $orden->estadoOrden->nombre,
             ];
         })->toArray();
+    }
 
+    /**
+     * Marca una orden como servida
+     */
+    public function marcarComoServida(int $id): bool
+    {
+        try {
+            DB::beginTransaction();
+
+            $orden = $this->obtenerPorId($id);
+            if (!$orden) {
+                throw new \RuntimeException('Orden no encontrada');
+            }
+
+            // Actualizar el estado de la orden a "Servida" (estado_id = 3)
+            $actualizado = $this->actualizar($id, ['estado_orden_id' => 4]);
+
+            if (!$actualizado) {
+                throw new \RuntimeException('Error al actualizar el estado de la orden');
+            }
+
+            DB::commit();
+            return true;
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Error al marcar orden como servida', [
+                'orden_id' => $id,
+                'error' => $e->getMessage()
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * @throws \Throwable
+     */
+    public function cambiarEstadoOrden(int $id, mixed $estado_orden_id): true
+    {
+        try {
+            DB::beginTransaction();
+
+            $orden = $this->obtenerPorId($id);
+            if (!$orden) {
+                throw new \RuntimeException('Orden no encontrada');
+            }
+
+            // Actualizar el estado de la orden
+            $actualizado = $this->actualizar($id, ['estado_orden_id' => $estado_orden_id]);
+
+            if (!$actualizado) {
+                throw new \RuntimeException('Error al actualizar el estado de la orden');
+            }
+
+            DB::commit();
+            return true;
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Error al cambiar estado de orden', [
+                'orden_id' => $id,
+                'estado_orden_id' => $estado_orden_id,
+                'error' => $e->getMessage()
+            ]);
+            throw $e;
+        }
     }
 }

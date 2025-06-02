@@ -5,6 +5,7 @@ namespace App\Repositories\Implementations;
 use App\Models\Igv;
 use App\Repositories\Interfaces\IIgvRepository;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class IgvRepository extends ActivoBoolRepository implements IIgvRepository
 {
@@ -47,5 +48,20 @@ class IgvRepository extends ActivoBoolRepository implements IIgvRepository
         } else {
             $consulta->orderBy('anio', 'desc');
         }
+    }
+
+    public function desactivarTodos(): bool
+    {
+        $igvs = $this->modelo->where('activo', true)->get();
+        foreach ($igvs as $igv) {
+            $igv->activo = false;
+            $igv->save();
+        }
+        return true;
+    }
+
+    public function obtenerActivo(): ?Model
+    {
+        return $this->modelo->where('activo', true)->first();
     }
 }

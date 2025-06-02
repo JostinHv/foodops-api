@@ -81,11 +81,12 @@ class Orden extends Model
         'nro_orden' => 'string',
         'nombre_cliente' => 'string',
         'peticiones_especiales' => 'string',
-        'tipo_servicio' => 'string'
+        'tipo_servicio' => 'string',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
     ];
 
     protected $hidden = [
-        'created_at',
         'updated_at'
     ];
 

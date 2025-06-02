@@ -24,7 +24,14 @@ class WebAuthenticate extends Middleware
             $this->setTokenFromCookie($request);
             $this->validateBearerToken($request);
             $this->authenticate($request, $guards);
-            return $next($request);
+            $response = $next($request);
+
+            // Agregar headers para prevenir el caché
+            $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+            $response->headers->set('Pragma', 'no-cache');
+            $response->headers->set('Expires', '0');
+
+            return $response;
         } catch (Exception $e) {
             return $this->buildErrorResponse();
         }

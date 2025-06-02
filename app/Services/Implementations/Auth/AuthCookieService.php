@@ -36,4 +36,12 @@ class AuthCookieService
             'none'
         );
     }
+
+    public function removeAuthCookies(): array
+    {
+        return [
+            'access' => $this->createCookie('access_token', '', -1),
+            'refresh' => $this->createCookie('refresh_token', '', -1)
+        ];
+    }
 }

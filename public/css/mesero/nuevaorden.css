@@ -1,12 +1,263 @@
+/* Estilos generales */
+.card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
 .card-header {
     background-color: #f8f9fa;
-    font-weight: bold;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
 }
 
-.table thead th {
+/* Estilos para las categorías */
+.categoria-productos {
+    border-bottom: 1px solid #eee;
+}
+
+.categoria-productos:last-child {
+    border-bottom: none;
+}
+
+.categoria-titulo {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #495057;
+    margin: 0;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* Estilos para las tarjetas de productos */
+.producto-card {
+    transition: all 0.2s ease;
+    border: 1px solid #eee;
+}
+
+.producto-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.producto-card .card-title {
+    font-size: 0.9rem;
+    color: #212529;
+}
+
+.producto-card .card-text {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+/* Estilos para los controles de cantidad */
+.cantidad-input {
+    width: 50px !important;
     text-align: center;
+    border: 1px solid #dee2e6;
 }
 
-.table td, .table th {
+.btn-cantidad-menos,
+.btn-cantidad-mas {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Estilos para la tabla de resumen */
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.table td {
     vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+/* Estilos para las tarjetas de mesa */
+.mesa-card {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mesa-card:hover {
+    transform: translateY(-2px);
+}
+
+.mesa-card.selected .card {
+    border-color: #198754;
+    background-color: #198754;
+    color: white;
+}
+
+.mesa-card.selected .card .card-title,
+.mesa-card.selected .card .card-text,
+.mesa-card.selected .card .bi {
+    color: white !important;
+}
+
+.mesa-card .card {
+    border: 1px solid #dee2e6;
+    transition: all 0.2s ease;
+}
+
+.mesa-card .card-title {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+    color: #212529;
+}
+
+.mesa-card .card-text {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.mesa-card .bi {
+    color: #6c757d;
+}
+
+/* Estilos para el botón de crear orden */
+.btn-primary {
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+}
+
+/* Estilos para el buscador */
+.input-group {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.input-group-text {
+    border: none;
+    background-color: white;
+}
+
+#buscarProducto {
+    border: none;
+    padding-left: 0;
+}
+
+#buscarProducto:focus {
+    box-shadow: none;
+}
+
+/* Estilos para el botón de eliminar */
+.btn-danger {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Estilos para las mesas */
+.mesas-container {
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 0.5rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .producto-card .card-body {
+        padding: 0.5rem;
+    }
+
+    .producto-card .card-title {
+        font-size: 0.8rem;
+    }
+
+    .producto-card .card-text {
+        font-size: 0.75rem;
+    }
+
+    .cantidad-input {
+        width: 40px !important;
+    }
+
+    .btn-cantidad-menos,
+    .btn-cantidad-mas {
+        width: 28px;
+        height: 28px;
+    }
+
+    .mesa-card .card-title {
+        font-size: 0.9rem;
+    }
+
+    .mesa-card .card-text {
+        font-size: 0.8rem;
+    }
+
+    .mesas-container {
+        max-height: 150px;
+    }
+
+    #detalle-tabla th,
+    #detalle-tabla td {
+        font-size: 0.8rem;
+    }
+
+    .btn-danger {
+        padding: 0.2rem 0.4rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.producto-item {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Estilos para dispositivos muy pequeños */
+@media (max-width: 576px) {
+    .producto-card .card-body {
+        padding: 0.4rem;
+    }
+
+    .producto-card .card-title {
+        font-size: 0.75rem;
+    }
+
+    .producto-card .card-text {
+        font-size: 0.7rem;
+    }
+
+    .cantidad-input {
+        width: 35px !important;
+    }
+
+    .btn-cantidad-menos,
+    .btn-cantidad-mas {
+        width: 24px;
+        height: 24px;
+    }
+
+    .mesa-card .card-title {
+        font-size: 0.8rem;
+    }
+
+    .mesa-card .card-text {
+        font-size: 0.7rem;
+    }
+
+    .mesas-container {
+        max-height: 120px;
+    }
 }

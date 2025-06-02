@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Models\Usuario;
 use App\Services\Implementations\Auth\AuthCookieService;
 use App\Services\Interfaces\IAuthService;
+use App\Services\Interfaces\IUsuarioService;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
@@ -17,11 +19,15 @@ use Illuminate\Http\Request;
 class AuthController extends Controller
 {
     private IAuthService $authService;
+    private IUsuarioService $usuarioService;
     private AuthCookieService $authCookieService;
 
-    public function __construct(IAuthService $authService, AuthCookieService $authCookieService)
+    public function __construct(IAuthService      $authService,
+                                IUsuarioService   $usuarioService,
+                                AuthCookieService $authCookieService)
     {
         $this->authService = $authService;
+        $this->usuarioService = $usuarioService;
         $this->authCookieService = $authCookieService;
     }
 
@@ -52,7 +58,7 @@ class AuthController extends Controller
             $response['data']['refresh_token']
         );
 
-        return redirect()->route('home')
+        return $this->redirectToDashboard($response['data']['user'])
             ->with(['success' => $response['message']])
             ->withCookies($cookies);
     }
@@ -77,11 +83,31 @@ class AuthController extends Controller
             $response['data']['access_token'],
             $response['data']['refresh_token']
         );
-        return redirect()->route('home')
-            ->with(['credentials' => $response['message']])
+        $this->usuarioService->actualizar($response['data']['user']['id'], [
+            'ultimo_acceso' => now()
+        ]);
+        return $this->redirectToDashboard($response['data']['user'])
+            ->with(['success' => $response['message']])
             ->withCookies($cookies);
     }
 
+    public function logout(Request $request): RedirectResponse
+    {
+        // Obtener el token de la cookie
+        $token = $request->cookie('access_token');
+
+        if ($token) {
+            // Intentar hacer logout en el servicio de autenticación
+            $this->authService->logout($token);
+        }
+
+        // Eliminar las cookies de autenticación
+        $cookies = $this->authCookieService->removeAuthCookies();
+
+        return redirect()->route('login')
+            ->with(['success' => 'Sesión cerrada correctamente'])
+            ->withCookies($cookies);
+    }
 
     public function checkEmail(Request $request): JsonResponse
     {
@@ -91,5 +117,41 @@ class AuthController extends Controller
         return response()->json(['exists' => $exists]);
     }
 
+    /**
+     * Redirige al usuario a su dashboard correspondiente según su rol
+     */
+    private function redirectToDashboard($userData): RedirectResponse
+    {
+        \Log::log('info', 'Redirigiendo al usuario: ' . $userData['email'] . ' con ID: ' . $userData['id']);
+        // Convertir el array de usuario a un objeto User
+        $user = Usuario::with('roles')->find($userData['id']);
+        \Log::log('info', 'Redirigiendo al usuario con ID: ' . $user->id);
+        if (!$user) {
+            \Log::log('info', 'Usuario no encontrado con ID: ' . $userData['id']);
+            return redirect()->route('home');
+        }
 
+        // Verificar si el usuario tiene el rol superadmin
+        if ($user->roles->contains('nombre', 'superadmin')) {
+            return redirect()->route('superadmin.dashboard');
+        }
+
+        // Verificar si el usuario tiene el rol admin
+        if ($user->roles->contains('nombre', 'administrador')) {
+            return redirect()->route('tenant.dashboard');
+        }
+
+        // Verificar si el usuario tiene el rol gerente
+        if ($user->roles->contains('nombre', 'gerente')) {
+            return redirect()->route('gerente.dashboard');
+        }
+
+        // Verificar si el usuario tiene el rol mesero
+        if ($user->roles->contains('nombre', 'mesero')) {
+            return redirect()->route('mesero.orden.index');
+        }
+
+        // Si no tiene ningún rol específico, redirigir al home
+        return redirect()->route('home');
+    }
 }
