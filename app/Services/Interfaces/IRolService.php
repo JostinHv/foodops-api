@@ -23,5 +23,7 @@ interface IRolService extends IActivoBoolService
 
     public function obtenerActivos(): Collection;
 
+    public function obtenerRolesActivosPorId(array $ids): Collection;
+
     public function obtenerUltimoActivo(): Collection;
 }

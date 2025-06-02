@@ -2,7 +2,7 @@
 <div class="mb-4">
     <h6 class="mb-3">Plan de Suscripción</h6>
     <div class="row">
-        <div class="col-12">
+        <div class="col-md-6">
             <label for="plan_suscripcion_id" class="form-label">Seleccione un Plan <span class="text-danger">*</span></label>
             <select class="form-select @error('plan_suscripcion_id') is-invalid @enderror"
                 id="plan_suscripcion_id"
@@ -19,6 +19,24 @@
                 @endforeach
             </select>
             @error('plan_suscripcion_id')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+        <div class="col-md-6">
+            <label for="metodo_pago_id" class="form-label">Método de Pago <span class="text-danger">*</span></label>
+            <select class="form-select @error('metodo_pago_id') is-invalid @enderror"
+                id="metodo_pago_id"
+                name="metodo_pago_id"
+                required>
+                <option value="">Seleccione un método de pago...</option>
+                @foreach($metodosPago as $metodo)
+                    <option value="{{ $metodo->id }}"
+                        {{ old('metodo_pago_id') == $metodo->id ? 'selected' : '' }}>
+                        {{ $metodo->nombre }}
+                    </option>
+                @endforeach
+            </select>
+            @error('metodo_pago_id')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
@@ -45,6 +63,43 @@
     </div>
 </div>
 
+<!-- Información de Suscripción -->
+<div class="mb-4">
+    <h6 class="mb-3">Información de Suscripción</h6>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="fecha_inicio" class="form-label">Fecha de Inicio <span class="text-danger">*</span></label>
+            <input type="date" 
+                class="form-control @error('fecha_inicio') is-invalid @enderror"
+                id="fecha_inicio"
+                name="fecha_inicio"
+                value="{{ old('fecha_inicio', date('Y-m-d')) }}"
+                required>
+            @error('fecha_inicio')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+        <div class="col-md-6">
+            <label for="renovacion_automatica" class="form-label">Renovación Automática</label>
+            <div class="form-check form-switch mt-2">
+                <input class="form-check-input" 
+                    type="checkbox" 
+                    id="renovacion_automatica" 
+                    name="renovacion_automatica" 
+                    value="1"
+                    {{ old('renovacion_automatica') ? 'checked' : '' }}>
+                <label class="form-check-label" for="renovacion_automatica">
+                    Activar renovación automática
+                </label>
+            </div>
+            <small class="text-muted d-block mt-1">
+                <i class="bi bi-info-circle me-1"></i>
+                La suscripción se renovará automáticamente al finalizar el período.
+            </small>
+        </div>
+    </div>
+</div>
+
 <!-- Información Básica -->
 <div class="mb-4">
     <h6 class="mb-3">Información Básica</h6>
@@ -59,6 +114,7 @@
                     name="dominio"
                     value="{{ old('dominio', $tenant->dominio ?? '') }}"
                     placeholder="mirestaurante.com"
+                    data-tenant-id="{{ $tenant->id ?? '' }}"
                     required>
             </div>
             @error('dominio')
@@ -187,3 +243,48 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const planSelect = document.getElementById('plan_suscripcion_id');
+    const planPreview = document.getElementById('plan-preview');
+    const precioPlan = document.getElementById('precio-plan');
+    const intervaloPlan = document.getElementById('intervalo-plan');
+    const caracteristicasPlan = document.getElementById('caracteristicas-plan');
+    const fechaInicio = document.getElementById('fecha_inicio');
+
+    // Establecer fecha mínima como hoy
+    fechaInicio.min = new Date().toISOString().split('T')[0];
+
+    planSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        if (selectedOption.value) {
+            const precio = selectedOption.getAttribute('data-precio');
+            const caracteristicas = JSON.parse(selectedOption.getAttribute('data-caracteristicas'));
+            const intervalo = selectedOption.text.split('/').pop().trim();
+
+            precioPlan.textContent = parseFloat(precio).toFixed(2);
+            intervaloPlan.textContent = intervalo;
+            
+            caracteristicasPlan.innerHTML = '';
+            caracteristicas.forEach(caracteristica => {
+                const li = document.createElement('li');
+                li.innerHTML = `<i class="bi bi-check-circle-fill text-success me-2"></i>${caracteristica}`;
+                caracteristicasPlan.appendChild(li);
+            });
+
+            planPreview.classList.remove('d-none');
+        } else {
+            planPreview.classList.add('d-none');
+        }
+    });
+
+    // Trigger change event if there's a selected plan
+    if (planSelect.value) {
+        planSelect.dispatchEvent(new Event('change'));
+    }
+});
+</script>
+<script src="{{ asset('js/tenant-form.js') }}"></script>
+@endpush

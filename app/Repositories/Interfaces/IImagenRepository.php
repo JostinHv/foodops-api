@@ -24,4 +24,6 @@ interface IImagenRepository
     public function obtenerActivos(): Collection;
 
     public function obtenerUltimoActivo(): Collection;
+
+    public function guardarImagen(\Illuminate\Http\UploadedFile $file, string $string);
 }

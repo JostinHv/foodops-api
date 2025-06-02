@@ -27,4 +27,5 @@ Route::group(['prefix' => 'v1'], function () {
     require __DIR__ . '/api/tenants.php';
     require __DIR__ . '/api/tenant-suscripciones.php';
     require __DIR__ . '/api/usuarios.php';
+    require __DIR__ . '/api/comandos.php';
 });

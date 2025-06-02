@@ -35,10 +35,24 @@ class UsuarioRolRepository extends ActivoBoolRepository implements IUsuarioRolRe
         }
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function actualizarRolUsuario(int $usuarioId, mixed $rol_id): bool
     {
+        if ($this->modelo->where('usuario_id', $usuarioId)->doesntExist()) {
+            $this->crear([
+                'usuario_id' => $usuarioId,
+                'rol_id' => $rol_id,
+                'activo' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+            return true; // No existe el usuario con ese ID
+        }
         return $this->modelo
             ->where('usuario_id', $usuarioId)
             ->update(['rol_id' => $rol_id]);
+
     }
 }

@@ -45,6 +45,7 @@ class TenantSuscripcion extends Model
     protected $table = 'tenants_suscripciones';
 
     protected $fillable = [
+        'tenant_id',
         'plan_suscripcion_id',
         'metodo_pago_id',
         'fecha_inicio',
@@ -56,6 +57,7 @@ class TenantSuscripcion extends Model
     ];
 
     protected $casts = [
+        'tenant_id' => 'integer',
         'plan_suscripcion_id' => 'integer',
         'metodo_pago_id' => 'integer',
         'fecha_inicio' => 'date',

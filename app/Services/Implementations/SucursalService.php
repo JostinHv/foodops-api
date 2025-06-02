@@ -60,4 +60,9 @@ readonly class SucursalService implements ISucursalService
     {
         return $this->repository->obtenerUltimoActivo();
     }
+
+    public function obtenerPorUsuarioId(int $usuarioId): Collection
+    {
+        return $this->repository->obtenerPorUsuarioId($usuarioId);
+    }
 }

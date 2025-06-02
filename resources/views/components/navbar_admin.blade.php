@@ -1,12 +1,12 @@
 <div class="d-flex flex-column flex-shrink-0 p-3">
     <ul class="nav nav-pills flex-column mb-auto">
-        <li class="nav-item">
-            <a href="{{ route('tenant.dashboard') }}"
-               class="nav-link {{ request()->routeIs('tenant.dashboard') ? 'active' : '' }}">
-                <i class="bi bi-speedometer2 me-2"></i>
-                Dashboard
-            </a>
-        </li>
+{{--        <li class="nav-item">--}}
+{{--            <a href="{{ route('tenant.dashboard') }}"--}}
+{{--               class="nav-link {{ request()->routeIs('tenant.dashboard') ? 'active' : '' }}">--}}
+{{--                <i class="bi bi-speedometer2 me-2"></i>--}}
+{{--                Dashboard--}}
+{{--            </a>--}}
+{{--        </li>--}}
         <li class="nav-item">
             <a href="{{ route('tenant.grupo-restaurant') }}"
                class="nav-link {{ request()->routeIs('tenant.grupo-restaurant*') ? 'active' : '' }}">
@@ -32,7 +32,7 @@
             <a href="{{ route('tenant.usuarios') }}"
                class="nav-link {{ request()->routeIs('tenant.usuarios*') ? 'active' : '' }}">
                 <i class="bi bi-people me-2"></i>
-                Usuarios
+                Trabajadores
             </a>
         </li>
     </ul>

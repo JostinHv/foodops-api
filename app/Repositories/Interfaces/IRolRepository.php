@@ -24,4 +24,6 @@ interface IRolRepository
     public function obtenerActivos(): Collection;
 
     public function obtenerUltimoActivo(): Collection;
+
+    public function obtenerRolesActivosPorId(array $ids);
 }

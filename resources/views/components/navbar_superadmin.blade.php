@@ -1,11 +1,11 @@
 <div class="d-flex flex-column flex-shrink-0 p-3">
     <ul class="nav nav-pills flex-column mb-auto">
-        <li class="nav-item">
-            <a href="{{ route('superadmin.dashboard') }}" class="nav-link {{ request()->routeIs('superadmin.dashboard') ? 'active' : '' }}">
-                <i class="bi bi-speedometer2 me-2"></i>
-                Dashboard
-            </a>
-        </li>
+{{--        <li class="nav-item">--}}
+{{--            <a href="{{ route('superadmin.dashboard') }}" class="nav-link {{ request()->routeIs('superadmin.dashboard') ? 'active' : '' }}">--}}
+{{--                <i class="bi bi-speedometer2 me-2"></i>--}}
+{{--                Dashboard--}}
+{{--            </a>--}}
+{{--        </li>--}}
         <li class="nav-item">
             <a href="{{ route('superadmin.tenant') }}" class="nav-link {{ request()->routeIs('superadmin.tenant*') ? 'active' : '' }}">
                 <i class="bi bi-building me-2"></i>

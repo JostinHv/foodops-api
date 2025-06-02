@@ -5,6 +5,7 @@ namespace App\Repositories\Implementations;
 use App\Models\Rol;
 use App\Repositories\Interfaces\IRolRepository;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class RolRepository extends ActivoBoolRepository implements IRolRepository
 {
@@ -44,5 +45,13 @@ class RolRepository extends ActivoBoolRepository implements IRolRepository
         } else {
             $consulta->orderBy('nombre', 'asc');
         }
+    }
+
+    public function obtenerRolesActivosPorId(array $ids): Collection
+    {
+        return $this->modelo
+            ->whereIn('id', $ids)
+            ->where('activo', true)
+            ->get();
     }
 }

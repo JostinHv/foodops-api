@@ -24,4 +24,6 @@ interface ISucursalService extends IActivoBoolService
     public function obtenerActivos(): Collection;
 
     public function obtenerUltimoActivo(): Collection;
+
+    public function obtenerPorUsuarioId(int $usuarioId): Collection;
 }

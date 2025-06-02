@@ -40,7 +40,7 @@ class UsuarioController extends Controller
 
         // Obtener datos para la vista
         $usuarios = $this->usuarioService->obtenerPorTenantId($usuario->tenant_id);
-        $roles = $this->rolService->obtenerActivos();
+        $roles = $this->rolService->obtenerRolesActivosPorId([3, 4, 5, 6]);
         $sucursales = $this->sucursalService->obtenerTodos();
 
         // Cargar relaciones

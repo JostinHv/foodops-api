@@ -5,6 +5,7 @@ namespace App\Repositories\Implementations;
 use App\Models\Sucursal;
 use App\Repositories\Interfaces\ISucursalRepository;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class SucursalRepository extends ActivoBoolRepository implements ISucursalRepository
 {
@@ -32,5 +33,15 @@ class SucursalRepository extends ActivoBoolRepository implements ISucursalReposi
         if ($sortField && $sortOrder) {
             $consulta->orderBy($sortField, $sortOrder);
         }
+    }
+
+    public function obtenerUltimoActivo(): Collection
+    {
+        return $this->modelo->where('activo', true)->latest()->get();
+    }
+
+    public function obtenerPorUsuarioId(int $usuarioId): Collection
+    {
+        return $this->modelo->where('usuario_id', $usuarioId)->get();
     }
 }

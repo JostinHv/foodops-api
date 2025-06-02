@@ -5,6 +5,7 @@ namespace App\Repositories\Implementations;
 use App\Models\Imagen;
 use App\Repositories\Interfaces\IImagenRepository;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\UploadedFile;
 
 class ImagenRepository extends ActivoBoolRepository implements IImagenRepository
 {
@@ -41,5 +42,15 @@ class ImagenRepository extends ActivoBoolRepository implements IImagenRepository
         } else {
             $consulta->orderBy('id', 'desc');
         }
+    }
+
+    public function guardarImagen(UploadedFile $file, string $string)
+    {
+        $ruta = $file->storeAs('imagenes', $string, 'public');
+        $datos = [
+            'url' => $ruta,
+            'activo' => true,
+        ];
+        return $this->crear($datos);
     }
 }

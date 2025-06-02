@@ -2,6 +2,9 @@
 
 namespace App\Services\Interfaces;
 
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
+
 interface IAsignacionPersonalService
 {
     public function crear(array $datos);
@@ -14,9 +17,11 @@ interface IAsignacionPersonalService
 
     public function obtenerPorSucursalId(int $sucursalId);
 
-    public function obtenerPorTenantId(int $tenantId);
+    public function obtenerPorTenantId(int $tenantId): Collection;
 
     public function eliminar(int $id);
 
     public function cambiarEstado(int $id, int $activo);
+
+    public function asignarUsuarioSucursal(Model $usuario, int $sucursalId): bool;
 }

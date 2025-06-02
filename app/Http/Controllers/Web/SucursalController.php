@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Sucursal;
+use App\Services\Interfaces\IAsignacionPersonalService;
+use App\Services\Interfaces\IRestauranteService;
 use App\Services\Interfaces\ISucursalService;
 use App\Services\Interfaces\IUsuarioService;
-use App\Services\Interfaces\IRestauranteService;
 use App\Traits\AuthenticatedUserTrait;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -19,9 +20,10 @@ class SucursalController extends Controller
     use AuthenticatedUserTrait;
 
     public function __construct(
-        private readonly IUsuarioService     $usuarioService,
-        private readonly ISucursalService    $sucursalService,
-        private readonly IRestauranteService $restauranteService,
+        private readonly IUsuarioService            $usuarioService,
+        private readonly ISucursalService           $sucursalService,
+        private readonly IRestauranteService        $restauranteService,
+        private readonly IAsignacionPersonalService $asignacionPersonalService,
     )
     {
     }
@@ -33,6 +35,9 @@ class SucursalController extends Controller
         $sucursales = $this->sucursalService->obtenerTodos();
         $restaurantes = $this->restauranteService->obtenerRestaurantesPorTenant($usuario->tenant_id);
         $gerentes = $this->usuarioService->obtenerPorTenantId($usuario->tenant_id);
+        $gerentes = $gerentes->filter(function ($gerente) {
+            return $gerente->roles->contains('nombre', 'gerente');
+        });
 
         // Cargar relaciones
         if ($sucursales) {
@@ -63,7 +68,17 @@ class SucursalController extends Controller
             $data = $request->all();
             $data['activo'] = true;
 
-            $this->sucursalService->crear($data);
+            $this->usuarioService->actualizar(
+                $data['usuario_id'],
+                ['restaurante_id' => $data['restaurante_id']]
+            );
+
+            $usuario = $this->usuarioService->obtenerPorId($data['usuario_id']);
+
+            $sucursal = $this->sucursalService->crear($data);
+
+            $this->asignacionPersonalService->asignarUsuarioSucursal($usuario, $sucursal->id);
+
             return redirect()->route('tenant.sucursales')
                 ->with('success', 'Sucursal creada exitosamente');
         } catch (\Exception $exception) {
@@ -93,7 +108,17 @@ class SucursalController extends Controller
             ]);
 
             $data = $request->all();
+
+            $this->usuarioService->actualizar(
+                $data['usuario_id'],
+                ['restaurante_id' => $data['restaurante_id']]
+            );
+
             $this->sucursalService->actualizar($sucursal->id, $data);
+
+            $usuario = $this->usuarioService->obtenerPorId($data['usuario_id']);
+
+            $this->asignacionPersonalService->asignarUsuarioSucursal($usuario, $sucursal->id);
 
             return redirect()->route('tenant.sucursales')
                 ->with('success', 'Sucursal actualizada exitosamente');

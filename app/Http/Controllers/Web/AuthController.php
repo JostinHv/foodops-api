@@ -133,17 +133,17 @@ class AuthController extends Controller
 
         // Verificar si el usuario tiene el rol superadmin
         if ($user->roles->contains('nombre', 'superadmin')) {
-            return redirect()->route('superadmin.dashboard');
+            return redirect()->route('superadmin.tenant');
         }
 
         // Verificar si el usuario tiene el rol admin
         if ($user->roles->contains('nombre', 'administrador')) {
-            return redirect()->route('tenant.dashboard');
+            return redirect()->route('tenant.grupo-restaurant');
         }
 
         // Verificar si el usuario tiene el rol gerente
         if ($user->roles->contains('nombre', 'gerente')) {
-            return redirect()->route('gerente.dashboard');
+            return redirect()->route('gerente.menu');
         }
 
         // Verificar si el usuario tiene el rol mesero

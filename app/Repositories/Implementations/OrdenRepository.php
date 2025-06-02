@@ -51,4 +51,43 @@ class OrdenRepository extends BaseRepository implements IOrdenRepository
             ->get();
     }
 
+    public function obtenerOrdenesPendientesPorSucursales(array $sucursalIds): Collection
+    {
+        return $this->modelo->with(['mesa', 'mesero', 'itemsOrdenes.itemMenu'])
+            ->whereIn('sucursal_id', $sucursalIds)
+            ->whereIn('estado_orden_id', [1, 2, 3, 4, 5, 7]) // 3 = Pendiente
+            ->get();
+    }
+
+    public function obtenerItemsOrden(int $ordenId): Collection
+    {
+        return $this->modelo->find($ordenId)
+            ->itemsOrdenes()
+            ->with('itemMenu')
+            ->get();
+    }
+
+    public function obtenerPorSucursal(int $sucursalId): Collection
+    {
+        return $this->modelo->where('sucursal_id', $sucursalId)
+            ->with(['estadoOrden', 'sucursal', 'itemsOrdenes'])
+            ->orderBy('nro_orden', 'asc')
+            ->get();
+    }
+
+    public function obtenerPorMesero(int $meseroId): Collection
+    {
+        return $this->modelo->where('mesero_id', $meseroId)
+            ->with(['estadoOrden', 'sucursal', 'itemsOrdenes'])
+            ->orderBy('nro_orden', 'asc')
+            ->get();
+    }
+
+    public function obtenerPorEstado(int $estadoId): Collection
+    {
+        return $this->modelo->where('estado_orden_id', $estadoId)
+            ->with(['sucursal', 'mesero', 'itemsOrdenes'])
+            ->orderBy('nro_orden', 'asc')
+            ->get();
+    }
 }

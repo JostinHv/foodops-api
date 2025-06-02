@@ -65,4 +65,9 @@ readonly class RestauranteService implements IRestauranteService
     {
         return $this->repository->obtenerRestaurantesPorTenant($tenantId);
     }
+
+    public function obtenerPorTenantId(int $tenantId): Collection
+    {
+        return $this->repository->obtenerPorTenantId($tenantId);
+    }
 }

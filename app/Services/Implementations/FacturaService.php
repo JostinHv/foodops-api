@@ -41,4 +41,38 @@ readonly class FacturaService implements IFacturaService
         return $this->repository->eliminar($id);
     }
 
+    public function obtenerPorSucursales(array $sucursalIds): Collection
+    {
+        return $this->repository->obtenerPorSucursales($sucursalIds);
+    }
+
+    public function obtenerPorOrden(int $ordenId): ?Model
+    {
+        return $this->repository->obtenerPorOrden($ordenId);
+    }
+
+    public function generarNumeroFactura(): string
+    {
+        $ultimaFactura = $this->repository->obtenerUltimaFactura();
+        $numero = $ultimaFactura ? (int)substr($ultimaFactura->nro_factura, 4) + 1 : 1;
+        return 'FAC-' . str_pad($numero, 6, '0', STR_PAD_LEFT);
+    }
+
+    public function calcularTotales(array $items, float $porcentajeIgv): array
+    {
+        $subtotal = 0;
+        foreach ($items as $item) {
+            $subtotal += $item['cantidad'] * $item['precio'];
+        }
+
+        $montoIgv = $subtotal * ($porcentajeIgv / 100);
+        $total = $subtotal + $montoIgv;
+
+        return [
+            'subtotal' => $subtotal,
+            'monto_igv' => $montoIgv,
+            'total' => $total
+        ];
+    }
+
 }

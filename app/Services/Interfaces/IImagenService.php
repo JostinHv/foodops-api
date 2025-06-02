@@ -4,6 +4,7 @@ namespace App\Services\Interfaces;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\UploadedFile;
 
 interface IImagenService extends IActivoBoolService
 {
@@ -24,4 +25,6 @@ interface IImagenService extends IActivoBoolService
     public function obtenerActivos(): Collection;
 
     public function obtenerUltimoActivo(): Collection;
+
+    public function guardarImagen(array|UploadedFile|null $file, string $string);
 }

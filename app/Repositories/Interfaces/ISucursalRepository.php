@@ -5,7 +5,7 @@ namespace App\Repositories\Interfaces;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
-interface ISucursalRepository
+interface ISucursalRepository extends IActivoBoolRepository
 {
     public function obtenerTodos(): Collection;
 
@@ -24,6 +24,8 @@ interface ISucursalRepository
     public function obtenerActivos(): Collection;
 
     public function obtenerUltimoActivo(): Collection;
+
+    public function obtenerPorUsuarioId(int $usuarioId): Collection;
 
     public function obtenerPorIdConRelaciones(int $id, array $relaciones = []): ?Model;
 

@@ -4,25 +4,34 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Services\Interfaces\IImagenService;
+use App\Services\Interfaces\IMetodoPagoService;
 use App\Services\Interfaces\IPlanSuscripcionService;
+use App\Services\Interfaces\IRestauranteService;
 use App\Services\Interfaces\IRolService;
 use App\Services\Interfaces\ITenantService;
+use App\Services\Interfaces\ITenantSuscripcionService;
 use App\Services\Interfaces\IUsuarioRolService;
 use App\Services\Interfaces\IUsuarioService;
+use Carbon\Carbon;
+use DB;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
+use App\Models\Tenant;
 
 class TenantController extends Controller
 {
     public function __construct(
-        private readonly ITenantService          $tenantService,
-        private readonly IImagenService          $imagenService,
-        private readonly IPlanSuscripcionService $planSuscripcionService,
-        private readonly IUsuarioService         $usuarioService,
-        private readonly IRolService             $rolService,
-        private readonly IUsuarioRolService      $usuarioRolService
+        private readonly ITenantService            $tenantService,
+        private readonly IImagenService            $imagenService,
+        private readonly IPlanSuscripcionService   $planSuscripcionService,
+        private readonly IUsuarioService           $usuarioService,
+        private readonly IRolService               $rolService,
+        private readonly IUsuarioRolService        $usuarioRolService,
+        private readonly IRestauranteService       $restauranteService,
+        private readonly IMetodoPagoService        $metodoPagoService,
+        private readonly ITenantSuscripcionService $tenantSuscripcionService
     )
     {
     }
@@ -31,35 +40,105 @@ class TenantController extends Controller
     {
         $tenants = $this->tenantService->obtenerTodos();
         $planes = $this->planSuscripcionService->obtenerActivos();
-        return view('super-admin.tenants.index', compact('tenants', 'planes'));
+        $metodosPago = $this->metodoPagoService->obtenerActivos();
+
+        // Obtener contadores para cada tenant
+        $tenants->each(function ($tenant) {
+            // Contar usuarios activos del tenant
+            $usuarios = $this->usuarioService->obtenerPorTenantId($tenant->id);
+            $tenant->usuarios_count = $usuarios->where('activo', true)->count();
+
+            // Contar restaurantes del tenant
+            $restaurantes = $this->restauranteService->obtenerPorTenantId($tenant->id);
+            $tenant->restaurantes_count = $restaurantes->count();
+        });
+
+        return view('super-admin.tenants.index', compact('tenants', 'planes', 'metodosPago'));
     }
 
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'dominio' => 'required|string|unique:tenants,dominio|max:255',
-            'datos_contacto.nombre_empresa' => 'required|string|max:255',
-            'datos_contacto.email' => 'required|email|max:255',
-            'datos_contacto.telefono' => 'nullable|string|max:20',
-            'datos_contacto.direccion' => 'nullable|string|max:255',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'activo' => 'boolean'
-        ]);
+        try {
+            $request->validate([
+                'dominio' => 'required|string|unique:tenants,dominio|max:255',
+                'datos_contacto.nombre_empresa' => 'required|string|max:255',
+                'datos_contacto.email' => 'required|email|max:255',
+                'datos_contacto.telefono' => 'nullable|string|max:20',
+                'datos_contacto.direccion' => 'nullable|string|max:255',
+                'logo' => 'nullable|image|max:2048',
+                'activo' => 'boolean',
+                'plan_suscripcion_id' => 'required|exists:planes_suscripciones,id',
+                'metodo_pago_id' => 'required|exists:metodos_pagos,id',
+                'fecha_inicio' => 'required|date',
+                'renovacion_automatica' => 'boolean'
+            ]);
 
-        $datos = $request->except('logo');
+            // Separar los datos del tenant y la suscripción
+            $datosTenant = $request->except([
+                'plan_suscripcion_id',
+                'metodo_pago_id',
+                'fecha_inicio',
+                'renovacion_automatica'
+            ]);
 
-//        // Procesar y guardar el logo si se proporcionó
-//        if ($request->hasFile('logo')) {
-//            $imagen = $this->imagenService->guardarImagen($request->file('logo'), 'tenants/logos');
-//            if ($imagen) {
-//                $datos['logo_id'] = $imagen->id;
-//            }
-//        }
+            DB::beginTransaction();
+            // Procesar y guardar el logo si se proporcionó
+            if ($request->hasFile('logo')) {
+                $logo = $request->file('logo');
+                $logoPath = $logo->store('tenants/logos', 'public');
+                $imagen = $this->imagenService->crear([
+                    'url' => $logoPath,
+                    'activo' => true,
+                ]);
+                if ($imagen) {
+                    $datosTenant['logo_id'] = $imagen->id;
+                }
+            }
 
-        $this->tenantService->crear($datos);
+            // Crear el tenant
+            $tenant = $this->tenantService->crear($datosTenant);
 
-        return redirect()->route('superadmin.tenant')
-            ->with('success', 'Tenant creado exitosamente');
+            if ($tenant) {
+                // Obtener el plan seleccionado
+                $plan = $this->planSuscripcionService->obtenerPorId($request->plan_suscripcion_id);
+
+                // Calcular la fecha de fin basada en el intervalo del plan
+                $fechaFin = null;
+                if ($plan) {
+                    $fechaInicio = Carbon::parse($request->fecha_inicio);
+                    switch ($plan->intervalo) {
+                        case 'mes':
+                            $fechaFin = $fechaInicio->copy()->addMonth();
+                            break;
+                        case 'anual':
+                            $fechaFin = $fechaInicio->copy()->addYear();
+                            break;
+                    }
+                }
+                \Log::info('tenant_id: ' . $tenant->id);
+                // Crear la suscripción
+                $this->tenantSuscripcionService->crear([
+                    'tenant_id' => $tenant->id,
+                    'plan_suscripcion_id' => $request->plan_suscripcion_id,
+                    'metodo_pago_id' => $request->metodo_pago_id,
+                    'fecha_inicio' => $request->fecha_inicio,
+                    'fecha_fin' => $fechaFin,
+                    'estado' => 'activo',
+                    'precio_acordado' => $plan ? $plan->precio : null,
+                    'renovacion_automatica' => $request->boolean('renovacion_automatica'),
+                    'notas' => 'Suscripción inicial'
+                ]);
+            }
+            DB::commit();
+            return redirect()->route('superadmin.tenant')
+                ->with('success', 'Tenant creado exitosamente');
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            \Log::error($exception->getTraceAsString());
+            \Log::error($exception->getMessage());
+            return redirect()->route('superadmin.tenant')
+                ->with('error', 'Error al crear el tenant: ' . $exception->getMessage());
+        }
     }
 
     public function show(int $id): View
@@ -70,9 +149,10 @@ class TenantController extends Controller
         }
 
         $usuarios = $this->usuarioService->obtenerPorTenantId($id);
-        $roles = $this->rolService->obtenerActivos();
+        $roles = $this->rolService->obtenerRolesActivosPorId([2, 3, 4, 5, 6]); // Asumiendo que los IDs de roles son 1, 2 y 3
+        $planes = $this->planSuscripcionService->obtenerActivos();
 
-        return view('super-admin.tenants.show', compact('tenant', 'usuarios', 'roles'));
+        return view('super-admin.tenants.show', compact('tenant', 'usuarios', 'roles', 'planes'));
     }
 
     public function update(Request $request, int $id): RedirectResponse
@@ -83,7 +163,7 @@ class TenantController extends Controller
             'datos_contacto.email' => 'required|email|max:255',
             'datos_contacto.telefono' => 'nullable|string|max:20',
             'datos_contacto.direccion' => 'nullable|string|max:255',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'logo' => 'nullable|image|max:2048',
             'activo' => 'boolean'
         ]);
 
@@ -200,5 +280,27 @@ class TenantController extends Controller
 
         return redirect()->route('superadmin.tenant.show', $tenantId)
             ->with('success', 'Rol de usuario actualizado exitosamente');
+    }
+
+    public function checkDomain(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $request->validate([
+            'dominio' => 'required|string|max:255',
+            'id' => 'nullable|integer|exists:tenants,id'
+        ]);
+
+        $query = Tenant::where('dominio', $request->dominio);
+        
+        // Si se está editando un tenant existente, excluirlo de la validación
+        if ($request->has('id')) {
+            $query->where('id', '!=', $request->id);
+        }
+
+        $exists = $query->exists();
+
+        return response()->json([
+            'valid' => !$exists,
+            'message' => $exists ? 'Este dominio ya está en uso' : 'Dominio disponible'
+        ]);
     }
 }

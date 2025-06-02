@@ -38,8 +38,6 @@ class ItemMenuRepository extends BaseRepository implements IItemMenuRepository
     public function obtenerTodosItemsDisponibles(): Collection
     {
         return $this->modelo
-            ->where('disponible', true)
-            ->where('activo', true)
             ->orderBy('orden_visualizacion', 'desc')
             ->get();
     }

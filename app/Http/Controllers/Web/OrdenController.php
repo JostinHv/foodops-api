@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CrearOrdenRequest;
+use App\Services\Interfaces\IAsignacionPersonalService;
 use App\Services\Interfaces\IEstadoOrdenService;
 use App\Services\Interfaces\IItemMenuService;
 use App\Services\Interfaces\IItemOrdenService;
 use App\Services\Interfaces\IMesaService;
 use App\Services\Interfaces\IOrdenService;
+use App\Services\Interfaces\IUsuarioService;
 use App\Traits\AuthenticatedUserTrait;
 use Exception;
 use Illuminate\Contracts\View\View;
@@ -25,13 +27,17 @@ class OrdenController extends Controller
     private IMesaService $mesaService;
     private IItemOrdenService $itemOrdenService;
     private IEstadoOrdenService $estadoOrdenService;
+    private IUsuarioService $usuarioService;
+    private IAsignacionPersonalService $asignacionPersonalService;
 
     public function __construct(
-        IOrdenService       $ordenService,
-        IItemMenuService    $itemMenuService,
-        IMesaService        $mesaService,
-        IItemOrdenService   $itemOrdenService,
-        IEstadoOrdenService $estadoOrdenService,
+        IOrdenService              $ordenService,
+        IItemMenuService           $itemMenuService,
+        IMesaService               $mesaService,
+        IItemOrdenService          $itemOrdenService,
+        IEstadoOrdenService        $estadoOrdenService,
+        IUsuarioService            $usuarioService,
+        IAsignacionPersonalService $asignacionPersonalService,
     )
     {
         $this->ordenService = $ordenService;
@@ -39,6 +45,8 @@ class OrdenController extends Controller
         $this->mesaService = $mesaService;
         $this->itemOrdenService = $itemOrdenService;
         $this->estadoOrdenService = $estadoOrdenService;
+        $this->usuarioService = $usuarioService;
+        $this->asignacionPersonalService = $asignacionPersonalService;
     }
 
     /**
@@ -46,7 +54,13 @@ class OrdenController extends Controller
      */
     public function index(): View
     {
-        $ordenes = $this->ordenService->obtenerTodos()
+        $usuario = $this->usuarioService->obtenerPorId($this->getCurrentUser()->getAuthIdentifier());
+        $asignacionPersonal = $this->asignacionPersonalService->obtenerPorUsuarioId($usuario->id);
+        if (!$asignacionPersonal) {
+            return view('login');
+        }
+        $sucursal = $asignacionPersonal->sucursal;
+        $ordenes = $this->ordenService->obtenerTodos()->where('tenant_id', $usuario->tenant_id)->where('sucursal_id', $sucursal->id)
             ->load(['mesa', 'estadoOrden', 'itemsOrdenes.itemMenu', 'mesero'])
             ->sortByDesc('created_at')
             ->map(function ($orden) {
@@ -70,8 +84,10 @@ class OrdenController extends Controller
     {
         try {
             $criterio = $request->input('criterio', 'reciente');
-
-            $ordenes = $this->ordenService->obtenerTodos()
+            $usuario = $this->usuarioService->obtenerPorId($this->getCurrentUser()->getAuthIdentifier());
+            $asignacionPersonal = $this->asignacionPersonalService->obtenerPorUsuarioId($usuario->id);
+            $sucursal = $asignacionPersonal->sucursal;
+            $ordenes = $this->ordenService->obtenerTodos()->where('tenant_id', $usuario->tenant_id)->where('sucursal_id', $sucursal->id)
                 ->load(['mesa', 'estadoOrden', 'itemsOrdenes.itemMenu', 'mesero']);
 
             // Aplicar ordenamiento según el criterio
@@ -187,7 +203,7 @@ class OrdenController extends Controller
                     ->route('login')
                     ->with('error', 'Debe iniciar sesión para realizar esta acción');
             }
-
+            $this->mesaService->actualizar($request->mesa_id, ['estado_mesa_id' => 2]);
             $this->ordenService->crearOrden(
                 $request->validated(),
                 $this->getCurrentUser()->getAuthIdentifier()
@@ -248,6 +264,17 @@ class OrdenController extends Controller
             $request->validate([
                 'estado_orden_id' => 'required|exists:estados_ordenes,id'
             ]);
+
+            $estadosQueLibenMesa = [
+                3, // Entregada
+                6, // Cancelada
+                8  // Estado adicional que libera mesa
+            ];
+
+            if (in_array($request->estado_orden_id, $estadosQueLibenMesa)) {
+                // Liberar la mesa (estado_mesa_id = 1 significa "Libre")
+                $this->mesaService->actualizar($orden->mesa_id, ['estado_mesa_id' => 1]);
+            }
 
             $this->ordenService->cambiarEstadoOrden($id, $request->estado_orden_id);
 

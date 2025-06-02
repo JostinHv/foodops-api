@@ -208,4 +208,14 @@ readonly class OrdenService implements IOrdenService
             throw $e;
         }
     }
+
+    public function obtenerOrdenesPendientesPorSucursales(array $sucursalIds): Collection
+    {
+        return $this->repository->obtenerOrdenesPendientesPorSucursales($sucursalIds);
+    }
+
+    public function obtenerItemsOrden(int $ordenId): Collection
+    {
+        return $this->repository->obtenerItemsOrden($ordenId);
+    }
 }

@@ -1,10 +1,10 @@
 document.addEventListener('DOMContentLoaded', function () {
     try {
         console.log('Inicializando nuevaorden.js...');
-        
+
         // Elementos del DOM
         const ordenForm = document.getElementById('ordenForm');
-        const tabla = document.getElementById('detalle-tabla').getElementsByTagName('tbody')[0];
+    const tabla = document.getElementById('detalle-tabla').getElementsByTagName('tbody')[0];
         const totalProductosBadge = document.getElementById('total-productos');
         const totalOrdenElement = document.getElementById('total-orden');
         const buscarProductoInput = document.getElementById('buscarProducto');
@@ -24,10 +24,10 @@ document.addEventListener('DOMContentLoaded', function () {
         function actualizarTotales() {
             const productos = ordenService.orden.getProductos();
             const total = productos.reduce((sum, producto) => sum + parseFloat(producto.precioTotal), 0);
-            
+
             totalProductosBadge.textContent = `${productos.length} productos`;
             totalOrdenElement.textContent = `S/. ${total.toFixed(2)}`;
-            
+
             console.log('Totales actualizados:', {
                 cantidadProductos: productos.length,
                 total: total
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (cantidad > 0) {
                     const producto = new Producto(productoId, nombreProducto, precio, cantidad);
                     ordenService.agregarProducto(producto);
-                } else {
+        } else {
                     ordenService.eliminarProducto(productoId);
                 }
 
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         const input = card.querySelector('.cantidad-input');
                         input.value = 0;
                     }
-                    
+
                     // Eliminar el producto
                     ordenService.eliminarProducto(productoId);
                     actualizarTotales();
@@ -135,30 +135,30 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Remover selección previa
                 document.querySelectorAll('.mesa-card').forEach(c => {
                     c.classList.remove('selected');
-                });
-                
+            });
+
                 // Agregar selección a la mesa actual
                 this.classList.add('selected');
-                
+
                 // Actualizar el input oculto con el ID de la mesa
                 const mesaId = this.dataset.id;
                 mesaInput.value = mesaId;
-                
+
                 console.log('Mesa seleccionada:', mesaId);
-            });
+    });
         });
 
         // Evento para enviar formulario
         ordenForm.addEventListener('submit', function (e) {
             try {
                 console.log('Iniciando envío del formulario...');
-                e.preventDefault();
+        e.preventDefault();
 
                 // Validar que se haya seleccionado una mesa
                 if (!mesaInput.value) {
                     alert('Por favor, seleccione una mesa');
-                    return;
-                }
+            return;
+        }
 
                 // Preparar el formulario con los productos
                 if (ordenService.prepararFormulario(this)) {
@@ -170,15 +170,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     console.log('Datos a enviar:', datosFormulario);
                     console.log('Formulario preparado correctamente, enviando...');
-                    
+
                     // Verificar que los productos se hayan agregado correctamente al formulario
                     const productosInputs = this.querySelectorAll('input[name^="productos"]');
                     console.log('Campos de productos en el formulario:', productosInputs.length);
                     productosInputs.forEach(input => {
                         console.log('Campo:', input.name, 'Valor:', input.value);
-                    });
+        });
 
-                    this.submit();
+        this.submit();
                 }
             } catch (error) {
                 console.error('Error al enviar el formulario:', error);

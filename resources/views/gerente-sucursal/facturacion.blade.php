@@ -11,8 +11,8 @@
         <!-- Encabezado -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h1 class="h3 mb-0">Facturación</h1>
-                <p class="mb-0 text-muted">Gestiona facturas, pagos y reportes financieros</p>
+                <h1 class="h3 mb-0">Gestión de Facturación</h1>
+                <p class="mb-0 text-muted">Administra las facturas de tu sucursal</p>
             </div>
             <a href="#" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#nuevaFacturaModal">
                 <i class="bi bi-plus-circle me-2"></i>Nueva Factura
@@ -21,299 +21,314 @@
 
         <!-- Tarjetas de resumen -->
         <div class="row mb-4">
-            <div class="col-md-4 mb-3">
+            <div class="col-md-6 col-lg-3 mb-3">
                 <div class="card text-center h-100">
                     <div class="card-body">
-                        <div class="fw-bold">Ventas del Día</div>
-                        <h3 class="mb-1">S/ 3,240.80</h3>
-                        <small class="text-success">+18% desde ayer</small>
+                        <div class="fw-bold">Total Facturas</div>
+                        <h3 class="mb-1">{{ $facturas ? $facturas->count() : 0 }}</h3>
+                        <small class="text-muted">Total de facturas emitidas</small>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mb-3">
+            <div class="col-md-6 col-lg-3 mb-3">
                 <div class="card text-center h-100">
                     <div class="card-body">
-                        <div class="fw-bold">Facturas Emitidas</div>
-                        <h3 class="mb-1">12</h3>
-                        <small class="text-success">+5 en la última hora</small>
+                        <div class="fw-bold">Órdenes Pendientes</div>
+                        <h3 class="mb-1">{{ $ordenesPendientes ? $ordenesPendientes->count() : 0 }}</h3>
+                        <small class="text-muted">Por facturar</small>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mb-3"">
+            <div class="col-md-6 col-lg-3 mb-3">
                 <div class="card text-center h-100">
                     <div class="card-body">
-                        <div class="fw-bold">Pagos Pendientes</div>
-                        <h3 class="mb-1">3</h3>
-                        <small class="text-muted">S/ 157.08 total</small>
+                        <div class="fw-bold">Total Pagado</div>
+                        <h3 class="mb-1">
+                            S/ {{ number_format($facturas ? $facturas->where('estado_pago', 'pagado')->sum('monto_total') : 0, 2) }}</h3>
+                        <small class="text-muted">Monto total pagado</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 mb-3">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <div class="fw-bold">Total Pendiente</div>
+                        <h3 class="mb-1">
+                            S/ {{ number_format($facturas ? $facturas->where('estado_pago', 'pendiente')->sum('monto_total') : 0, 2) }}</h3>
+                        <small class="text-muted">Monto por cobrar</small>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- Lista de facturas -->
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Facturas del Día</h5>
-                <span class="badge bg-primary">4 facturas</span>
+                <h5 class="mb-0">Facturas Emitidas</h5>
+                <div>
+                    <span class="badge bg-primary me-2">{{ $facturas ? $facturas->count() : 0 }} facturas</span>
+                </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-hover">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Factura</th>
-                                <th>Cliente</th>
-                                <th>Mesa</th>
-                                <th>Subtotal</th>
-                                <th>IGV</th>
-                                <th>Total</th>
-                                <th>Estado</th>
-                                <th>Pago</th>
-                                <th>Acciones</th>
-                            </tr>
+                        <thead>
+                        <tr>
+                            <th>N° Factura</th>
+                            <th>Cliente</th>
+                            <th>Mesa</th>
+                            <th>Subtotal</th>
+                            <th>IGV</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            <!-- Factura 1 -->
+                        @forelse($facturas ?? [] as $factura)
                             <tr>
-                                <td><strong>FAC-001</strong></td>
-                                <td>Juan Pérez</td>
-                                <td>Mesa 5</td>
-                                <td>S/ 72.50</td>
-                                <td>S/ 13.05</td>
-                                <td class="fw-bold">S/ 85.55</td>
-                                <td><span class="badge bg-success">Pagada</span></td>
-                                <td><span class="badge bg-info text-dark">Tarjeta</span></td>
+                                <td>
+                                    <strong>{{ $factura->nro_factura }}</strong>
+                                    <div class="text-muted small">
+                                        {{ $factura->created_at->format('d/m/Y H:i') }}
+                                    </div>
+                                </td>
+                                <td>{{ $factura->orden->nombre_cliente }}</td>
+                                <td>{{ $factura->orden->mesa->nombre }}</td>
+                                <td>S/ {{ number_format($factura->monto_total, 2) }}</td>
+                                <td>S/ {{ number_format($factura->monto_total_igv, 2) }}</td>
+                                <td>
+                                    <strong>S/ {{ number_format($factura->monto_total + $factura->monto_total_igv, 2) }}</strong>
+                                </td>
+                                <td>
+                                        <span
+                                            class="badge bg-{{ $factura->estado_pago === 'pagado' ? 'success' : ($factura->estado_pago === 'pendiente' ? 'warning' : 'danger') }}">
+                                            {{ ucfirst($factura->estado_pago) }}
+                                        </span>
+                                </td>
                                 <td>
                                     <div class="d-flex gap-2">
-                                        <button class="btn btn-sm btn-outline-primary" title="Ver factura">
-                                            <i class="bi bi-receipt"></i>
+                                        <button class="btn btn-sm btn-outline-primary"
+                                                title="Ver detalles"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#verFacturaModal"
+                                                data-action="ver-factura"
+                                                data-factura="{{ $factura->id }}">
+                                            <i class="bi bi-eye"></i>
                                         </button>
-                                        <button class="btn btn-sm btn-outline-secondary" title="Reimprimir">
-                                            <i class="bi bi-printer"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-danger" title="Anular"  data-bs-toggle="modal" data-bs-target="#eliminarItemModal">
-                                            <i class="bi bi-x-circle"></i>
-                                        </button>
+                                        @if($factura->estado_pago === 'pendiente')
+                                            <button class="btn btn-sm btn-outline-success"
+                                                    title="Marcar como pagado"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#editarFacturaModal"
+                                                    data-factura="{{ $factura->id }}">
+                                                <i class="bi bi-check-circle"></i>
+                                            </button>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
-
-                            <!-- Factura 2 -->
+                        @empty
                             <tr>
-                                <td><strong>FAC-002</strong></td>
-                                <td>María García</td>
-                                <td>Mesa 2</td>
-                                <td>S/ 38.30</td>
-                                <td>S/ 6.89</td>
-                                <td class="fw-bold">S/ 45.19</td>
-                                <td><span class="badge bg-warning text-dark">Pendiente</span></td>
-                                <td><span class="badge bg-success">Efectivo</span></td>
-                                <td>
-                                    <div class="d-flex gap-2">
-                                        <button class="btn btn-sm btn-outline-primary" title="Ver factura">
-                                            <i class="bi bi-receipt"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-secondary" title="Reimprimir">
-                                            <i class="bi bi-printer"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-success" title="Marcar como pagada">
-                                            <i class="bi bi-check-circle"></i>
-                                        </button>
+                                <td colspan="8" class="text-center py-4">
+                                    <div class="text-muted">
+                                        <i class="bi bi-receipt fs-3 d-block mb-2"></i>
+                                        <p class="mb-0">No hay facturas registradas</p>
+                                        <small>Genera una nueva factura usando el botón superior</small>
                                     </div>
                                 </td>
                             </tr>
-
-                            <!-- Factura 3 -->
-                            <tr>
-                                <td><strong>FAC-003</strong></td>
-                                <td>Carlos López</td>
-                                <td>Mesa 8</td>
-                                <td>S/ 107.00</td>
-                                <td>S/ 19.26</td>
-                                <td class="fw-bold">S/ 126.26</td>
-                                <td><span class="badge bg-success">Pagada</span></td>
-                                <td><span class="badge bg-info text-dark">Tarjeta</span></td>
-                                <td>
-                                    <div class="d-flex gap-2">
-                                        <button class="btn btn-sm btn-outline-primary" title="Ver factura">
-                                            <i class="bi bi-receipt"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-secondary" title="Reimprimir">
-                                            <i class="bi bi-printer"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-danger" title="Anular"  data-bs-toggle="modal" data-bs-target="#eliminarItemModal">
-                                            <i class="bi bi-x-circle"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <!-- Factura 4 -->
-                            <tr>
-                                <td><strong>FAC-004</strong></td>
-                                <td>Ana Martín</td>
-                                <td>Mesa 3</td>
-                                <td>S/ 24.25</td>
-                                <td>S/ 4.37</td>
-                                <td class="fw-bold">S/ 28.62</td>
-                                <td><span class="badge bg-secondary">Cancelada</span></td>
-                                <td><span class="badge bg-success">Efectivo</span></td>
-                                <td>
-                                    <div class="d-flex gap-2">
-                                        <button class="btn btn-sm btn-outline-primary" title="Ver factura">
-                                            <i class="bi bi-receipt"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-secondary" title="Reimprimir">
-                                            <i class="bi bi-printer"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-dark" disabled title="Factura cancelada">
-                                            <i class="bi bi-slash-circle"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
+                        @endforelse
                         </tbody>
                     </table>
                 </div>
-
-                <!-- Filtros y resumen -->
-                <div class="row mt-4">
-                    <div class="col-md-6 text-end">
-                        <div class="d-inline-block bg-light p-2 rounded">
-                            <strong>Total del día:</strong> <span class="text-success">S/ 285.62</span>
-                        </div>
-                    </div>
-                </div>
             </div>
-
         </div>
     </div>
 
     <!-- Modal: Nueva Factura -->
     <div class="modal fade" id="nuevaFacturaModal" tabindex="-1" aria-labelledby="nuevaFacturaModalLabel"
-        aria-hidden="true">
+         aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <form id="nuevaFacturaForm" action="#" method="POST">
+                <form id="nuevaFacturaForm" action="{{ route('gerente.facturacion.store') }}" method="POST">
                     @csrf
                     <div class="modal-header">
                         <h5 class="modal-title" id="nuevaFacturaModalLabel">Nueva Factura</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                            aria-label="Cerrar"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
                     <div class="modal-body">
-                        <p class="text-muted mb-4">Genera una nueva factura para un cliente</p>
-
-                        <!-- Información del Cliente -->
-                        <div class="row g-3 mb-4">
-                            <div class="col-md-8">
-                                <label for="cliente" class="form-label">Cliente</label>
-                                <input type="text" class="form-control" id="cliente" name="cliente"
-                                    placeholder="Nombre del cliente" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="mesa" class="form-label">Mesa</label>
-                                <select class="form-select" id="mesa" name="mesa" required>
-                                    <option value="" selected disabled>Seleccionar mesa</option>
-                                    <option value="1">Mesa 1</option>
-                                    <option value="2">Mesa 2</option>
-                                    <option value="3">Mesa 3</option>
-                                    <option value="4">Mesa 4</option>
-                                    <option value="5">Mesa 5</option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-8">
-                                <label for="ruc" class="form-label">RUC (Opcional)</label>
-                                <input type="text" class="form-control" id="ruc" name="ruc"
-                                    placeholder="20123456789">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="metodo_pago" class="form-label">Método de Pago</label>
-                                <select class="form-select" id="metodo_pago" name="metodo_pago" required>
-                                    <option value="" selected disabled>Seleccionar método</option>
-                                    <option value="efectivo">Efectivo</option>
-                                    <option value="tarjeta">Tarjeta</option>
-                                    <option value="transferencia">Transferencia</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <hr class="my-4">
-
-                        <!-- Resumen de la Orden -->
-                        <h6 class="mb-3">Resumen de la Orden</h6>
-                        <div class="table-responsive mb-4">
-                            <table class="table table-sm">
-                                <tbody id="itemsFactura">
-                                    <!-- Ejemplo de items (se llenará dinámicamente) -->
-                                    <tr>
-                                        <td>Lomo Saltado x1</td>
-                                        <td class="text-end">S/ 28.50</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Pisco Sour x2</td>
-                                        <td class="text-end">S/ 30.00</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Suspiro Limeño x1</td>
-                                        <td class="text-end">S/ 12.00</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Totales -->
-                        <div class="row justify-content-end">
+                        <div class="row g-3">
                             <div class="col-md-6">
-                                <table class="table table-sm table-borderless">
-                                    <tbody>
-                                        <tr>
-                                            <td class="text-end">Subtotal:</td>
-                                            <td class="text-end">S/ 70.50</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-end">IGV (18%):</td>
-                                            <td class="text-end">S/ 12.69</td>
-                                        </tr>
-                                        <tr class="border-top">
-                                            <td class="text-end fw-bold">Total:</td>
-                                            <td class="text-end fw-bold">S/ 83.19</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <label for="orden_id" class="form-label">Orden</label>
+                                <select class="form-select" id="orden_id" name="orden_id" required>
+                                    <option value="">Seleccione una orden</option>
+                                    @foreach($ordenesPendientes ?? [] as $orden)
+                                        <option value="{{ $orden->id }}">
+                                            Orden #{{ $orden->nro_orden }} - Mesa {{ $orden->mesa->nombre }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="metodo_pago_id" class="form-label">Método de Pago</label>
+                                <select class="form-select" id="metodo_pago_id" name="metodo_pago_id" required>
+                                    <option value="">Seleccione un método</option>
+                                    @foreach($metodosPago ?? [] as $metodo)
+                                        <option value="{{ $metodo->id }}">{{ $metodo->nombre }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="igv_id" class="form-label">IGV</label>
+                                <select class="form-select" id="igv_id" name="igv_id" required>
+                                    <option value="{{ $igvActivo->id ?? '' }}">{{ $igvActivo->valor_porcentaje ?? '0' }}%</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="estado_pago" class="form-label">Estado de Pago</label>
+                                <select class="form-select" id="estado_pago" name="estado_pago" required>
+                                    <option value="pendiente">Pendiente</option>
+                                    <option value="pagado">Pagado</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="notas" class="form-label">Notas</label>
+                                <textarea class="form-control" id="notas" name="notas" rows="2"></textarea>
+                            </div>
+
+                            <!-- Resumen de totales -->
+                            <div class="col-12 mt-4">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <h6 class="mb-2">Subtotal</h6>
+                                                <h4 id="subtotal">S/ 0.00</h4>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <h6 class="mb-2">IGV (<span id="igv_porcentaje">0</span>%)</h6>
+                                                <h4 id="monto_igv">S/ 0.00</h4>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <h6 class="mb-2">Total</h6>
+                                                <h4 id="total">S/ 0.00</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Generar Factura</button>
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-dark">Generar Factura</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-<!-- Modal: Confirmar Eliminación -->
-<div class="modal fade" id="eliminarItemModal" tabindex="-1" aria-labelledby="eliminarItemModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="eliminarItemModalLabel">Confirmar Eliminación</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+    <!-- Modal: Ver Factura -->
+    <div class="modal fade" id="verFacturaModal" tabindex="-1" aria-labelledby="verFacturaModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="verFacturaModalLabel">Detalles de la Factura</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <h6><i class="bi bi-receipt me-1"></i>Número de Factura</h6>
+                        <p id="factura-numero"></p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="bi bi-person me-1"></i>Cliente</h6>
+                        <p id="factura-cliente"></p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="bi bi-table me-1"></i>Mesa</h6>
+                        <p id="factura-mesa"></p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="bi bi-cash me-1"></i>Subtotal</h6>
+                        <p id="factura-subtotal"></p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="bi bi-percent me-1"></i>IGV</h6>
+                        <p id="factura-igv"></p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="bi bi-currency-dollar me-1"></i>Total</h6>
+                        <p id="factura-total"></p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="bi bi-credit-card me-1"></i>Método de Pago</h6>
+                        <p id="factura-metodo-pago"></p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="bi bi-toggle-on me-1"></i>Estado</h6>
+                        <p id="factura-estado"></p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="btnDescargarPDF">
+                        <i class="bi bi-file-pdf me-2"></i>Descargar PDF
+                    </button>
+                </div>
             </div>
-            <div class="modal-body">
-                <p>¿Estás seguro que deseas anular esta factura?</p>
-                <p class="text-danger">Esta acción no se puede deshacer.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
-                <form id="formEliminarItem" action="#" method="POST" class="d-inline">
+        </div>
+    </div>
+
+    <!-- Modal: Editar Factura -->
+    <div class="modal fade" id="editarFacturaModal" tabindex="-1" aria-labelledby="editarFacturaModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="editarFacturaForm" action="" method="POST">
                     @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger">Anular Factura</button>
+                    @method('PUT')
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editarFacturaModalLabel">Actualizar Estado de Pago</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="edit_estado_pago" class="form-label">Estado de Pago</label>
+                            <select class="form-select" id="edit_estado_pago" name="estado_pago" required>
+                                <option value="pendiente">Pendiente</option>
+                                <option value="pagado">Pagado</option>
+                                <option value="cancelado">Cancelado</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_metodo_pago_id" class="form-label">Método de Pago</label>
+                            <select class="form-select" id="edit_metodo_pago_id" name="metodo_pago_id" required>
+                                @foreach($metodosPago ?? [] as $metodo)
+                                    <option value="{{ $metodo->id }}">{{ $metodo->nombre }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_notas" class="form-label">Notas</label>
+                            <textarea class="form-control" id="edit_notas" name="notas" rows="2"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-dark">Guardar Cambios</button>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
-</div>
+
+    @push('scripts')
+        <script src="{{ asset('js/gerente-sucursal/facturacion.js') }}"></script>
+    @endpush
 @endsection

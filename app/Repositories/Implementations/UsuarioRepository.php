@@ -20,7 +20,6 @@ class UsuarioRepository extends ActivoBoolRepository implements IUsuarioReposito
 
     public function registrarUsuarioConRol(array $datos): Model
     {
-        Log::error('password: ' . $datos['password']);
         return DB::transaction(function () use ($datos) {
             try {
                 // Verificar si el rol "USUARIO" existe, si no, crearlo

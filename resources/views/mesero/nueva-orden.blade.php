@@ -78,14 +78,19 @@
                                                          data-precio="{{ $producto->precio }}">
                                                         <div class="card-body p-2">
                                                             <h6 class="card-title mb-1 text-truncate">{{ $producto->nombre }}</h6>
-                                                            <p class="card-text mb-2">S/. {{ number_format($producto->precio, 2) }}</p>
-                                                            <div class="d-flex align-items-center justify-content-center">
-                                                                <button type="button" class="btn btn-sm btn-outline-secondary me-2 btn-cantidad-menos">
+                                                            <p class="card-text mb-2">
+                                                                S/. {{ number_format($producto->precio, 2) }}</p>
+                                                            <div
+                                                                class="d-flex align-items-center justify-content-center">
+                                                                <button type="button"
+                                                                        class="btn btn-sm btn-outline-secondary me-2 btn-cantidad-menos">
                                                                     <i class="bi bi-dash"></i>
                                                                 </button>
-                                                                <input type="number" class="form-control form-control-sm text-center cantidad-input"
+                                                                <input type="number"
+                                                                       class="form-control form-control-sm text-center cantidad-input"
                                                                        value="0" min="0" style="width: 50px;">
-                                                                <button type="button" class="btn btn-sm btn-outline-secondary ms-2 btn-cantidad-mas">
+                                                                <button type="button"
+                                                                        class="btn btn-sm btn-outline-secondary ms-2 btn-cantidad-mas">
                                                                     <i class="bi bi-plus"></i>
                                                                 </button>
                                                             </div>
@@ -112,21 +117,21 @@
                             <div class="table-responsive">
                                 <table class="table table-hover mb-0" id="detalle-tabla">
                                     <thead class="table-light">
-                                        <tr>
-                                            <th>Producto</th>
-                                            <th class="text-center">Cant.</th>
-                                            <th class="text-end">Subtotal</th>
-                                            <th></th>
-                                        </tr>
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th class="text-center">Cant.</th>
+                                        <th class="text-end">Subtotal</th>
+                                        <th></th>
+                                    </tr>
                                     </thead>
                                     <tbody>
-                                        {{-- JS insertará filas aquí --}}
+                                    {{-- JS insertará filas aquí --}}
                                     </tbody>
                                     <tfoot class="table-light">
-                                        <tr>
-                                            <td colspan="2" class="text-end"><strong>Total:</strong></td>
-                                            <td colspan="2" class="text-end"><strong id="total-orden">S/. 0.00</strong></td>
-                                        </tr>
+                                    <tr>
+                                        <td colspan="2" class="text-end"><strong>Total:</strong></td>
+                                        <td colspan="2" class="text-end"><strong id="total-orden">S/. 0.00</strong></td>
+                                    </tr>
                                     </tfoot>
                                 </table>
                             </div>

@@ -17,4 +17,11 @@ interface IFacturaService extends IBaseService
 
     public function eliminar(int $id): bool;
 
+    public function obtenerPorSucursales(array $sucursalIds): Collection;
+
+    public function obtenerPorOrden(int $ordenId): ?Model;
+
+    public function generarNumeroFactura(): string;
+
+    public function calcularTotales(array $items, float $porcentajeIgv): array;
 }

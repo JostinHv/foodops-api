@@ -6,6 +6,7 @@ use App\Repositories\Interfaces\IImagenRepository;
 use App\Services\Interfaces\IImagenService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\UploadedFile;
 
 readonly class ImagenService implements IImagenService
 {
@@ -59,5 +60,18 @@ readonly class ImagenService implements IImagenService
     public function obtenerUltimoActivo(): Collection
     {
         return $this->repository->obtenerUltimoActivo();
+    }
+
+    public function guardarImagen(array|UploadedFile|null $file, string $string)
+    {
+        if (is_array($file)) {
+            $file = $file[0] ?? null;
+        }
+
+        if ($file instanceof UploadedFile) {
+            return $this->repository->guardarImagen($file, $string);
+        }
+
+        return $this->repository->guardarImagen(null, $string);
     }
 }

@@ -37,7 +37,6 @@
                 <input type="email"
                        name="email"
                        id="email"
-                       pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
                        title="Por favor ingrese un correo electrónico válido"
                        class="form-control bg-light @error('email') is-invalid @enderror"
                        value="{{ old('email') }}"

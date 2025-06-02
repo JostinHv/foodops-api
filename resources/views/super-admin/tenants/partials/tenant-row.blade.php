@@ -39,66 +39,22 @@
     <td>{{ $tenant->restaurantes_count ?? 0 }}</td>
     <td>{{ $tenant->usuarios_count ?? 0 }}</td>
     <td>
-        @if($tenant->activo)
-            <span class="badge bg-success">Activo</span>
-        @else
-            <span class="badge bg-danger">Inactivo</span>
-        @endif
+        <form action="{{ route('superadmin.tenant.toggle-activo', $tenant->id) }}" method="POST" class="d-inline">
+            @csrf
+            @method('PUT')
+            <button type="submit" class="btn btn-sm {{ $tenant->activo ? 'btn-success' : 'btn-warning' }}">
+                {{ $tenant->activo ? 'Activo' : 'Inactivo' }}
+            </button>
+        </form>
     </td>
     <td>{{ $tenant->updated_at?->diffForHumans() ?? ''}}</td>
     <td>
         <div class="btn-group" role="group">
-            <button class="btn btn-sm btn-outline-primary"
-                    title="Ver detalles"
-                    data-bs-toggle="modal"
-                    data-bs-target="#detallesTenantModal"
-                    data-tenant="{{ json_encode($tenant) }}">
-                <i class="bi bi-eye"></i>
-            </button>
-            <a href="{{ route('superadmin.tenant.update', $tenant->id) }}"
+            <a href="{{ route('superadmin.tenant.show', $tenant->id) }}"
                class="btn btn-sm btn-outline-secondary"
-               title="Editar">
-                <i class="bi bi-pencil"></i>
+               title="Ver detalles">
+                <i class="bi bi-eye"></i>
             </a>
-            @if($tenant->activo)
-                <form action="{{ route('superadmin.tenant.toggle-activo', $tenant->id) }}"
-                      method="POST"
-                      class="d-inline"
-                      onsubmit="return confirm('¿Está seguro de que desea desactivar este tenant?');">
-                    @csrf
-                    @method('PUT')
-                    <button type="submit"
-                            class="btn btn-sm btn-outline-danger"
-                            title="Desactivar">
-                        <i class="bi bi-person-dash"></i>
-                    </button>
-                </form>
-            @else
-                <form action="{{ route('superadmin.tenant.toggle-activo', $tenant->id) }}"
-                      method="POST"
-                      class="d-inline"
-                      onsubmit="return confirm('¿Está seguro de que desea activar este tenant?');">
-                    @csrf
-                    @method('PUT')
-                    <button type="submit"
-                            class="btn btn-sm btn-outline-success"
-                            title="Activar">
-                        <i class="bi bi-person-check"></i>
-                    </button>
-                </form>
-            @endif
-            <form action="{{ route('superadmin.tenant.destroy', $tenant->id) }}"
-                  method="POST"
-                  class="d-inline"
-                  onsubmit="return confirm('¿Está seguro de que desea eliminar este tenant?');">
-                @csrf
-                @method('DELETE')
-                <button type="submit"
-                        class="btn btn-sm btn-outline-danger"
-                        title="Eliminar">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </form>
         </div>
     </td>
 </tr>

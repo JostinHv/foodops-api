@@ -75,4 +75,37 @@ readonly class AsignacionPersonalService implements IAsignacionPersonalService
     {
         return $this->repository->obtenerPorTenantId($tenantId);
     }
+
+    public function asignarUsuarioSucursal(?Model $usuario, mixed $sucursalId): bool
+    {
+        try {
+            if ($usuario) {
+                $asignacion = $this->repository->obtenerPorUsuarioId($usuario->id);
+                if ($asignacion) {
+                    return $this->repository->actualizar($asignacion->id, [
+                        'tenant_id' => $usuario->tenant_id ?? null,
+                        'sucursal_id' => $sucursalId ?? null,
+                        'tipo' => $usuario->roles->first()->nombre ?? null,
+                        'fecha_asignacion' => now(),
+                        'updated_at' => now()
+                    ]);
+                }
+
+                $asignacionNueva = $this->repository->crear([
+                    'tenant_id' => $usuario->tenant_id,
+                    'usuario_id' => $usuario->id,
+                    'sucursal_id' => $sucursalId,
+                    'tipo' => $usuario->roles->first()->nombre ?? null,
+                    'fecha_asignacion' => now(),
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+                return true;
+            }
+            return false;
+        } catch (\Exception $exception) {
+            \Log::error('Error al asignar usuario a sucursal: ' . $exception->getMessage());
+            return false;
+        }
+    }
 }

@@ -42,4 +42,9 @@ class RestauranteRepository extends ActivoBoolRepository implements IRestaurante
             ->where('tenant_id', $tenantId)
             ->get();
     }
+
+    public function obtenerPorTenantId(int $tenantId): Collection
+    {
+        return $this->modelo->where('tenant_id', $tenantId)->get();
+    }
 }

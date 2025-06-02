@@ -27,7 +27,7 @@ interface IAsignacionPersonalRepository
 
     public function buscarPorUsuarioId(mixed $usuarioId): ?Model;
 
-    public function obtenerPorUsuarioId(int $usuarioId);
+    public function obtenerPorUsuarioId(int $usuarioId): ?Model;
 
     public function obtenerPorSucursalId(int $sucursalId);
 

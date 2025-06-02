@@ -49,7 +49,9 @@
                     <div class="card-body">
                         <div class="fw-bold">Ocupación</div>
                         <h3 class="mb-1">{{ number_format($ocupacion, 1) }}%</h3>
-                        <small class="text-muted">{{ $mesas->where('estado', 'Ocupada')->count() }} de {{ $totalMesas }} mesas</small>
+                        <small class="text-muted">
+                            {{ $mesas->where('estadoMesa.nombre', 'Ocupada')->count() }} de {{ $totalMesas }} mesas
+                        </small>
                     </div>
                 </div>
             </div>
@@ -57,7 +59,7 @@
                 <div class="card text-center h-100">
                     <div class="card-body">
                         <div class="fw-bold">Asientos Disponibles</div>
-                        <h3 class="mb-1">{{ $totalAsientos - ($mesas->where('estado', 'Ocupada')->sum('capacidad')) }}</h3>
+                        <h3 class="mb-1">{{ $totalAsientos - ($mesas->where('estadoMesa.nombre', 'Ocupada')->sum('capacidad')) }}</h3>
                         <small class="text-muted">de {{ $totalAsientos }} asientos totales</small>
                     </div>
                 </div>
@@ -74,70 +76,65 @@
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
-                            <tr>
-                                <th>Mesa</th>
-                                <th>Capacidad</th>
-                                <th>Estado</th>
-                                <th class="text-center">Acciones</th>
-                            </tr>
+                        <tr>
+                            <th>Mesa</th>
+                            <th>Sucursal</th>
+                            <th>Capacidad</th>
+                            <th>Estado</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            @forelse($mesas as $mesa)
-                                <tr>
-                                    <td><strong>{{ $mesa['nombre'] }}</strong></td>
-                                    <td>{{ $mesa['capacidad'] }} personas</td>
-                                    <td>
-                                        @php
-                                            $badgeClass = match($mesa['estado']) {
-                                                'Libre' => 'bg-success',
-                                                'Ocupada' => 'bg-warning text-dark',
-                                                'Reservada' => 'bg-info',
-                                                'Sucia' => 'bg-danger',
-                                                'En Limpieza' => 'bg-secondary',
-                                                'Bloqueada' => 'bg-dark',
-                                                default => 'bg-primary'
-                                            };
-                                        @endphp
-                                        <span class="badge {{ $badgeClass }}">{{ $mesa['estado'] }}</span>
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="btn-group" role="group">
-                                            <a href="{{ route('gerente.mesas.show', $mesa['id']) }}"
-                                                class="btn btn-sm btn-outline-primary"
+                        @forelse($mesas as $mesa)
+                            <tr>
+                                <td><strong>{{ $mesa['nombre'] }}</strong></td>
+                                <td>{{ $mesa['sucursal']['nombre'] }}</td>
+                                <td>{{ $mesa['capacidad'] }} personas</td>
+                                <td>
+                                    @php
+                                        $badgeClass = match($mesa->estadoMesa->nombre ?? 'Desconocido') {
+                                            'Libre' => 'bg-success',
+                                            'Ocupada' => 'bg-warning text-dark',
+                                            'Reservada' => 'bg-info',
+                                            'Sucia' => 'bg-danger',
+                                            'En Limpieza' => 'bg-secondary',
+                                            'Bloqueada' => 'bg-dark',
+                                            default => 'bg-primary'
+                                        };
+                                    @endphp
+                                    <span
+                                            class="badge {{ $badgeClass }}">{{ $mesa->estadoMesa->nombre ?? 'Desconocido'}}</span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-outline-primary"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#verMesaModal"
+                                                data-mesa="{{ $mesa['id'] }}"
                                                 title="Ver detalles">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-                                            <a href="{{ route('gerente.mesas.edit', $mesa['id']) }}"
-                                                class="btn btn-sm btn-outline-secondary"
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#editarMesaModal"
+                                                data-mesa="{{ $mesa['id'] }}"
                                                 title="Editar mesa">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
-                                            <form action="{{ route('gerente.mesas.destroy', $mesa['id']) }}"
-                                                method="POST"
-                                                class="d-inline"
-                                                onsubmit="return confirm('¿Está seguro de que desea eliminar esta mesa?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
-                                                    class="btn btn-sm btn-outline-danger"
-                                                    title="Eliminar mesa">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="text-center py-4">
-                                        <div class="text-muted">
-                                            <i class="bi bi-inbox fs-3 d-block mb-2"></i>
-                                            <p class="mb-0">No hay mesas registradas</p>
-                                            <small>Crea una nueva mesa usando el botón superior</small>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforelse
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="text-center py-4">
+                                    <div class="text-muted">
+                                        <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                                        <p class="mb-0">No hay mesas registradas</p>
+                                        <small>Crea una nueva mesa usando el botón superior</small>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -145,67 +142,67 @@
         </div>
 
         <!-- Modal: Nueva Mesa -->
-        <div class="modal fade" id="nuevaMesaModal" tabindex="-1" aria-labelledby="nuevaMesaModalLabel" aria-hidden="true">
+        <div class="modal fade" id="nuevaMesaModal" tabindex="-1" aria-labelledby="nuevaMesaModalLabel"
+             aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <form id="formNuevaMesa" action="{{ route('gerente.mesas.store') }}" method="POST">
                         @csrf
                         <div class="modal-header">
                             <h5 class="modal-title" id="nuevaMesaModalLabel">Nueva Mesa</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Cerrar"></button>
                         </div>
                         <div class="modal-body">
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label for="nombre" class="form-label">Nombre</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="bi bi-tag"></i></span>
-                                        <input type="text"
-                                            class="form-control @error('nombre') is-invalid @enderror"
-                                            id="nombre"
-                                            name="nombre"
-                                            placeholder="Ej: Mesa VIP 1"
-                                            value="{{ old('nombre') }}"
-                                            required>
-                                    </div>
-                                    @error('nombre')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                    <label for="nombre" class="form-label">
+                                        <i class="bi bi-tag me-1"></i>Nombre
+                                    </label>
+                                    <input type="text"
+                                           class="form-control"
+                                           id="nombre"
+                                           name="nombre"
+                                           placeholder="Ej: Mesa VIP 1"
+                                           required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="capacidad" class="form-label">Capacidad de Personas</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="bi bi-people"></i></span>
-                                        <input type="number"
-                                            class="form-control @error('capacidad') is-invalid @enderror"
-                                            id="capacidad"
-                                            name="capacidad"
-                                            min="1"
-                                            max="20"
-                                            placeholder="Ej: 4"
-                                            value="{{ old('capacidad') }}"
-                                            required>
-                                        <span class="input-group-text">personas</span>
-                                    </div>
-                                    @error('capacidad')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                    <label for="capacidad" class="form-label">
+                                        <i class="bi bi-people me-1"></i>Capacidad
+                                    </label>
+                                    <input type="number"
+                                           class="form-control"
+                                           id="capacidad"
+                                           name="capacidad"
+                                           min="1"
+                                           max="20"
+                                           placeholder="Ej: 4"
+                                           required>
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="descripcion" class="form-label">Descripción (Opcional)</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="bi bi-card-text"></i></span>
-                                    <textarea class="form-control @error('descripcion') is-invalid @enderror"
-                                        id="descripcion"
-                                        name="descripcion"
-                                        rows="2"
-                                        placeholder="Ej: Mesa junto a la ventana, ideal para familias">{{ old('descripcion') }}</textarea>
-                                </div>
-                                @error('descripcion')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <label for="sucursal_id" class="form-label">
+                                    <i class="bi bi-shop me-1"></i>Sucursal
+                                </label>
+                                <select class="form-select" id="sucursal_id" name="sucursal_id" required>
+                                    <option value="">Seleccione una sucursal</option>
+                                    @foreach($sucursales as $sucursal)
+                                        <option value="{{ $sucursal->id }}">{{ $sucursal->nombre }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="estado_mesa_id" class="form-label">
+                                    <i class="bi bi-toggle-on me-1"></i>Estado Inicial
+                                </label>
+                                <select class="form-select" id="estado_mesa_id" name="estado_mesa_id" required>
+                                    <option value="">Seleccione un estado</option>
+                                    @foreach($estadosMesa as $estado)
+                                        <option value="{{ $estado->id }}">{{ $estado->nombre }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -220,9 +217,118 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal: Editar Mesa -->
+        <div class="modal fade" id="editarMesaModal" tabindex="-1" aria-labelledby="editarMesaModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form id="formEditarMesa" action="" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editarMesaModalLabel">Editar Mesa</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Cerrar"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="edit_nombre" class="form-label">
+                                        <i class="bi bi-tag me-1"></i>Nombre
+                                    </label>
+                                    <input type="text"
+                                           class="form-control"
+                                           id="edit_nombre"
+                                           name="nombre"
+                                           required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="edit_capacidad" class="form-label">
+                                        <i class="bi bi-people me-1"></i>Capacidad
+                                    </label>
+                                    <input type="number"
+                                           class="form-control"
+                                           id="edit_capacidad"
+                                           name="capacidad"
+                                           min="1"
+                                           max="20"
+                                           required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="edit_sucursal_id" class="form-label">
+                                    <i class="bi bi-shop me-1"></i>Sucursal
+                                </label>
+                                <select class="form-select" id="edit_sucursal_id" name="sucursal_id" required>
+                                    <option value="">Seleccione una sucursal</option>
+                                    @foreach($sucursales as $sucursal)
+                                        <option value="{{ $sucursal->id }}">{{ $sucursal->nombre }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="edit_estado_mesa_id" class="form-label">
+                                    <i class="bi bi-toggle-on me-1"></i>Estado
+                                </label>
+                                <select class="form-select" id="edit_estado_mesa_id" name="estado_mesa_id" required>
+                                    <option value="">Seleccione un estado</option>
+                                    @foreach($estadosMesa as $estado)
+                                        <option value="{{ $estado->id }}">{{ $estado->nombre }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                                <i class="bi bi-x-circle me-2"></i>Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-dark">
+                                <i class="bi bi-check-circle me-2"></i>Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal: Ver Mesa -->
+        <div class="modal fade" id="verMesaModal" tabindex="-1" aria-labelledby="verMesaModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="verMesaModalLabel">Detalles de la Mesa</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <h6><i class="bi bi-tag me-1"></i>Nombre</h6>
+                            <p id="mesa-nombre"></p>
+                        </div>
+                        <div class="mb-3">
+                            <h6><i class="bi bi-shop me-1"></i>Sucursal</h6>
+                            <p id="mesa-sucursal"></p>
+                        </div>
+                        <div class="mb-3">
+                            <h6><i class="bi bi-people me-1"></i>Capacidad</h6>
+                            <p id="mesa-capacidad"></p>
+                        </div>
+                        <div class="mb-3">
+                            <h6><i class="bi bi-toggle-on me-1"></i>Estado</h6>
+                            <p id="mesa-estado"></p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     @push('scripts')
-    <script src="{{ asset('js/gerente-sucursal/mesas.js') }}"></script>
+        <script src="{{ asset('js/gerente-sucursal/mesas.js') }}"></script>
     @endpush
 @endsection

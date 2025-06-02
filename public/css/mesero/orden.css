@@ -1,0 +1,139 @@
+/* Estilos generales */
+.card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Estilos para las tarjetas de orden */
+.orden-card {
+    cursor: pointer;
+}
+
+.orden-card .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.orden-card .badge {
+    font-size: 0.8rem;
+    padding: 0.5em 0.8em;
+}
+
+/* Estilos para los filtros */
+.input-group {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.input-group-text {
+    border: none;
+    background-color: white;
+}
+
+#buscarOrden {
+    border: none;
+    padding-left: 0;
+}
+
+#buscarOrden:focus {
+    box-shadow: none;
+}
+
+/* Estilos para el modal de detalles */
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+#tabla-productos th {
+    font-size: 0.9rem;
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+#tabla-productos td {
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+/* Estilos para la información de la orden */
+#orden-info-general,
+#orden-estado-tiempo {
+    font-size: 0.9rem;
+}
+
+#orden-info-general p,
+#orden-estado-tiempo p {
+    margin-bottom: 0.5rem;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .orden-card .card-title {
+        font-size: 1rem;
+    }
+
+    .orden-card .badge {
+        font-size: 0.75rem;
+        padding: 0.4em 0.6em;
+    }
+
+    #tabla-productos th,
+    #tabla-productos td {
+        font-size: 0.8rem;
+    }
+
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.orden-card {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Estilos para el botón de nueva orden */
+.btn-primary {
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+}
+
+/* Estilos para los iconos */
+.bi {
+    font-size: 1.1rem;
+}
+
+/* Estilos para el estado de la orden */
+.badge.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #000;
+}
+
+.badge.bg-success {
+    background-color: #198754 !important;
+}

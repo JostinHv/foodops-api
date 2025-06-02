@@ -26,4 +26,6 @@ interface IRestauranteService extends IActivoBoolService
     public function obtenerUltimoActivo(): Collection;
 
     public function obtenerRestaurantesPorTenant(int $tenantId);
+
+    public function obtenerPorTenantId(int $tenantId): Collection;
 }

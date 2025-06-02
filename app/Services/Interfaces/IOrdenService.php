@@ -27,4 +27,8 @@ interface IOrdenService extends IBaseService
     public function marcarComoServida(int $id): bool;
 
     public function cambiarEstadoOrden(int $id, mixed $estado_orden_id);
+
+    public function obtenerOrdenesPendientesPorSucursales(array $sucursalIds): Collection;
+
+    public function obtenerItemsOrden(int $ordenId): Collection;
 }

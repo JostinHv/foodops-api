@@ -11,8 +11,8 @@
         <!-- Encabezado -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h1 class="h3 mb-0">Usuarios</h1>
-                <p class="mb-0 text-muted">Gestiona todos los usuarios de tu organización</p>
+                <h1 class="h3 mb-0">Trabajadores</h1>
+                <p class="mb-0 text-muted">Gestiona todos los trabajadores de tu organización</p>
             </div>
             <a href="#" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#modalUsuario">
                 <i class="bi bi-plus-circle me-2"></i>Nuevo Usuario
@@ -24,7 +24,7 @@
             <div class="col-md-6 col-lg-3 mb-3">
                 <div class="card text-center h-100">
                     <div class="card-body">
-                        <div class="fw-bold">Total Usuarios</div>
+                        <div class="fw-bold">Total Trabajadores</div>
                         <h3 class="mb-1">{{ $totalUsuarios ?? 0}}</h3>
                         <small class="text-muted">Usuarios registrados</small>
                     </div>
@@ -33,7 +33,7 @@
             <div class="col-md-6 col-lg-3 mb-3">
                 <div class="card text-center h-100">
                     <div class="card-body">
-                        <div class="fw-bold">Usuarios Activos</div>
+                        <div class="fw-bold">Trabajadores Activos</div>
                         <h3 class="mb-1">{{ $usuariosActivos ?? 0 }}</h3>
                         <small class="text-success">{{ round(($usuariosActivos / $totalUsuarios ?? 1) * 100) }}% del
                             total</small>
@@ -120,7 +120,7 @@
                                 </td>
                                 <td>
                                     @if($usuario->ultimo_acceso)
-                                        <div>{{ $usuario->ultimo_acceso->format('d/m/Y H:i') }}</div>
+                                        <div>{{ $usuario->ultimo_acceso->format('d/m/Y') }}</div>
                                     @else
                                         <div class="text-muted">Nunca</div>
                                     @endif

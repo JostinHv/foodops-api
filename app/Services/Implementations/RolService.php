@@ -60,4 +60,9 @@ readonly class RolService implements IRolService
     {
         return $this->repository->obtenerUltimoActivo();
     }
+
+    public function obtenerRolesActivosPorId(array $ids): Collection
+    {
+        return $this->repository->obtenerRolesActivosPorId($ids);
+    }
 }
