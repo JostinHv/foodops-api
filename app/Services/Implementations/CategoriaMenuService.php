@@ -60,4 +60,9 @@ readonly class CategoriaMenuService implements ICategoriaMenuService
     {
         return $this->repository->obtenerUltimoActivo();
     }
+
+    public function obtenerCategoriasPorSucursal(int $sucursalId): Collection
+    {
+        return $this->repository->obtenerCategoriasPorSucursal($sucursalId);
+    }
 }

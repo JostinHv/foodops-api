@@ -7,7 +7,9 @@ use App\Models\Imagen;
 use App\Models\Restaurante;
 use App\Services\Interfaces\IGrupoRestaurantesService;
 use App\Services\Interfaces\IImagenService;
+use App\Services\Interfaces\ILimiteUsoService;
 use App\Services\Interfaces\IRestauranteService;
+use App\Services\Interfaces\ITenantSuscripcionService;
 use App\Services\Interfaces\IUsuarioService;
 use App\Traits\AuthenticatedUserTrait;
 use Illuminate\Contracts\View\Factory;
@@ -26,6 +28,8 @@ class RestauranteController extends Controller
         private readonly IRestauranteService       $restauranteService,
         private readonly IGrupoRestaurantesService $grupoRestaurantesService,
         private readonly IImagenService            $imagenService,
+        private readonly ILimiteUsoService         $limiteUsoService,
+        private readonly ITenantSuscripcionService $tenantSuscripcionService
     )
     {
     }
@@ -36,7 +40,8 @@ class RestauranteController extends Controller
         $usuario = $this->usuarioService->obtenerPorId($usuarioId);
         $restaurantes = $this->restauranteService->obtenerRestaurantesPorTenant($usuario->tenant_id);
         $grupos = $this->grupoRestaurantesService->obtenerGrupoRestaurantesPorTenant($usuario->tenant_id);
-
+        $tenantSuscripcion = $this->tenantSuscripcionService->obtenerPorTenantId($usuario->tenant_id);
+//        $limiteRestauranteMaximo = $this->limiteUsoService->esstaUsoMaximoRecurso($tenantSuscripcion->id, 'restaurante');
         return view('admin-tenant.restaurants', compact('restaurantes', 'grupos'));
     }
 
@@ -66,12 +71,11 @@ class RestauranteController extends Controller
 
             if ($request->hasFile('logo')) {
                 $logo = $request->file('logo');
-                $logoPath = $logo->store('logos', 'public');
+                $logoPath = $logo->store('imagenes/tenants/logos', 'public');
 
                 $imagen = Imagen::create([
                     'url' => $logoPath,
-                    'tipo' => 'logo',
-                    'tenant_id' => $tenant_id,
+                    'activo' => true,
                 ]);
 
                 $data['logo_id'] = $imagen->id;
@@ -81,7 +85,11 @@ class RestauranteController extends Controller
             return redirect()->route('tenant.restaurantes')
                 ->with('success', 'Restaurante creado exitosamente');
         } catch (\Exception $exception) {
-            \Log::log('info', 'Error al crear restaurante: ' . $exception->getMessage());
+            // Eliminar el logo si hubo un error y se subió uno
+            if ($request->hasFile('logo')) {
+                $logoPath = $request->file('logo')->store('imagenes/tenants/logos', 'public');
+                Storage::disk('public')->delete($logoPath);
+            }
             return redirect()->back()
                 ->withErrors(['error' => 'Error al crear el restaurante: ' . $exception->getMessage()])
                 ->withInput();
@@ -132,7 +140,6 @@ class RestauranteController extends Controller
             return redirect()->route('tenant.restaurantes')
                 ->with('success', 'Restaurante actualizado exitosamente');
         } catch (\Exception $exception) {
-            \Log::error('Error al actualizar restaurante: ' . $exception->getMessage());
             return redirect()->back()
                 ->withErrors(['error' => 'Error al actualizar el restaurante: ' . $exception->getMessage()])
                 ->withInput();
@@ -146,7 +153,6 @@ class RestauranteController extends Controller
             return redirect()->route('tenant.restaurantes')
                 ->with('success', 'Estado del restaurante actualizado exitosamente');
         } catch (\Exception $exception) {
-            \Log::error('Error al cambiar estado del restaurante: ' . $exception->getMessage());
             return redirect()->back()
                 ->withErrors(['error' => 'Error al cambiar el estado del restaurante']);
         }
@@ -158,7 +164,6 @@ class RestauranteController extends Controller
             $restaurante->load(['grupoRestaurantes', 'logo']);
             return response()->json(['restaurante' => $restaurante]);
         } catch (\Exception $exception) {
-            \Log::error('Error al obtener detalles del restaurante: ' . $exception->getMessage());
             return response()->json(['error' => 'Error al obtener los detalles del restaurante'], 500);
         }
     }

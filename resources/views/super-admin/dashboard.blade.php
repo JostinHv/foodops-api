@@ -3,6 +3,7 @@
 @section('title', 'Dashboard Super Administrador')
 
 @push('styles')
+    <link rel="stylesheet" href="{{ asset('css/variables.css') }}">
     <link rel="stylesheet" href="{{ asset('css/super-admin/dashboard.css') }}">
 @endpush
 

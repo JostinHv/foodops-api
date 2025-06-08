@@ -25,4 +25,6 @@ interface IMesaRepository
 
     public function cambiarEstadoMesa(int $id, int $estadoMesaId): bool;
 
+    public function obtenerMesasDisponiblesPorSucursal(int $sucursalId): Collection;
+
 }

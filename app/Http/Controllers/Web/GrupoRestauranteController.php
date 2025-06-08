@@ -53,7 +53,6 @@ class GrupoRestauranteController extends Controller
             return redirect()->route('tenant.grupo-restaurant')
                 ->with('success', 'Grupo de restaurantes creado exitosamente');
         } catch (\Exception $exception) {
-            \Log::error('Error al crear grupo de restaurantes: ' . $exception->getMessage());
             return redirect()->back()
                 ->withErrors(['error' => 'Error al crear el grupo de restaurantes: ' . $exception->getMessage()])
                 ->withInput();
@@ -74,7 +73,6 @@ class GrupoRestauranteController extends Controller
             return redirect()->route('tenant.grupo-restaurant')
                 ->with('success', 'Grupo de restaurantes actualizado exitosamente');
         } catch (\Exception $exception) {
-            \Log::error('Error al actualizar grupo de restaurantes: ' . $exception->getMessage());
             return redirect()->back()
                 ->withErrors(['error' => 'Error al actualizar el grupo de restaurantes: ' . $exception->getMessage()])
                 ->withInput();
@@ -86,7 +84,6 @@ class GrupoRestauranteController extends Controller
         try {
             return response()->json(['grupo' => $grupo]);
         } catch (\Exception $exception) {
-            \Log::error('Error al obtener detalles del grupo: ' . $exception->getMessage());
             return response()->json(['error' => 'Error al obtener los detalles del grupo'], 500);
         }
     }

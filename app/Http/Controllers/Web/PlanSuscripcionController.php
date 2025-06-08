@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\PlanSuscripcion;
+use App\Services\Interfaces\ILimiteUsoService;
 use App\Services\Interfaces\IPlanSuscripcionService;
 use App\Services\Interfaces\ITenantService;
 use App\Services\Interfaces\ITenantSuscripcionService;
@@ -22,7 +23,8 @@ class PlanSuscripcionController extends Controller
     public function __construct(
         private readonly IPlanSuscripcionService   $planSuscripcionService,
         private readonly ITenantService            $tenantService,
-        private readonly ITenantSuscripcionService $tenantSuscripcionService
+        private readonly ITenantSuscripcionService $tenantSuscripcionService,
+        private readonly ILimiteUsoService         $limiteUsoService,
     )
     {
     }
@@ -138,6 +140,11 @@ class PlanSuscripcionController extends Controller
             $data['caracteristicas'] = $caracteristicas;
 
             $this->planSuscripcionService->actualizar($plan->id, $data);
+
+            $suscripcionesIds = $this->tenantSuscripcionService->obtenerTenantsPorPlan($plan->id)->pluck('id')->toArray();
+            if (!empty($suscripcionesIds)) {
+                $this->limiteUsoService->modificarLimitesPorSuscripcionesIds($suscripcionesIds, $caracteristicas['limites']);
+            }
             return redirect()->route('planes')
                 ->with('success', 'Plan actualizado exitosamente');
         } catch (\Exception $e) {

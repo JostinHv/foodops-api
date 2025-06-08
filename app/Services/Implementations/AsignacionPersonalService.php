@@ -6,6 +6,7 @@ use App\Repositories\Interfaces\IAsignacionPersonalRepository;
 use App\Services\Interfaces\IAsignacionPersonalService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 readonly class AsignacionPersonalService implements IAsignacionPersonalService
 {
@@ -104,7 +105,7 @@ readonly class AsignacionPersonalService implements IAsignacionPersonalService
             }
             return false;
         } catch (\Exception $exception) {
-            \Log::error('Error al asignar usuario a sucursal: ' . $exception->getMessage());
+            Log::error('Error al asignar usuario a sucursal: ' . $exception->getMessage());
             return false;
         }
     }

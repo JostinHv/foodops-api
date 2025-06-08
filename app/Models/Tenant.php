@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Traits\Auditable;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
@@ -33,6 +35,8 @@ use Illuminate\Support\Carbon;
  */
 class Tenant extends Model
 {
+    use Auditable;
+
     protected $table = 'tenants';
 
     protected $fillable = [
@@ -57,6 +61,13 @@ class Tenant extends Model
     public function logo(): BelongsTo
     {
         return $this->belongsTo(Imagen::class, 'logo_id');
+    }
+
+
+    public function suscripcion(): HasOne
+    {
+        return $this->hasOne(TenantSuscripcion::class, 'tenant_id')
+            ->latest();
     }
 
 }

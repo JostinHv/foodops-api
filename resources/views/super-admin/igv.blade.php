@@ -3,17 +3,18 @@
 @section('title', 'Configuración de IGV')
 
 @push('styles')
+    <link rel="stylesheet" href="{{ asset('css/variables.css') }}">
     <link rel="stylesheet" href="{{ asset('css/super-admin/igv.css') }}">
     <style>
         .card {
             transition: transform 0.2s, box-shadow 0.2s;
             border: none;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            box-shadow: var(--card-shadow);
         }
         
         .card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            box-shadow: var(--card-shadow-hover);
         }
 
         .status-badge {
@@ -26,12 +27,12 @@
         .igv-icon {
             font-size: 2.5rem;
             margin-bottom: 1rem;
-            color: #6c757d;
+            color: var(--text-muted);
             transition: color 0.2s;
         }
 
         .card:hover .igv-icon {
-            color: #0d6efd;
+            color: var(--primary-color);
         }
 
         .action-buttons {
@@ -44,17 +45,17 @@
         }
 
         .section-title {
-            border-bottom: 2px solid #dee2e6;
+            border-bottom: 2px solid var(--border-color);
             padding-bottom: 0.5rem;
             margin-bottom: 1.5rem;
         }
 
         .active-igv {
-            border-left: 4px solid #198754;
+            border-left: 4px solid var(--accent-color);
         }
 
         .inactive-igv {
-            border-left: 4px solid #dc3545;
+            border-left: 4px solid var(--danger-color);
         }
     </style>
 @endpush

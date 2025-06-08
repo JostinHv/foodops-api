@@ -3,6 +3,7 @@
 @section('title', 'Planes de Suscripción')
 
 @push('styles')
+    <link rel="stylesheet" href="{{ asset('css/variables.css') }}">
     <link rel="stylesheet" href="{{ asset('css/super-admin/planes.css') }}">
 @endpush
 
@@ -14,7 +15,7 @@
                 <h1 class="h3 mb-0">Planes de Suscripción</h1>
                 <p class="mb-0 text-muted">Gestiona los planes de suscripción disponibles</p>
             </div>
-            <a href="#" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#nuevoPlanModal">
+            <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevoPlanModal">
                 <i class="bi bi-plus-circle me-2"></i>Nuevo Plan
             </a>
         </div>
@@ -26,7 +27,7 @@
                     <div class="card-body">
                         <div class="fw-bold">Total Planes</div>
                         <h3 class="mb-1">{{ $estadisticas['total_planes'] }}</h3>
-                        <small class="text-muted">Planes disponibles</small>
+                        <small class="text-primary">Planes disponibles</small>
                     </div>
                 </div>
             </div>
@@ -35,7 +36,7 @@
                     <div class="card-body">
                         <div class="fw-bold">Planes Activos</div>
                         <h3 class="mb-1">{{ $estadisticas['planes_activos'] }}</h3>
-                        <small class="text-success">En uso</small>
+                        <small class="text-primary">En uso</small>
                     </div>
                 </div>
             </div>
@@ -55,9 +56,9 @@
                         <h3 class="mb-1">S/ {{ number_format($estadisticas['ingresos_anuales'], 2) }}</h3>
                         <small class="text-primary">Por suscripciones anuales</small>
                     </div>
-                    </div>
                 </div>
             </div>
+        </div>
 
         <!-- Planes Mensuales -->
         <div class="card mb-4">
@@ -91,8 +92,8 @@
                                             </form>
                                         </div>
                                     </div>
-                    </div>
-                    <div class="card-body">
+                                </div>
+                                <div class="card-body">
                                     <p class="text-muted mb-4">{{ $plan->descripcion }}</p>
 
                                     <div class="mb-4">
@@ -141,7 +142,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                        </div>
+                                    </div>
                                     <!-- Características adicionales -->
                                     <div class="mb-4">
                                         <h6 class="border-bottom pb-2">Características</h6>
@@ -150,9 +151,9 @@
                                                 <li class="mb-2">
                                                     <i class="bi bi-check-circle-fill text-success me-2"></i>
                                                     {{ $caracteristica }}
-                            </li>
+                                                </li>
                                             @endforeach
-                        </ul>
+                                        </ul>
                                     </div>
 
                                     <div class="mb-4">
@@ -172,16 +173,16 @@
                         <div class="col-12">
                             <div class="alert alert-info mb-0">
                                 No hay planes mensuales disponibles
-                    </div>
+                            </div>
                         </div>
                     @endforelse
-                    </div>
                 </div>
             </div>
+        </div>
 
         <!-- Planes Anuales -->
         <div class="card">
-            <div class="card-header bg-info text-white">
+            <div class="card-header bg-secondary text-white">
                 <h5 class="mb-0">
                     <i class="bi bi-calendar-year me-2"></i>Planes Anuales
                 </h5>
@@ -211,8 +212,8 @@
                                             </form>
                                         </div>
                                     </div>
-                    </div>
-                    <div class="card-body">
+                                </div>
+                                <div class="card-body">
                                     <h5 class="card-title">{{ $plan->nombre }}</h5>
                                     <p class="text-muted mb-4">{{ $plan->descripcion }}</p>
 
@@ -248,7 +249,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                        </div>
+                                    </div>
 
                                     <!-- Características adicionales -->
                                     <div class="mb-4">
@@ -260,7 +261,7 @@
                                                     {{ $caracteristica }}
                                                 </li>
                                             @endforeach
-                        </ul>
+                                        </ul>
                                     </div>
 
                                     <div class="mb-4">
@@ -280,8 +281,8 @@
                         <div class="col-12">
                             <div class="alert alert-info mb-0">
                                 No hay planes anuales disponibles
-                    </div>
-                    </div>
+                            </div>
+                        </div>
                     @endforelse
                 </div>
             </div>
@@ -352,7 +353,7 @@
                             </label>
                             <textarea name="descripcion" class="form-control" rows="3"
                                       placeholder="Describe las características principales del plan..."></textarea>
-                            </div>
+                        </div>
 
                         <div class="mb-3">
                             <label for="intervalo" class="form-label">
@@ -362,7 +363,7 @@
                                 <option value="mes">Mensual</option>
                                 <option value="anual">Anual</option>
                             </select>
-                            </div>
+                        </div>
 
                         <div class="mb-3">
                             <div class="alert alert-info">
@@ -375,12 +376,12 @@
                                               placeholder="Ejemplo: Gestión multi-sucursal, API personalizada, Reportes en tiempo real"
                                               required minlength="1" style="height: 100px"></textarea>
                                     <label>Características de adicionales</label>
-                            </div>
+                                </div>
                                 @error('caracteristicas')
-                                    <div class="invalid-feedback d-block mt-2">
-                                        <i class="bi bi-exclamation-circle me-1"></i>
-                                        {{ $message }}
-                            </div>
+                                <div class="invalid-feedback d-block mt-2">
+                                    <i class="bi bi-exclamation-circle me-1"></i>
+                                    {{ $message }}
+                                </div>
                                 @enderror
                             </div>
                         </div>
@@ -400,7 +401,7 @@
 
     <!-- Modal: Editar Plan -->
     <div class="modal fade" id="editarPlanModal" tabindex="-1" aria-labelledby="editarPlanModalLabel"
-        aria-hidden="true">
+         aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <form id="formEditarPlan" action="" method="POST">
@@ -459,7 +460,7 @@
                                 <i class="bi bi-text-paragraph me-1"></i>Descripción
                             </label>
                             <textarea name="descripcion" class="form-control" rows="3"></textarea>
-                            </div>
+                        </div>
 
                         <div class="mb-3">
                             <label for="intervalo" class="form-label">
@@ -469,7 +470,7 @@
                                 <option value="mes">Mensual</option>
                                 <option value="anual">Anual</option>
                             </select>
-                            </div>
+                        </div>
 
                         <div class="mb-3">
                             <div class="alert alert-info">
@@ -482,12 +483,12 @@
                                               placeholder="Ejemplo: Gestión multi-sucursal, API personalizada, Reportes en tiempo real"
                                               required minlength="1" style="height: 100px"></textarea>
                                     <label>Características adicionales</label>
-                            </div>
+                                </div>
                                 @error('caracteristicas')
-                                    <div class="invalid-feedback d-block mt-2">
-                                        <i class="bi bi-exclamation-circle me-1"></i>
-                                        {{ $message }}
-                            </div>
+                                <div class="invalid-feedback d-block mt-2">
+                                    <i class="bi bi-exclamation-circle me-1"></i>
+                                    {{ $message }}
+                                </div>
                                 @enderror
                             </div>
                         </div>

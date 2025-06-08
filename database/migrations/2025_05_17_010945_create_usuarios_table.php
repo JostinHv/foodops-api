@@ -3,6 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 return new class extends Migration {
     /**
@@ -24,6 +26,20 @@ return new class extends Migration {
             $table->boolean('activo')->default(true);
             $table->timestamps();
         });
+
+        // Insertar usuarios de ejemplo
+        DB::table('usuarios')->insert([
+            [
+                'email' => 'admin@foodops.com',
+                'password' => Hash::make('1234'),
+                'nombres' => 'Admin',
+                'apellidos' => 'Sistema',
+                'nro_celular' => '999888777',
+                'activo' => true,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]
+        ]);
     }
 
     /**

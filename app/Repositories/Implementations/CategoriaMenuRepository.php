@@ -6,6 +6,7 @@ namespace App\Repositories\Implementations;
 use App\Models\CategoriaMenu;
 use App\Repositories\Interfaces\ICategoriaMenuRepository;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class CategoriaMenuRepository extends ActivoBoolRepository implements ICategoriaMenuRepository
 {
@@ -28,5 +29,12 @@ class CategoriaMenuRepository extends ActivoBoolRepository implements ICategoria
     protected function aplicarOrdenamiento(Builder $consulta, ?string $sortField, ?string $sortOrder): void
     {
         // TODO: Implement aplicarOrdenamiento() method.
+    }
+
+    public function obtenerCategoriasPorSucursal(int $sucursalId): Collection
+    {
+        return $this->modelo->where('sucursal_id', $sucursalId)
+            ->where('activo', true)
+            ->get();
     }
 }

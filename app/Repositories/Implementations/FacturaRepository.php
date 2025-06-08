@@ -10,30 +10,30 @@ use Illuminate\Database\Eloquent\Model;
 
 class FacturaRepository extends BaseRepository implements IFacturaRepository
 {
-    public function __construct(
-        private readonly Factura $model
-    ) {
-        parent::__construct($model);
+
+    public function __construct(Factura $modelo)
+    {
+        parent::__construct($modelo);
     }
 
     public function obtenerTodos(): Collection
     {
-        return $this->model->with(['orden', 'metodoPago', 'igv'])->get();
+        return $this->modelo->with(['orden', 'metodoPago', 'igv'])->get();
     }
 
     public function obtenerPorId(int $id): ?Model
     {
-        return $this->model->with(['orden', 'metodoPago', 'igv'])->find($id);
+        return $this->modelo->with(['orden', 'metodoPago', 'igv'])->find($id);
     }
 
     public function crear(array $datos): Model
     {
-        return $this->model->create($datos);
+        return $this->modelo->create($datos);
     }
 
     public function actualizar(int $id, array $datos): bool
     {
-        $factura = $this->model->find($id);
+        $factura = $this->modelo->find($id);
         if (!$factura) {
             return false;
         }
@@ -42,7 +42,7 @@ class FacturaRepository extends BaseRepository implements IFacturaRepository
 
     public function eliminar(int $id): bool
     {
-        $factura = $this->model->find($id);
+        $factura = $this->modelo->find($id);
         if (!$factura) {
             return false;
         }
@@ -51,7 +51,7 @@ class FacturaRepository extends BaseRepository implements IFacturaRepository
 
     public function obtenerPorSucursales(array $sucursalIds): Collection
     {
-        return $this->model->with(['orden', 'metodoPago', 'igv'])
+        return $this->modelo->with(['orden', 'metodoPago', 'igv'])
             ->whereHas('orden', function ($query) use ($sucursalIds) {
                 $query->whereIn('sucursal_id', $sucursalIds);
             })
@@ -60,14 +60,14 @@ class FacturaRepository extends BaseRepository implements IFacturaRepository
 
     public function obtenerPorOrden(int $ordenId): ?Model
     {
-        return $this->model->with(['orden', 'metodoPago', 'igv'])
+        return $this->modelo->with(['orden', 'metodoPago', 'igv'])
             ->where('orden_id', $ordenId)
             ->first();
     }
 
     public function obtenerUltimaFactura(): ?Model
     {
-        return $this->model->orderBy('id', 'desc')->first();
+        return $this->modelo->orderBy('id', 'desc')->first();
     }
 
     protected function aplicarFiltros(Builder $consulta, array $filtros): void

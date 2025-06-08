@@ -1,0 +1,432 @@
+:root {
+    /* Paleta de colores */
+}
+
+body {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: var(--light-bg); /* Usar variable de fondo claro */
+    color: var(--text-dark); /* Usar variable de texto oscuro */
+    line-height: 1.6;
+}
+
+/* Card Styles (Alinear con home.css) */
+.card {
+    border: 1px solid rgba(0, 0, 0, 0.1); /* Usar un borde sutil */
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition-base);
+    background-color: var(--card-bg);
+}
+
+.card:hover {
+    box-shadow: var(--card-shadow-hover);
+}
+
+/* Ajustar card-header si es necesario, aunque en contacto.planes.blade.php no tiene un header específico en el card principal */
+/*
+.card-header {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    padding: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    border-bottom: none;
+}
+*/
+
+.card-body {
+    padding: 1.5rem; /* Alinear padding del body con home.css responsive */
+}
+
+.text-center h2 {
+    color: var(--primary-color); /* Usar variable de color primario */
+}
+
+/* Mantener custom-text-muted para la descripción bajo el título */
+.custom-text-muted {
+    color: var(--text-muted) !important; /* Usar variable de texto secundario */
+}
+
+/* Stepper Styles */
+.stepper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    position: relative;
+    padding: 0 1rem; /* Añadir padding para evitar desbordamiento */
+}
+
+.stepper::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    /* Ajustar left y right para que la línea no se extienda completamente hasta los círculos */
+    left: calc(5% + 15px); /* 5% más la mitad del ancho del círculo (30px/2) */
+    right: calc(5% + 15px); /* 5% más la mitad del ancho del círculo */
+    /* Cambiar la línea a sólida */
+    z-index: 0;
+    transform: translateY(-50%); /* Centrar verticalmente */
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2; /* Asegurar que los pasos estén sobre la línea */
+    flex-basis: 0;
+    flex-grow: 1;
+    max-width: 100px; /* Limitar ancho para pantallas pequeñas */
+    text-align: center;
+    padding: 0.5rem 0; /* Ajustar padding */
+    margin: 0; /* Eliminar margen entre pasos, la línea y el padding lo manejan */
+}
+
+.step .circle {
+    width: 30px; /* Ajustar tamaño */
+    height: 30px; /* Ajustar tamaño */
+    /* Asegurar que el círculo sea visible y esté sobre la línea */
+    background-color: var(--card-bg); /* Usar variable de fondo de tarjeta (blanco) */
+    color: var(--text-dark); /* Usar variable de texto oscuro para el número */
+    border: 2px solid var(--primary-color); /* Usar color primario para el borde del círculo por defecto */
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    margin-bottom: 0.5rem; /* Ajustar margen */
+    transition: var(--transition-base);
+    font-size: 1rem; /* Ajustar tamaño de fuente */
+    z-index: 1; /* Asegurar que el círculo dentro del paso esté sobre la línea */
+    position: relative; /* Necesario para que z-index funcione */
+}
+
+.step.active .circle {
+    background-color: var(--primary-color); /* Usar variable de color primario */
+    color: var(--text-light); /* Usar variable de texto claro */
+    border-color: var(--primary-color); /* Usar variable de color primario */
+}
+
+.step.completed .circle {
+    background-color: var(--success-color); /* Usar variable de color de éxito */
+    color: var(--text-light); /* Usar variable de texto claro */
+    border-color: var(--success-color); /* Usar variable de color de éxito */
+}
+
+.step .label {
+    font-size: 0.8rem; /* Ajustar tamaño de fuente */
+    color: var(--text-dark); /* Usar variable de texto oscuro */
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2; /* Ajustar altura de línea */
+    margin-top: 0.25rem; /* Añadir un pequeño margen superior */
+}
+
+.step.active .label {
+    font-weight: 600;
+    color: var(--primary-color); /* Usar variable de color primario */
+}
+
+/* Form Control Styles (Alinear con home.css) */
+.form-label {
+    font-weight: 500;
+    color: var(--text-dark); /* Usar variable de texto oscuro */
+}
+
+.form-control,
+.form-select {
+    border-radius: var(--border-radius); /* Usar variable de border-radius */
+    border-color: rgba(0, 0, 0, 0.1); /* Usar un borde sutil */
+    padding: 0.6rem 1rem; /* Ajustar padding */
+    transition: var(--transition-base);
+    font-size: 1rem; /* Ajustar tamaño de fuente */
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-color); /* Usar variable de color primario */
+    box-shadow: 0 0 0 0.25rem rgba(var(--primary-color-rgb), 0.25); /* Usar variable de color primario con opacidad */
+}
+
+.form-control.is-invalid,
+.form-select.is-invalid {
+    border-color: var(--danger-color); /* Usar variable de color de peligro */
+}
+
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus {
+    box-shadow: 0 0 0 0.25rem rgba(var(--danger-color-rgb), 0.25); /* Usar variable de color de peligro con opacidad */
+}
+
+.invalid-feedback {
+    color: var(--danger-color); /* Usar variable de color de peligro */
+    font-size: 0.875em;
+}
+
+/* Button Styles (Alinear con home.css) */
+.btn {
+    padding: 0.5rem 1.5rem; /* Ajustar padding */
+    border-radius: 25px; /* Usar border-radius de botón de home */
+    font-weight: 500;
+    transition: var(--transition-base);
+    font-size: 1rem; /* Ajustar tamaño de fuente */
+}
+
+.btn-primary {
+    background-color: var(--primary-color); /* Usar variable de color primario */
+    border-color: var(--primary-color); /* Usar variable de color primario */
+    color: var(--text-light); /* Usar variable de texto claro */
+}
+
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 500;
+    transition: var(--transition-base);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark); /* Usar variable de color primario oscuro */
+    border-color: var(--primary-dark); /* Usar variable de color primario oscuro */
+}
+
+.btn-secondary {
+    background-color: var(--light-bg); /* Usar variable de fondo claro */
+    border-color: rgba(0, 0, 0, 0.1); /* Usar un borde sutil */
+    color: var(--text-dark); /* Usar variable de texto oscuro */
+}
+
+.btn-secondary:hover {
+    background-color: #e9ecef; /* Un gris más claro en hover (se puede ajustar) */
+    border-color: #dee2e6; /* Ajustar borde en hover */
+}
+
+.btn-success {
+    background-color: var(--success-color); /* Usar variable de color de éxito */
+    border-color: var(--success-color); /* Usar variable de color de éxito */
+    color: var(--text-light); /* Usar variable de texto claro */
+}
+
+.btn-success:hover {
+    background-color: #218838; /* Un verde más oscuro (se puede ajustar si se necesita) */
+    border-color: #1e7e34; /* Un verde más oscuro (se puede ajustar si se necesita) */
+}
+
+/* Plan Preview Styles */
+.plan-preview {
+    border: 1px solid rgba(0, 0, 0, 0.1); /* Usar un borde sutil */
+    border-radius: var(--border-radius); /* Usar variable de border-radius */
+    padding: 1.2rem; /* Ajustar padding */
+    margin-top: 1.5rem;
+    background-color: var(--light-bg); /* Usar variable de fondo claro */
+    transition: opacity 0.5s ease-in-out;
+    opacity: 1;
+}
+
+.plan-preview:empty {
+    display: none;
+}
+
+.plan-preview h4 {
+    color: var(--primary-color); /* Usar variable de color primario */
+    margin-bottom: 0.8rem; /* Ajustar margen inferior */
+    font-size: 1.2rem; /* Ajustar tamaño de fuente */
+}
+
+.plan-preview .plan-price {
+    font-size: 1.1rem; /* Ajustar tamaño de fuente */
+    font-weight: 600;
+    color: var(--text-dark); /* Usar variable de texto oscuro */
+    margin-bottom: 1rem; /* Ajustar margen inferior */
+}
+
+.plan-preview .plan-caracteristicas li {
+    margin-bottom: 0.4rem; /* Ajustar margen inferior */
+    color: var(--text-dark); /* Usar variable de texto oscuro */
+    font-size: 0.9rem; /* Ajustar tamaño de fuente */
+}
+
+.plan-preview .plan-caracteristicas i {
+    color: var(--accent-color); /* Usar variable de color de acento */
+    margin-right: 0.5rem;
+}
+
+/* Header Styles (Alinear con home.css) */
+.navbar {
+    padding: 1rem 0;
+    background-color: var(--card-bg);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+}
+
+.navbar-brand span {
+    color: var(--primary-color); /* Asegurar que el color del texto de la marca use la variable */
+}
+
+.nav-link {
+    color: var(--text-dark);
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: var(--transition-base);
+}
+
+.nav-link:hover {
+    color: var(--primary-color);
+}
+
+.nav-link.active {
+    color: var(--primary-color);
+}
+
+/* Footer Styles (Alinear con home.css) */
+footer {
+    background-color: var(--dark-bg); /* Usar variable de fondo oscuro */
+    color: var(--text-light); /* Usar variable de texto claro */
+    padding: 2rem 0; /* Alinear padding con home.css */
+}
+
+footer p {
+    margin-bottom: 0;
+    color: var(--text-custom-muted); /* Usar variable para texto atenuado en fondo oscuro */
+}
+
+footer a {
+    color: var(--text-custom-muted); /* Usar variable para enlaces en fondo oscuro */
+}
+
+footer a:hover {
+    color: var(--primary-light); /* Usar acento claro en hover */
+}
+
+footer h5 {
+    color: var(--primary-color); /* Usar variable de color primario para títulos */
+    font-weight: 600;
+}
+
+footer .hover-primary {
+    transition: var(--transition-base);
+}
+
+footer .hover-primary:hover {
+    color: var(--primary-color) !important; /* Acento primario en hover */
+}
+
+footer .bi {
+    color: var(--primary-color); /* Color primario para iconos en el footer */
+}
+
+/* Responsive Adjustments (Alinear con home.css responsive) */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1rem; /* Alinear con home.css responsive */
+    }
+
+    .stepper {
+        padding: 0 0.5rem;
+    }
+
+    .step {
+        max-width: 80px; /* Reducir ancho en tablet */
+        padding: 0.3rem;
+        margin: 0 0.3rem;
+    }
+
+    .step .circle {
+        width: 25px;
+        height: 25px;
+        font-size: 0.9rem;
+    }
+
+    .step .label {
+        font-size: 0.7rem; /* Reducir tamaño de fuente en tablet */
+        max-width: 100%;
+    }
+
+    .form-control,
+    .form-select,
+    .btn {
+        padding: 0.5rem 1rem; /* Alinear con home.css responsive */
+        font-size: 0.9rem; /* Alinear con home.css responsive */
+    }
+
+    .plan-preview {
+        padding: 1rem;
+    }
+
+    .plan-preview h4 {
+        font-size: 1.1rem; /* Alinear con home.css responsive card header */
+    }
+
+    .plan-preview .plan-price {
+        font-size: 1rem;
+    }
+
+    .plan-preview .plan-caracteristicas li {
+        font-size: 0.85rem; /* Alinear con home.css responsive */
+    }
+
+    footer {
+        padding: 1.5rem 0; /* Alinear con home.css responsive */
+    }
+}
+
+@media (max-width: 576px) {
+    .card-body {
+        padding: 0.8rem; /* Alinear con home.css responsive */
+    }
+
+    .stepper {
+        padding: 0;
+    }
+
+    .step {
+        max-width: 60px; /* Reducir ancho en mobile */
+        padding: 0.2rem;
+        margin: 0 0.2rem;
+    }
+
+    .step .circle {
+        width: 20px;
+        height: 20px;
+        font-size: 0.8rem;
+    }
+
+    .step .label {
+        font-size: 0.6rem; /* Reducir tamaño de fuente en mobile */
+    }
+
+    .form-control,
+    .form-select,
+    .btn {
+        padding: 0.4rem 0.8rem; /* Alinear con home.css responsive */
+        font-size: 0.8rem; /* Alinear con home.css responsive */
+    }
+
+    .plan-preview {
+        padding: 0.8rem;
+    }
+
+    .plan-preview h4 {
+        font-size: 1rem; /* Alinear con home.css responsive card header */
+    }
+
+    .plan-preview .plan-price {
+        font-size: 0.9rem;
+    }
+
+    .plan-preview .plan-caracteristicas li {
+        font-size: 0.8rem; /* Alinear con home.css responsive */
+    }
+
+    footer {
+        padding: 1rem 0; /* Alinear con home.css responsive */
+    }
+}

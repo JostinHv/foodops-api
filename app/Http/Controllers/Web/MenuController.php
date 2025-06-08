@@ -7,10 +7,15 @@ use App\Services\Interfaces\ICategoriaMenuService;
 use App\Services\Interfaces\IItemMenuService;
 use App\Services\Interfaces\ISucursalService;
 use App\Services\Interfaces\IUsuarioService;
+use App\Services\Interfaces\IImagenService;
 use App\Traits\AuthenticatedUserTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+use Exception;
+use RuntimeException;
 
 class MenuController extends Controller
 {
@@ -21,6 +26,7 @@ class MenuController extends Controller
         private readonly IItemMenuService      $itemMenuService,
         private readonly ISucursalService      $sucursalService,
         private readonly IUsuarioService       $usuarioService,
+        private readonly IImagenService        $imagenService,
     )
     {
     }
@@ -45,7 +51,6 @@ class MenuController extends Controller
             });
 
 
-        \Log::log('info', 'Items disponibles: ', $itemsSucursales->toArray());
 
         // Calcular estadísticas
         $totalItems = $itemsSucursales->count();
@@ -78,7 +83,6 @@ class MenuController extends Controller
 
             return response()->json(['item' => $item]);
         } catch (\Exception $e) {
-            \Log::error('Error al obtener item: ' . $e->getMessage());
             return response()->json([
                 'error' => 'Error al obtener el item: ' . $e->getMessage()
             ], 500);
@@ -93,10 +97,23 @@ class MenuController extends Controller
             'precio' => 'required|numeric|min:0',
             'categoria_menu_id' => 'required|exists:categorias_menus,id',
             'disponible' => 'boolean',
-            'activo' => 'boolean'
+            'activo' => 'boolean',
+            'imagen' => 'nullable|image|max:2048'
         ]);
 
-        $success = $this->itemMenuService->actualizar($id, $request->all());
+        $data = $request->all();
+        $data['disponible'] = $request->boolean('disponible');
+        $data['activo'] = $request->boolean('activo');
+
+        // Procesar la imagen si se ha subido una nueva
+        if ($request->hasFile('imagen')) {
+            $imagen = $this->imagenService->guardarImagen($request->file('imagen'), 'items_menu');
+            if ($imagen) {
+                $data['imagen_id'] = $imagen->id;
+            }
+        }
+
+        $success = $this->itemMenuService->actualizar($id, $data);
 
         if (!$success) {
             return response()->json(['error' => 'Error al actualizar el item'], 500);
@@ -153,12 +170,21 @@ class MenuController extends Controller
                 'categoria_menu_id' => 'required|exists:categorias_menus,id',
                 'orden_visualizacion' => 'nullable|integer|min:1',
                 'disponible' => 'boolean',
-                'activo' => 'boolean'
+                'activo' => 'boolean',
+                'imagen' => 'nullable|image|max:2048'
             ]);
 
             $data = $request->all();
             $data['disponible'] = $request->boolean('disponible', true);
             $data['activo'] = $request->boolean('activo', true);
+
+            // Procesar la imagen si se ha subido una
+            if ($request->hasFile('imagen')) {
+                $imagen = $this->imagenService->guardarImagen($request->file('imagen'), 'items_menu');
+                if ($imagen) {
+                    $data['imagen_id'] = $imagen->id;
+                }
+            }
 
             $item = $this->itemMenuService->crear($data);
 
@@ -166,8 +192,8 @@ class MenuController extends Controller
                 return response()->json(['error' => 'Error al crear el item'], 500);
             }
 
-            // Cargar la relación con la categoría
-            $item->load('categoriaMenu');
+            // Cargar la relación con la categoría y la imagen
+            $item->load(['categoriaMenu', 'imagen']);
 
             return response()->json([
                 'message' => 'Item creado exitosamente',
@@ -179,7 +205,6 @@ class MenuController extends Controller
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
-            \Log::error('Error al crear item: ' . $e->getMessage());
             return response()->json([
                 'error' => 'Error al crear el item: ' . $e->getMessage()
             ], 500);
@@ -219,7 +244,6 @@ class MenuController extends Controller
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
-            \Log::error('Error al crear categoría: ' . $e->getMessage());
             return response()->json([
                 'error' => 'Error al crear la categoría: ' . $e->getMessage()
             ], 500);
@@ -275,9 +299,61 @@ class MenuController extends Controller
 
             return response()->json(['categoria' => $categoria]);
         } catch (\Exception $e) {
-            \Log::error('Error al obtener categoría: ' . $e->getMessage());
             return response()->json([
                 'error' => 'Error al obtener la categoría: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function uploadImagen(Request $request): JsonResponse
+    {
+        try {
+            $request->validate([
+                'imagen' => 'required|image|max:2048'
+            ]);
+
+            if ($request->hasFile('imagen')) {
+                try {
+                    $imagen = $request->file('imagen');
+                    if ($imagen->isValid()) {
+                        // Usar DIRECTORY_SEPARATOR para compatibilidad con Windows
+                        $directory = 'imagenes' . DIRECTORY_SEPARATOR . 'items_menu';
+
+                        // Crear directorio si no existe
+                        if (!Storage::disk('public')->exists($directory)) {
+                            Storage::disk('public')->makeDirectory($directory);
+                        }
+
+                        $imagenPath = $imagen->store($directory, 'public');
+                        $imagen = $this->imagenService->crear([
+                            'url' => str_replace('\\', '/', $imagenPath), // Convertir separadores para URL
+                            'activo' => true,
+                        ]);
+
+                        if ($imagen) {
+                            Log::info('Imagen guardada exitosamente: ' . $imagen->url);
+                            Log::info('Path: ' . $directory);
+                            return response()->json([
+                                'message' => 'Imagen subida exitosamente',
+                                'imagen_id' => $imagen->id
+                            ]);
+                        }
+                    }
+                } catch (Exception $e) {
+                    Log::error('Error al guardar la imagen del item: ' . $e->getMessage());
+                    throw new RuntimeException('No se pudo procesar la imagen: ' . $e->getMessage());
+                }
+            }
+
+            return response()->json(['error' => 'Error al guardar la imagen'], 500);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'error' => 'Error de validación',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al subir la imagen: ' . $e->getMessage()
             ], 500);
         }
     }

@@ -13,9 +13,7 @@ class WebCheckRole
         try {
             $user = JWTAuth::parseToken()->authenticate();
             $userRoles = $user->roles->pluck('nombre')->toArray();
-            \Log::info('Roles del usuario: {roles}', ['roles' => $userRoles]);
             if (empty(array_intersect($roles, $userRoles))) {
-                \Log::log('warning', 'Acceso denegado para el usuario: {user}', ['user' => $user->id]);
                 return redirect()
                     ->route('login')
                     ->with('error', 'No tiene permiso para acceder a esta página');

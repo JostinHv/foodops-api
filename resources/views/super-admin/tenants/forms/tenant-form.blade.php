@@ -13,6 +13,8 @@
                     <option value="{{ $plan->id }}"
                         data-precio="{{ $plan->precio }}"
                         data-caracteristicas="{{ json_encode($plan->caracteristicas) }}"
+                        data-intervalo="{{ $plan->intervalo }}"
+                        data-descripcion="{{ $plan->descripcion }}"
                         {{ old('plan_suscripcion_id', $tenant->plan_suscripcion_id ?? '') == $plan->id ? 'selected' : '' }}>
                         {{ $plan->nombre }} - S/. {{ number_format($plan->precio, 2) }}/{{ $plan->intervalo }}
                     </option>
@@ -45,17 +47,57 @@
 
 <!-- Preview del Plan Seleccionado -->
 <div id="plan-preview" class="mb-4 d-none">
-    <div class="card bg-light">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h6 class="mb-0">Detalles del Plan Seleccionado</h6>
+        </div>
         <div class="card-body">
-            <h6 class="card-title">Detalles del Plan</h6>
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <p class="text-muted" id="descripcion-plan"></p>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-6">
-                    <p class="mb-1"><strong>Precio:</strong> S/. <span id="precio-plan">0.00</span></p>
-                    <p class="mb-1"><strong>Facturación:</strong> <span id="intervalo-plan">-</span></p>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Precio:</span>
+                        <span class="h5 mb-0">S/. <span id="precio-plan">0.00</span></span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span>Intervalo:</span>
+                        <span class="badge rounded-pill bg-primary" id="intervalo-plan">-</span>
+                    </div>
                 </div>
                 <div class="col-md-6">
-                    <p class="mb-1"><strong>Características:</strong></p>
-                    <ul class="list-unstyled" id="caracteristicas-plan">
+                    <div class="limites mb-3">
+                        <div class="limite-item">
+                            <i class="bi bi-people"></i>
+                            <div>
+                                <small>Usuarios</small>
+                                <strong id="limite-usuarios">0</strong>
+                            </div>
+                        </div>
+                        <div class="limite-item">
+                            <i class="bi bi-building"></i>
+                            <div>
+                                <small>Restaurantes</small>
+                                <strong id="limite-restaurantes">0</strong>
+                            </div>
+                        </div>
+                        <div class="limite-item">
+                            <i class="bi bi-shop"></i>
+                            <div>
+                                <small>Sucursales</small>
+                                <strong id="limite-sucursales">0</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <small class="d-block mb-2">Características adicionales:</small>
+                    <ul class="list-unstyled mb-0" id="caracteristicas-plan">
                     </ul>
                 </div>
             </div>
@@ -69,7 +111,7 @@
     <div class="row">
         <div class="col-md-6">
             <label for="fecha_inicio" class="form-label">Fecha de Inicio <span class="text-danger">*</span></label>
-            <input type="date" 
+            <input type="date"
                 class="form-control @error('fecha_inicio') is-invalid @enderror"
                 id="fecha_inicio"
                 name="fecha_inicio"
@@ -82,10 +124,10 @@
         <div class="col-md-6">
             <label for="renovacion_automatica" class="form-label">Renovación Automática</label>
             <div class="form-check form-switch mt-2">
-                <input class="form-check-input" 
-                    type="checkbox" 
-                    id="renovacion_automatica" 
-                    name="renovacion_automatica" 
+                <input class="form-check-input"
+                    type="checkbox"
+                    id="renovacion_automatica"
+                    name="renovacion_automatica"
                     value="1"
                     {{ old('renovacion_automatica') ? 'checked' : '' }}>
                 <label class="form-check-label" for="renovacion_automatica">
@@ -262,11 +304,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (selectedOption.value) {
             const precio = selectedOption.getAttribute('data-precio');
             const caracteristicas = JSON.parse(selectedOption.getAttribute('data-caracteristicas'));
-            const intervalo = selectedOption.text.split('/').pop().trim();
+            const intervalo = selectedOption.getAttribute('data-intervalo');
+            const descripcion = selectedOption.getAttribute('data-descripcion');
 
             precioPlan.textContent = parseFloat(precio).toFixed(2);
             intervaloPlan.textContent = intervalo;
-            
+
             caracteristicasPlan.innerHTML = '';
             caracteristicas.forEach(caracteristica => {
                 const li = document.createElement('li');
@@ -286,5 +329,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-<script src="{{ asset('js/tenant-form.js') }}"></script>
 @endpush

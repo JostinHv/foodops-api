@@ -45,4 +45,9 @@ readonly class ItemMenuService implements IItemMenuService
     {
         return $this->repository->obtenerTodosItemsDisponibles();
     }
+
+    public function obtenerTodosItemsDisponiblesSegunCategorias( array $categoriasIds): Collection
+    {
+        return $this->repository->obtenerTodosItemsDisponiblesSegunCategorias($categoriasIds);
+    }
 }

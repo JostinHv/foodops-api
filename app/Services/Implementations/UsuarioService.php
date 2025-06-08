@@ -65,4 +65,24 @@ readonly class UsuarioService implements IUsuarioService
     {
         return $this->repository->obtenerPorTenantId($tenantId);
     }
+
+    public function obtenerPorEmail(string $email): ?Model
+    {
+        return $this->repository->obtenerPorEmail($email);
+    }
+
+    public function estaBloqueado(int $usuarioId): bool
+    {
+        $usuario = $this->repository->obtenerPorId($usuarioId);
+        if (!$usuario) {
+            return false;
+        }
+        if (!($usuario->activo)) {
+            return true;
+        }
+        if (!($usuario->tenant?->activo ?? true)) {
+            return true;
+        }
+        return false;
+    }
 }

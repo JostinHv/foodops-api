@@ -15,7 +15,6 @@ class ApiCheckRole
             $userRoles = $user->roles->pluck('nombre')->toArray();
 
             if (empty(array_intersect($roles, $userRoles))) {
-                \Log::log('warning', 'Acceso denegado para el usuario: {user}', ['user' => $user->id]);
                 return response()->json([
                     'status' => 'error',
                     'message' => 'No tiene permiso para acceder a esta ruta',

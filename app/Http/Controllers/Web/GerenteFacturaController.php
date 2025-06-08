@@ -9,11 +9,12 @@ use App\Services\Interfaces\IMetodoPagoService;
 use App\Services\Interfaces\IOrdenService;
 use App\Services\Interfaces\ISucursalService;
 use App\Traits\AuthenticatedUserTrait;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class GerenteFacturaController extends Controller
 {
@@ -111,6 +112,9 @@ class GerenteFacturaController extends Controller
                     'message' => 'Factura no encontrada'
                 ], 404);
             }
+
+            // Cargar las relaciones necesarias
+            $factura->load(['orden.itemsOrdenes.itemMenu', 'metodoPago', 'igv', 'orden.mesa']);
 
             return response()->json([
                 'factura' => $factura
@@ -216,25 +220,86 @@ class GerenteFacturaController extends Controller
         }
     }
 
-    public function generarPDF($id)
+    public function generarPDF($id): Response|JsonResponse
     {
-        $factura = $this->facturaService->obtenerPorId($id);
-        
-        if (!$factura) {
-            return response()->json(['message' => 'Factura no encontrada'], 404);
+        try {
+            $factura = $this->facturaService->obtenerPorId($id);
+
+            if (!$factura) {
+                return response()->json(['message' => 'Factura no encontrada'], 404);
+            }
+
+            // Cargar las relaciones necesarias
+            $factura->load(['orden.itemsOrdenes.itemMenu', 'metodoPago', 'igv']);
+
+            // Obtener información del restaurante y sucursal
+            $sucursal = $factura->orden->sucursal;
+            $restaurante = $sucursal->restaurante;
+
+            $pdf = PDF::loadView('pdf.factura', [
+                'factura' => $factura,
+                'items' => $factura->orden->itemsOrdenes,
+                'subtotal' => $factura->monto_total,
+                'igv' => $factura->monto_total_igv,
+                'total' => $factura->monto_total + $factura->monto_total_igv,
+                'restaurante' => $restaurante,
+                'sucursal' => $sucursal
+            ]);
+
+            // Configurar el PDF
+            $pdf->setPaper('a4');
+            $pdf->setOption('margin-top', 10);
+            $pdf->setOption('margin-right', 10);
+            $pdf->setOption('margin-bottom', 10);
+            $pdf->setOption('margin-left', 10);
+
+            return $pdf->download("factura-{$factura->nro_factura}.pdf");
+        } catch (\Exception $e) {
+            Log::error('Error al generar PDF: ' . $e->getMessage());
+            return response()->json(['message' => 'Error al generar el PDF: ' . $e->getMessage()], 500);
         }
+    }
 
-        // Cargar las relaciones necesarias
-        $factura->load(['orden.itemsOrdenes.itemMenu', 'metodoPago', 'igv']);
+    public function generarPDFPOS($id): Response|JsonResponse
+    {
+        try {
+            $factura = $this->facturaService->obtenerPorId($id);
 
-        $pdf = PDF::loadView('pdf.factura', [
-            'factura' => $factura,
-            'items' => $factura->orden->itemsOrdenes,
-            'subtotal' => $factura->monto_total,
-            'igv' => $factura->monto_total_igv,
-            'total' => $factura->monto_total + $factura->monto_total_igv
-        ]);
+            if (!$factura) {
+                return response()->json(['message' => 'Factura no encontrada'], 404);
+            }
 
-        return $pdf->download("factura-{$factura->nro_factura}.pdf");
+            // Cargar las relaciones necesarias
+            $factura->load(['orden.itemsOrdenes.itemMenu', 'metodoPago', 'igv']);
+
+            // Obtener información del restaurante y sucursal
+            $sucursal = $factura->orden->sucursal;
+            $restaurante = $sucursal->restaurante;
+
+            $pdf = PDF::loadView('pdf.factura-pos', [
+                'factura' => $factura,
+                'items' => $factura->orden->itemsOrdenes,
+                'subtotal' => $factura->monto_total,
+                'igv' => $factura->monto_total_igv,
+                'total' => $factura->monto_total + $factura->monto_total_igv,
+                'restaurante' => $restaurante,
+                'sucursal' => $sucursal
+            ]);
+
+            // Configurar el PDF para impresión térmica
+            $pdf->setPaper([0, 0, 300, 1000]); // Tamaño personalizado para ticket
+            $pdf->setOption('margin-top', 0);
+            $pdf->setOption('margin-right', 0);
+            $pdf->setOption('margin-bottom', 0);
+            $pdf->setOption('margin-left', 0);
+            $pdf->setOption('dpi', 72);
+            $pdf->setOption('isHtml5ParserEnabled', true);
+            $pdf->setOption('isRemoteEnabled', true);
+
+            return $pdf->download("ticket-{$factura->nro_factura}.pdf");
+        } catch (\Exception $e) {
+            Log::error('Error al generar PDF POS: ' . $e->getMessage());
+            return response()->json(['message' => 'Error al generar el ticket: ' . $e->getMessage()], 500);
+        }
     }
 }

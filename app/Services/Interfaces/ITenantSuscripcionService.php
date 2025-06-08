@@ -17,6 +17,8 @@ interface ITenantSuscripcionService extends IBaseService
 
     public function eliminar(int $id): bool;
 
-    public function obtenerTenantsPorPlan($id);
+    public function obtenerTenantsPorPlan($id): Collection;
+
+    public function obtenerPorTenantId(int $id): ?Model;
 
 }

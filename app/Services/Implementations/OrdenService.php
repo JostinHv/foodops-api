@@ -8,11 +8,11 @@ use App\Repositories\Interfaces\IItemOrdenRepository;
 use App\Repositories\Interfaces\IOrdenRepository;
 use App\Repositories\Interfaces\IUsuarioRepository;
 use App\Services\Interfaces\IOrdenService;
-use DB;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Log;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 readonly class OrdenService implements IOrdenService
 {

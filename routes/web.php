@@ -2,12 +2,16 @@
 
 use App\Http\Controllers\Web\AdminController;
 use App\Http\Controllers\Web\AuthController;
+use App\Http\Controllers\Web\ContactoController;
+use App\Http\Controllers\Web\GerenteFacturaController;
 use App\Http\Controllers\Web\GerenteMesaController;
+use App\Http\Controllers\Web\GerentePersonalController;
 use App\Http\Controllers\Web\GrupoRestauranteController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\IgvController;
 use App\Http\Controllers\Web\MenuController;
 use App\Http\Controllers\Web\MetodoPagoController;
+use App\Http\Controllers\Web\MovimientoHistorialController;
 use App\Http\Controllers\Web\OrdenController;
 use App\Http\Controllers\Web\PerfilController;
 use App\Http\Controllers\Web\PlanSuscripcionController;
@@ -15,15 +19,13 @@ use App\Http\Controllers\Web\RestauranteController;
 use App\Http\Controllers\Web\SucursalController;
 use App\Http\Controllers\Web\TenantController;
 use App\Http\Controllers\Web\UsuarioController;
-use App\Http\Controllers\Web\GerentePersonalController;
-use App\Http\Controllers\Web\GerenteFacturaController;
 use App\Http\Middleware\WebAuthenticate;
 use App\Http\Middleware\WebCheckRole;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('home');
-})->name('home');
+Route::get('/phpinfo', function () {
+    phpinfo();
+});
 
 
 // Rutas de autenticación
@@ -34,6 +36,11 @@ Route::post('/register', [AuthController::class, 'register'])->name('register-su
 Route::post('/check-email', [AuthController::class, 'checkEmail'])->name('check.email');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/planes', [HomeController::class, 'planes'])->name('detalles.planes');
+Route::get('/contacto', [ContactoController::class, 'mostrarFormulario'])->name('contacto');
+Route::get('/contacto-planes', [ContactoController::class, 'mostrarFormulario'])->name('contacto.planes');
+Route::get('/terminos-condiciones', [HomeController::class, 'terminosCondiciones'])->name('terminos.condiciones');
+Route::get('/politica-privacidad', [HomeController::class, 'politicaPrivacidad'])->name('politica.privacidad');
 
 Route::prefix('mesero')->group(function () {
 // Rutas protegidas por autenticación
@@ -123,7 +130,7 @@ Route::prefix('gerente')->group(function () {
         Route::get('/dashboard', static function () {
             return view('gerente-sucursal.dashboard');
         })->name('gerente.dashboard');
-        
+
         // Rutas del menú
         Route::get('/menu', [MenuController::class, 'index'])->name('gerente.menu');
         Route::get('/menu/items/{id}', [MenuController::class, 'showItem'])->name('gerente.menu.items.show');
@@ -131,13 +138,14 @@ Route::prefix('gerente')->group(function () {
         Route::post('/menu/items/{id}', [MenuController::class, 'updateItem'])->name('gerente.menu.items.update');
         Route::post('/menu/items/{id}/toggle-activo', [MenuController::class, 'toggleItemActivo'])->name('gerente.menu.items.toggle-activo');
         Route::post('/menu/items/{id}/toggle-disponible', [MenuController::class, 'toggleItemDisponible'])->name('gerente.menu.items.toggle-disponible');
-        
+        Route::post('/menu/upload-imagen', [MenuController::class, 'uploadImagen'])->name('gerente.menu.upload-imagen');
+
         // Rutas para categorías del menú
         Route::get('/menu/categorias/{id}', [MenuController::class, 'showCategoria'])->name('gerente.menu.categorias.show');
         Route::post('/menu/categorias', [MenuController::class, 'storeCategoria'])->name('gerente.menu.categorias.store');
         Route::post('/menu/categorias/{id}', [MenuController::class, 'updateCategoria'])->name('gerente.menu.categorias.update');
         Route::post('/menu/categorias/{id}/toggle-activo', [MenuController::class, 'toggleCategoriaActivo'])->name('gerente.menu.categorias.toggle-activo');
-        
+
         Route::group(['prefix' => 'mesas'], function () {
             Route::get('/', [GerenteMesaController::class, 'index'])
                 ->name('gerente.mesas');
@@ -170,6 +178,7 @@ Route::prefix('gerente')->group(function () {
             Route::delete('/{id}', [GerenteFacturaController::class, 'destroy'])->name('gerente.facturacion.destroy');
             Route::post('/calcular-totales', [GerenteFacturaController::class, 'calcularTotales'])->name('gerente.facturacion.calcular-totales');
             Route::get('/{id}/pdf', [GerenteFacturaController::class, 'generarPDF'])->name('gerente.facturacion.pdf');
+            Route::get('/{id}/pdf-pos', [GerenteFacturaController::class, 'generarPDFPOS'])->name('gerente.facturacion.pdf-pos');
         });
 
         // Rutas de perfil
@@ -193,6 +202,7 @@ Route::prefix('superadmin')->group(function () {
             Route::get('/', [TenantController::class, 'index'])->name('superadmin.tenant');
             Route::post('/', [TenantController::class, 'store'])->name('superadmin.tenant.store');
             Route::get('/{id}', [TenantController::class, 'show'])->name('superadmin.tenant.show');
+            Route::get('/detalles/{id}', [TenantController::class, 'obtenerDetalles'])->name('superadmin.tenant.detalles');
             Route::put('/{id}', [TenantController::class, 'update'])->name('superadmin.tenant.update');
             Route::delete('/{id}', [TenantController::class, 'destroy'])->name('superadmin.tenant.destroy');
             Route::put('/{id}/toggle-activo', [TenantController::class, 'toggleActivo'])->name('superadmin.tenant.toggle-activo');
@@ -200,9 +210,9 @@ Route::prefix('superadmin')->group(function () {
             // Rutas para gestión de usuarios del tenant
             Route::post('/{id}/usuarios', [TenantController::class, 'agregarUsuario'])
                 ->name('superadmin.tenant.usuarios.store');
-            Route::delete('/{tenantId}/usuarios/{usuarioId}', [TenantController::class, 'desactivarUsuario'])
-                ->name('superadmin.tenant.usuarios.destroy');
-            Route::post('/{tenantId}/usuarios/{usuarioId}/rol', [TenantController::class, 'cambiarRolUsuario'])
+            Route::put('/{tenantId}/usuarios/{usuarioId}/toggle-estado', [TenantController::class, 'toggleEstadoUsuario'])
+                ->name('superadmin.tenant.usuarios.toggle-estado');
+            Route::put('/{tenantId}/usuarios/{usuarioId}/rol', [TenantController::class, 'cambiarRolUsuario'])
                 ->name('superadmin.tenant.usuarios.cambiar-rol');
         });
 
@@ -226,6 +236,10 @@ Route::prefix('superadmin')->group(function () {
             Route::put('/{id}', [IgvController::class, 'update'])->name('superadmin.igv.update');
             Route::post('/{id}/toggle-activo', [IgvController::class, 'toggleActivo'])->name('superadmin.igv.toggle-activo');
         });
+
+        // Rutas de auditoría
+        Route::get('/movimientos', [MovimientoHistorialController::class, 'index'])->name('superadmin.movimientos');
+        Route::get('/movimientos/usuario/{id}', [MovimientoHistorialController::class, 'getUserDetail'])->name('superadmin.movimientos.user-detail');
     });
 });
 

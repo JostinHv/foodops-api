@@ -3,6 +3,7 @@
 @section('title', 'Usuarios')
 
 @push('styles')
+    <link rel="stylesheet" href="{{ asset('css/variables.css') }}">
     <link rel="stylesheet" href="{{ asset('css/admin-tenant/usuarios.css') }}">
 @endpush
 

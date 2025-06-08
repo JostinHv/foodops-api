@@ -32,16 +32,13 @@ class GerenteMesaController extends Controller
             ->whereIn('sucursal_id', $sucursales->pluck('id'))
             ->load(['estadoMesa', 'sucursal']);
 
-        \Log::info('mesas: ' . $mesas);
         $estadosMesa = $this->estadoMesaService->obtenerActivos();
 
         $totalMesas = count($mesas);
         $totalAsientos = $mesas->sum('capacidad');
         $mesasOcupadas = $mesas->where('estadoMesa.nombre', 'Ocupada')->count();
-        \Log::info('mesas ocupadas: ' . $mesasOcupadas);
         $ocupacion = $totalMesas > 0 ? ($mesasOcupadas / $totalMesas) * 100 : 0;
 
-        \Log::info('mesas: ' . $mesas);
         return view('gerente-sucursal.mesas', compact(
             'mesas',
             'sucursales',
@@ -78,7 +75,6 @@ class GerenteMesaController extends Controller
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
-            \Log::error('Error al crear mesa: ' . $e->getMessage());
             return response()->json([
                 'error' => 'Error al crear la mesa: ' . $e->getMessage()
             ], 500);
@@ -98,7 +94,6 @@ class GerenteMesaController extends Controller
 
             return response()->json(['mesa' => $mesa]);
         } catch (\Exception $e) {
-            \Log::error('Error al obtener mesa: ' . $e->getMessage());
             return response()->json([
                 'error' => 'Error al obtener la mesa: ' . $e->getMessage()
             ], 500);
@@ -128,7 +123,6 @@ class GerenteMesaController extends Controller
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
-            \Log::error('Error al actualizar mesa: ' . $e->getMessage());
             return response()->json([
                 'error' => 'Error al actualizar la mesa: ' . $e->getMessage()
             ], 500);
@@ -146,7 +140,6 @@ class GerenteMesaController extends Controller
 
             return response()->json(['message' => 'Mesa eliminada exitosamente']);
         } catch (\Exception $e) {
-            \Log::error('Error al eliminar mesa: ' . $e->getMessage());
             return response()->json([
                 'error' => 'Error al eliminar la mesa: ' . $e->getMessage()
             ], 500);
@@ -168,7 +161,6 @@ class GerenteMesaController extends Controller
 
             return response()->json(['message' => 'Estado de la mesa actualizado exitosamente']);
         } catch (\Exception $e) {
-            \Log::error('Error al cambiar estado de mesa: ' . $e->getMessage());
             return response()->json([
                 'error' => 'Error al cambiar el estado de la mesa: ' . $e->getMessage()
             ], 500);

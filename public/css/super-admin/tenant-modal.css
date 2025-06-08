@@ -1,0 +1,254 @@
+/* Estilos para el modal de creación de tenant */
+.modal-progress {
+    padding: 1rem;
+    background-color: var(--light-bg);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-progress .progress {
+    height: 4px;
+    background-color: var(--light-bg);
+    border-radius: var(--border-radius);
+}
+
+.modal-progress .progress-bar {
+    background-color: var(--primary-color);
+    transition: width 0.3s ease;
+}
+
+.steps-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+    position: relative;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    flex: 1;
+}
+
+.step i {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--light-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    color: var(--text-muted);
+    transition: var(--transition-base);
+}
+
+.step span {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    text-align: center;
+    transition: var(--transition-base);
+}
+
+.step.active i {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+}
+
+.step.active span {
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.step.completed i {
+    background-color: var(--success-color);
+    color: var(--text-light);
+}
+
+.step-header {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+}
+
+.step-content {
+    padding: 1rem 0;
+}
+
+.summary-container {
+    background-color: var(--light-bg);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.summary-item:last-child {
+    border-bottom: none;
+}
+
+.summary-label {
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.summary-value {
+    color: var(--text-muted);
+}
+
+.limites {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.limite-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.limite-item i {
+    font-size: 1.25rem;
+    color: var(--primary-color);
+}
+
+.limite-item small {
+    color: var(--text-muted);
+}
+
+.limite-item strong {
+    display: block;
+    color: var(--text-dark);
+}
+
+/* Estilos para el preview del plan */
+#plan-preview .card-header {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+}
+
+#plan-preview .badge {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+}
+
+/* Estilos para los inputs y selects */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(var(--primary-rgb), 0.25);
+}
+
+.form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Estilos para los botones */
+.btn {
+    transition: var(--transition-base);
+}
+
+.btn:focus {
+    box-shadow: 0 0 0 0.25rem rgba(var(--primary-dark), 0.25);
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--text-light);
+}
+
+.btn-primary:disabled {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--text-light);
+}
+
+.btn:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--text-light);
+}
+
+.btn-primary:hover {
+    color: var(--text-light);
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+.btn-primary:active {
+    background-color: var(--primary-dark) !important;
+    border-color: var(--primary-dark) !important;
+}
+
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+}
+
+.btn-outline-primary:active {
+    background-color: var(--primary-dark) !important;
+    border-color: var(--primary-dark) !important;
+    color: var(--text-light) !important;
+}
+
+.btn-success {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+    color: var(--text-light);
+}
+
+.btn-success:hover {
+    background-color: var(--success-dark);
+    border-color: var(--success-dark);
+}
+
+.btn-success:active {
+    background-color: var(--success-darker) !important;
+    border-color: var(--success-darker) !important;
+}
+
+.btn-outline-secondary {
+    color: var(--text-muted);
+    border-color: var(--border-color);
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--light-bg);
+    border-color: var(--border-color);
+    color: var(--text-dark);
+}
+
+.btn-outline-secondary:active {
+    background-color: var(--border-color) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-dark) !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .step span {
+        display: none;
+    }
+
+    .step i {
+        margin-bottom: 0;
+    }
+}

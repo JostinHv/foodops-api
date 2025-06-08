@@ -6,6 +6,7 @@ use App\Models\TenantSuscripcion;
 use App\Repositories\Interfaces\ITenantSuscripcionRepository;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 
 class TenantSuscripcionRepository extends BaseRepository implements ITenantSuscripcionRepository
 {
@@ -41,5 +42,12 @@ class TenantSuscripcionRepository extends BaseRepository implements ITenantSuscr
             ->where('plan_suscripcion_id', $id)
             ->with(['tenant'])
             ->get();
+    }
+
+    public function obtenerPorTenantId(int $id): ?Model
+    {
+        return $this->modelo
+            ->where('tenant_id', $id)
+            ->first();
     }
 }

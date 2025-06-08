@@ -82,7 +82,6 @@ class SucursalController extends Controller
             return redirect()->route('tenant.sucursales')
                 ->with('success', 'Sucursal creada exitosamente');
         } catch (\Exception $exception) {
-            \Log::error('Error al crear sucursal: ' . $exception->getMessage());
             return redirect()->back()
                 ->withErrors(['error' => 'Error al crear la sucursal: ' . $exception->getMessage()])
                 ->withInput();
@@ -123,7 +122,6 @@ class SucursalController extends Controller
             return redirect()->route('tenant.sucursales')
                 ->with('success', 'Sucursal actualizada exitosamente');
         } catch (\Exception $exception) {
-            \Log::error('Error al actualizar sucursal: ' . $exception->getMessage());
             return redirect()->back()
                 ->withErrors(['error' => 'Error al actualizar la sucursal: ' . $exception->getMessage()])
                 ->withInput();
@@ -136,7 +134,6 @@ class SucursalController extends Controller
             $sucursal->load(['restaurante', 'usuario']);
             return response()->json(['sucursal' => $sucursal]);
         } catch (\Exception $exception) {
-            \Log::error('Error al obtener detalles de la sucursal: ' . $exception->getMessage());
             return response()->json(['error' => 'Error al obtener los detalles de la sucursal'], 500);
         }
     }
@@ -148,7 +145,6 @@ class SucursalController extends Controller
             return redirect()->route('tenant.sucursales')
                 ->with('success', 'Estado de la sucursal actualizado exitosamente');
         } catch (\Exception $exception) {
-            \Log::error('Error al cambiar estado de la sucursal: ' . $exception->getMessage());
             return redirect()->back()
                 ->withErrors(['error' => 'Error al cambiar el estado de la sucursal']);
         }

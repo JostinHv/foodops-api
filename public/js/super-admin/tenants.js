@@ -1,12 +1,12 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Previsualización de imagen
     const logoInput = document.getElementById('logo');
     if (logoInput) {
-        logoInput.addEventListener('change', function(e) {
+        logoInput.addEventListener('change', function (e) {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     const preview = document.createElement('img');
                     preview.src = e.target.result;
                     preview.className = 'img-thumbnail mt-2';
@@ -28,13 +28,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const modals = {
         details: document.getElementById('detallesTenantModal'),
         edit: document.getElementById('editarTenantModal'),
-        delete: document.getElementById('eliminarItemModal'),
-        deactivate: document.getElementById('desactivarItemModal')
     };
 
     // Actualizar datos en modales
     document.querySelectorAll('[data-tenant]').forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             const tenant = JSON.parse(this.dataset.tenant);
 
             if (this.dataset.bsTarget === '#detallesTenantModal') {
@@ -47,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Actualizar IDs en formularios de eliminación/desactivación
     document.querySelectorAll('[data-tenant-id]').forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             const tenantId = this.dataset.tenantId;
             const modal = this.dataset.bsTarget;
 

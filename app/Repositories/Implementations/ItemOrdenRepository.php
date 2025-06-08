@@ -5,6 +5,8 @@ namespace App\Repositories\Implementations;
 use App\Models\ItemOrden;
 use App\Repositories\Interfaces\IItemOrdenRepository;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ItemOrdenRepository extends BaseRepository implements IItemOrdenRepository
 {
@@ -40,22 +42,21 @@ class ItemOrdenRepository extends BaseRepository implements IItemOrdenRepository
     public function crearItemsOrden(array $itemsOrden): bool
     {
         if (empty($itemsOrden)) {
-            \Log::warning('Intento de crear items de orden con array vacío');
             return false;
         }
 
         try {
-            return \DB::transaction(function () use ($itemsOrden) {
+            return DB::transaction(function () use ($itemsOrden) {
                 $this->modelo->insert($itemsOrden);
 
-                \Log::info('Items de orden creados exitosamente', [
+                Log::info('Items de orden creados exitosamente', [
                     'cantidad_items' => count($itemsOrden),
                     'orden_id' => $itemsOrden[0]['orden_id'] ?? null
                 ]);
                 return true;
             });
         } catch (\Exception $e) {
-            \Log::error('Error al crear items de orden', [
+            Log::error('Error al crear items de orden', [
                 'error' => $e->getMessage(),
                 'items' => array_map(function ($item) {
                     return [
@@ -67,7 +68,7 @@ class ItemOrdenRepository extends BaseRepository implements IItemOrdenRepository
 
             throw new \RuntimeException('Error al crear los items de la orden: ' . $e->getMessage());
         } catch (\Throwable $e) {
-            \Log::log('error', 'Error al crear items de orden');
+            Log::log('error', 'Error al crear items de orden');
         }
         return false;
     }

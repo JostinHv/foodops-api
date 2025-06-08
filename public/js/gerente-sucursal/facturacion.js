@@ -138,69 +138,96 @@ document.addEventListener('DOMContentLoaded', function () {
         igvSelect.addEventListener('change', calcularTotales);
     }
 
-    // Botones de acción
+    // Evento para el botón de ver factura
     document.querySelectorAll('[data-action="ver-factura"]').forEach(button => {
         button.addEventListener('click', async function() {
             const facturaId = this.dataset.factura;
             const modal = document.getElementById('verFacturaModal');
-            
-            // Mostrar loading en el modal
-            const modalBody = modal.querySelector('.modal-body');
-            modalBody.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div><p class="mt-2">Cargando detalles...</p></div>';
-            
+            const modalBody = modal.querySelector('#factura-detalles-contenido');
+            const loadingPlaceholder = modalBody.querySelector('#loading-placeholder');
+            const loadedContent = modalBody.querySelector('#factura-loaded-content');
+
+            // Mostrar loading y ocultar contenido cargado
+            if (loadingPlaceholder) loadingPlaceholder.style.display = 'block';
+            if (loadedContent) loadedContent.style.display = 'none';
+
             try {
                 const response = await fetch(`/gerente/facturacion/${facturaId}`);
                 const data = await response.json();
 
                 if (response.ok && data.factura) {
                     const factura = data.factura;
-                    modalBody.innerHTML = `
-                        <div class="mb-3">
-                            <h6><i class="bi bi-receipt me-1"></i>Número de Factura</h6>
-                            <p>${factura.nro_factura || 'No especificado'}</p>
-                        </div>
-                        <div class="mb-3">
-                            <h6><i class="bi bi-person me-1"></i>Cliente</h6>
-                            <p>${factura.orden?.nombre_cliente || 'No especificado'}</p>
-                        </div>
-                        <div class="mb-3">
-                            <h6><i class="bi bi-table me-1"></i>Mesa</h6>
-                            <p>${factura.orden?.mesa?.nombre || 'No especificada'}</p>
-                        </div>
-                        <div class="mb-3">
-                            <h6><i class="bi bi-cash me-1"></i>Subtotal</h6>
-                            <p>S/ ${parseFloat(factura.monto_total || 0).toFixed(2)}</p>
-                        </div>
-                        <div class="mb-3">
-                            <h6><i class="bi bi-percent me-1"></i>IGV</h6>
-                            <p>S/ ${parseFloat(factura.monto_total_igv || 0).toFixed(2)}</p>
-                        </div>
-                        <div class="mb-3">
-                            <h6><i class="bi bi-currency-dollar me-1"></i>Total</h6>
-                            <p>S/ ${(parseFloat(factura.monto_total || 0) + parseFloat(factura.monto_total_igv || 0)).toFixed(2)}</p>
-                        </div>
-                        <div class="mb-3">
-                            <h6><i class="bi bi-credit-card me-1"></i>Método de Pago</h6>
-                            <p>${factura.metodo_pago?.nombre || 'No especificado'}</p>
-                        </div>
-                        <div class="mb-3">
-                            <h6><i class="bi bi-toggle-on me-1"></i>Estado</h6>
-                            <p>${factura.estado_pago || 'No especificado'}</p>
-                        </div>
-                    `;
 
-                    // Configurar el botón de descarga PDF
-                    const btnDescargarPDF = document.getElementById('btnDescargarPDF');
-                    if (btnDescargarPDF) {
-                        btnDescargarPDF.onclick = () => {
-                            window.open(`/gerente/facturacion/${facturaId}/pdf`, '_blank');
-                        };
+                    // Poblar Detalles de la Factura
+                    document.getElementById('detalle-factura-numero').textContent = factura.nro_factura || 'N/A';
+                    document.getElementById('detalle-factura-fecha').textContent = factura.created_at ? new Date(factura.created_at).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' }) : 'N/A';
+
+                    // Poblar Detalles de la Orden
+                    document.getElementById('detalle-orden-numero').textContent = factura.orden?.nro_orden || 'N/A';
+                    document.getElementById('detalle-orden-cliente').textContent = factura.orden?.nombre_cliente || 'Cliente General';
+                    document.getElementById('detalle-orden-mesa').textContent = factura.orden?.mesa?.nombre || 'N/A';
+                    document.getElementById('detalle-orden-fecha').textContent = factura.orden?.created_at ? new Date(factura.orden.created_at).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' }) : 'N/A';
+
+                    // Poblar Items de la Orden
+                    const itemsList = document.getElementById('detalle-items-list');
+                    itemsList.innerHTML = ''; // Limpiar lista actual
+                    if (factura.orden?.items_ordenes && factura.orden.items_ordenes.length > 0) {
+                        factura.orden.items_ordenes.forEach(item => {
+                            const itemName = item.item_menu?.nombre || 'Producto Desconocido';
+                            const itemUnitPrice = parseFloat(item.monto / item.cantidad || 0).toFixed(2);
+                            const itemTotal = parseFloat(item.monto || 0).toFixed(2);
+                            const listItem = document.createElement('li');
+                            listItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
+                            listItem.innerHTML = `
+                                <div>
+                                    <strong>${item.cantidad}x ${itemName}</strong><br>
+                                    <small class="text-muted">P.U.: S/ ${itemUnitPrice}</small>
+                                </div>
+                                <span class="badge bg-primary rounded-pill">S/ ${itemTotal}</span>
+                            `;
+                            itemsList.appendChild(listItem);
+                        });
+                    } else {
+                         itemsList.innerHTML = '<li class="list-group-item text-muted">No hay items asociados a esta orden.</li>';
                     }
+
+                    // Poblar Resumen de Totales
+                    document.getElementById('detalle-subtotal').textContent = parseFloat(factura.monto_total || 0).toFixed(2);
+                    document.getElementById('detalle-igv-porcentaje').textContent = factura.igv?.valor_porcentaje || 'N/A';
+                    document.getElementById('detalle-igv').textContent = parseFloat(factura.monto_total_igv || 0).toFixed(2);
+                    document.getElementById('detalle-total').textContent = (parseFloat(factura.monto_total || 0) + parseFloat(factura.monto_total_igv || 0)).toFixed(2);
+
+                    // Poblar Información de Pago
+                    document.getElementById('detalle-metodo-pago').textContent = factura.metodo_pago?.nombre || 'N/A';
+                    document.getElementById('detalle-estado-pago').textContent = (factura.estado_pago || 'N/A').charAt(0).toUpperCase() + (factura.estado_pago || '').slice(1);
+                    document.getElementById('detalle-notas').textContent = factura.notas || 'Ninguna';
+
+                    // Ocultar loading y mostrar contenido cargado
+                    if (loadingPlaceholder) loadingPlaceholder.style.display = 'none';
+                    if (loadedContent) loadedContent.style.display = 'block';
+
+                    // Configurar los botones de descarga/impresión en el modal footer (ya deberían estar configurados si usan el ID de factura correcto)
+                    const btnDescargarPDF = document.getElementById('btnDescargarPDF');
+                    const btnImprimirPOS = document.getElementById('btnImprimirPOS');
+
+                    if (btnDescargarPDF) {
+                         btnDescargarPDF.href = `/gerente/facturacion/${facturaId}/pdf`;
+                    }
+                    if (btnImprimirPOS) {
+                        btnImprimirPOS.href = `/gerente/facturacion/${facturaId}/pdf-pos`;
+                    }
+
                 } else {
-                    modalBody.innerHTML = '<div class="alert alert-danger">Error al cargar los detalles de la factura</div>';
+                     // Ocultar loading y mostrar mensaje de error
+                    if (loadingPlaceholder) loadingPlaceholder.style.display = 'none';
+                    if (loadedContent) loadedContent.style.display = 'none';
+                    modalBody.innerHTML = '<div class="alert alert-danger">Error al cargar los detalles de la factura.</div>';
                 }
             } catch (error) {
-                modalBody.innerHTML = '<div class="alert alert-danger">Error al cargar los detalles de la factura</div>';
+                 // Ocultar loading y mostrar mensaje de error
+                 if (loadingPlaceholder) loadingPlaceholder.style.display = 'none';
+                 if (loadedContent) loadedContent.style.display = 'none';
+                modalBody.innerHTML = '<div class="alert alert-danger">Error al cargar los detalles de la factura. Intente nuevamente.</div>';
                 console.error('Error:', error);
             }
         });

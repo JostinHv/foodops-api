@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CrearOrdenRequest;
 use App\Services\Interfaces\IAsignacionPersonalService;
+use App\Services\Interfaces\ICategoriaMenuService;
 use App\Services\Interfaces\IEstadoOrdenService;
 use App\Services\Interfaces\IItemMenuService;
 use App\Services\Interfaces\IItemOrdenService;
@@ -38,6 +39,7 @@ class OrdenController extends Controller
         IEstadoOrdenService        $estadoOrdenService,
         IUsuarioService            $usuarioService,
         IAsignacionPersonalService $asignacionPersonalService,
+        ICategoriaMenuService      $categoriaMenuService,
     )
     {
         $this->ordenService = $ordenService;
@@ -47,6 +49,7 @@ class OrdenController extends Controller
         $this->estadoOrdenService = $estadoOrdenService;
         $this->usuarioService = $usuarioService;
         $this->asignacionPersonalService = $asignacionPersonalService;
+        $this->categoriaMenuService = $categoriaMenuService;
     }
 
     /**
@@ -126,8 +129,13 @@ class OrdenController extends Controller
      */
     public function create(): View
     {
-        $mesas = $this->mesaService->obtenerMesasDisponibles();
-        $productos = $this->itemMenuService->obtenerTodosItemsDisponibles();
+        $usuario = $this->usuarioService->obtenerPorId($this->getCurrentUser()->getAuthIdentifier());
+        $asignacionPersonal = $this->asignacionPersonalService->obtenerPorUsuarioId($usuario->id);
+        $sucursal = $asignacionPersonal->sucursal;
+        $mesas = $this->mesaService->obtenerMesasDisponiblesPorSucursal($sucursal->id);
+        $categorias = $this->categoriaMenuService->obtenerCategoriasPorSucursal($sucursal->id);
+        $categoriasIds = $categorias->pluck('id')->toArray();
+        $productos = $this->itemMenuService->obtenerTodosItemsDisponiblesSegunCategorias($categoriasIds);
 
         // Agrupar productos por categoría
         $productosPorCategoria = $productos->groupBy('categoria_menu_id')

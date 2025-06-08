@@ -74,4 +74,11 @@ class UsuarioRepository extends ActivoBoolRepository implements IUsuarioReposito
             ->with(['roles', 'fotoPerfil', 'restaurante'])
             ->get();
     }
+
+    public function obtenerPorEmail(string $email)
+    {
+        return $this->modelo->where('email', $email)
+            ->with(['tenant'])
+            ->first();
+    }
 }

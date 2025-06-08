@@ -19,4 +19,6 @@ interface IItemMenuRepository
 
     public function obtenerTodosItemsDisponibles(): Collection;
 
+    public function obtenerTodosItemsDisponiblesSegunCategorias(array $categoriasIds): Collection;
+
 }

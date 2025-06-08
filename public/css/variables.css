@@ -1,0 +1,37 @@
+:root {
+    /* Nueva paleta de colores */
+    --color1: #432000; /* Marrón oscuro */
+    --color2: #3c5e00; /* Verde oliva oscuro */
+    --color3: #e66300; /* Naranja */
+    --color4: #ffc83d; /* Amarillo */
+    --color5: #ffffad; /* Amarillo claro */
+
+    /* Mapeo a usos comunes */
+    --primary-color: var(--color3); /* Naranja como color principal */
+    --primary-dark: #c25200; /* Un naranja más oscuro para hover/activos */
+    --primary-light: var(--color4); /* Amarillo como color claro principal */
+
+    --secondary-color: var(--color1); /* Marrón oscuro para elementos secundarios */
+    --accent-color: var(--color2); /* Verde oliva oscuro para acentos/iconos */
+
+    --success-color: #28a745; /* Mantener verde para éxito por convención */
+    --warning-color: #ffc107; /* Mantener amarillo para advertencia por convención */
+    --danger-color: #dc3545;  /* Mantener rojo para error por convención */
+
+    /* Colores de fondo */
+    --light-bg: #f8f9fa; /* Fondo claro (se puede ajustar si es necesario) */
+    --dark-bg: var(--color1); /* Fondo oscuro usando color1 */
+    --card-bg: #ffffff; /* Fondo de tarjetas (se puede ajustar) */
+
+    /* Colores de texto */
+    --text-dark: #212529; /* Texto oscuro (se puede ajustar) */
+    --text-light: #ffffff; /* Texto claro (se puede ajustar) */
+    --text-muted: #6c757d; /* Texto secundario (se puede ajustar) */
+    --text-custom-muted: rgba(255, 255, 255, 0.8); /* Texto atenuado personalizado para fondos oscuros */
+
+    /* Efectos */
+    --border-radius: 0.5rem;
+    --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --card-shadow-hover: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --transition-base: all 0.3s ease;
+} 

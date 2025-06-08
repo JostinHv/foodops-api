@@ -1,0 +1,125 @@
+/* Estilos para las tarjetas de métodos de pago */
+.card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: none;
+    box-shadow: var(--card-shadow);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow-hover);
+}
+
+.status-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1;
+}
+
+.method-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-muted);
+    transition: color 0.2s;
+}
+
+.card:hover .method-icon {
+    color: var(--primary-color);
+}
+
+.action-buttons {
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.card:hover .action-buttons {
+    opacity: 1;
+}
+
+/* Estilos para formularios */
+.form-floating > .form-control {
+    padding-left: 2.5rem;
+}
+
+.form-floating > label {
+    padding-left: 2.5rem;
+}
+
+.input-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    z-index: 2;
+}
+
+.form-floating {
+    position: relative;
+}
+
+/* Override de estilos de Bootstrap */
+.btn-primary {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark) !important;
+    border-color: var(--primary-dark) !important;
+}
+
+.btn-outline-primary {
+    color: var(--secondary-color) !important;
+    border-color: var(--secondary-color) !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--secondary-color) !important;
+    color: var(--text-muted) !important;
+}
+
+.btn-success {
+    background-color: var(--success-color) !important;
+    border-color: var(--success-color) !important;
+}
+
+.btn-outline-success {
+    color: var(--success-color) !important;
+    border-color: var(--success-color) !important;
+}
+
+.btn-danger {
+    background-color: var(--danger-color) !important;
+    border-color: var(--danger-color) !important;
+}
+
+.btn-outline-danger {
+    color: var(--danger-color) !important;
+    border-color: var(--danger-color) !important;
+}
+
+.alert-success {
+    background-color: var(--success-color) !important;
+    border-color: var(--success-color) !important;
+    color: var(--text-light) !important;
+}
+
+.alert-info {
+    background-color: var(--primary-light) !important;
+    border-color: var(--primary-light) !important;
+    color: var(--text-dark) !important;
+}
+
+.bg-success {
+    background-color: var(--success-color) !important;
+}
+
+.bg-danger {
+    background-color: var(--danger-color) !important;
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}

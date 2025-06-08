@@ -27,4 +27,8 @@ interface IUsuarioService extends IActivoBoolService
 
     public function obtenerPorTenantId(int $tenantId): Collection;
 
+    public function obtenerPorEmail(string $email): ?Model;
+
+    public function estaBloqueado(int $usuarioId): bool;
+
 }

@@ -125,6 +125,11 @@
                                                 <i class="bi bi-check-circle"></i>
                                             </button>
                                         @endif
+                                        <a href="{{ route('gerente.facturacion.pdf-pos', $factura->id) }}"
+                                           class="btn btn-sm btn-outline-secondary" title="Imprimir Ticket POS"
+                                           target="_blank">
+                                            <i class="bi bi-printer"></i>
+                                        </a>
                                     </div>
                                 </td>
                             </tr>
@@ -183,7 +188,9 @@
                             <div class="col-md-6">
                                 <label for="igv_id" class="form-label">IGV</label>
                                 <select class="form-select" id="igv_id" name="igv_id" required>
-                                    <option value="{{ $igvActivo->id ?? '' }}">{{ $igvActivo->valor_porcentaje ?? '0' }}%</option>
+                                    <option value="{{ $igvActivo->id ?? '' }}">{{ $igvActivo->valor_porcentaje ?? '0' }}
+                                        %
+                                    </option>
                                 </select>
                             </div>
 
@@ -242,44 +249,67 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <h6><i class="bi bi-receipt me-1"></i>Número de Factura</h6>
-                        <p id="factura-numero"></p>
-                    </div>
-                    <div class="mb-3">
-                        <h6><i class="bi bi-person me-1"></i>Cliente</h6>
-                        <p id="factura-cliente"></p>
-                    </div>
-                    <div class="mb-3">
-                        <h6><i class="bi bi-table me-1"></i>Mesa</h6>
-                        <p id="factura-mesa"></p>
-                    </div>
-                    <div class="mb-3">
-                        <h6><i class="bi bi-cash me-1"></i>Subtotal</h6>
-                        <p id="factura-subtotal"></p>
-                    </div>
-                    <div class="mb-3">
-                        <h6><i class="bi bi-percent me-1"></i>IGV</h6>
-                        <p id="factura-igv"></p>
-                    </div>
-                    <div class="mb-3">
-                        <h6><i class="bi bi-currency-dollar me-1"></i>Total</h6>
-                        <p id="factura-total"></p>
-                    </div>
-                    <div class="mb-3">
-                        <h6><i class="bi bi-credit-card me-1"></i>Método de Pago</h6>
-                        <p id="factura-metodo-pago"></p>
-                    </div>
-                    <div class="mb-3">
-                        <h6><i class="bi bi-toggle-on me-1"></i>Estado</h6>
-                        <p id="factura-estado"></p>
+                    <div id="factura-detalles-contenido">
+                        <!-- Contenido cargado por JS -->
+                        <!-- Placeholder de carga inicial -->
+                        <div class="text-center my-4" id="loading-placeholder">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                            <p class="mt-2">Cargando detalles de la factura...</p>
+                        </div>
+
+                        <!-- Estructura para mostrar los detalles (inicialmente oculta) -->
+                        <div id="factura-loaded-content" style="display: none;">
+                            <div class="mb-4">
+                                <h5><i class="bi bi-receipt me-2 text-primary"></i>Detalles de la Factura</h5>
+                                <p><strong>Número:</strong> <span id="detalle-factura-numero"></span></p>
+                                <p><strong>Fecha/Hora:</strong> <span id="detalle-factura-fecha"></span></p>
+                            </div>
+
+                            <div class="mb-4">
+                                <h5><i class="bi bi-journal-text me-2 text-primary"></i>Detalles de la Orden</h5>
+                                <p><strong>Número de Orden:</strong> <span id="detalle-orden-numero"></span></p>
+                                <p><strong>Cliente:</strong> <span id="detalle-orden-cliente"></span></p>
+                                <p><strong>Mesa:</strong> <span id="detalle-orden-mesa"></span></p>
+                                <p><strong>Fecha/Hora Orden:</strong> <span id="detalle-orden-fecha"></span></p>
+                            </div>
+
+                            <div class="mb-4">
+                                <h5><i class="bi bi-list-ul me-2 text-primary"></i>Items de la Orden</h5>
+                                <ul class="list-group" id="detalle-items-list">
+                                    <!-- Items se cargarán aquí por JS -->
+                                </ul>
+                            </div>
+
+                            <div class="mb-4">
+                                <h5><i class="bi bi-cash me-2 text-primary"></i>Resumen de Totales</h5>
+                                <p><strong>Subtotal:</strong> S/ <span id="detalle-subtotal"></span></p>
+                                <p><strong>IGV (<span id="detalle-igv-porcentaje"></span>%):</strong> S/ <span
+                                        id="detalle-igv"></span></p>
+                                <p><strong>Total:</strong> S/ <span id="detalle-total"></span></p>
+                            </div>
+
+                            <div class="mb-0">
+                                <h5><i class="bi bi-credit-card me-2 text-primary"></i>Información de Pago</h5>
+                                <p><strong>Método de Pago:</strong> <span id="detalle-metodo-pago"></span></p>
+                                <p><strong>Estado:</strong> <span id="detalle-estado-pago"></span></p>
+                                <p><strong>Notas:</strong> <span id="detalle-notas"></span></p>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" id="btnDescargarPDF">
-                        <i class="bi bi-file-pdf me-2"></i>Descargar PDF
-                    </button>
+                    <div class="btn-group">
+                        <a href="#" class="btn btn-primary" id="btnDescargarPDF">
+                            <i class="bi bi-file-pdf me-2"></i>Factura
+                        </a>
+                        <a href="#" class="btn btn-secondary" id="btnImprimirPOS">
+                            <i class="bi bi-printer me-2"></i>Ticket POS
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

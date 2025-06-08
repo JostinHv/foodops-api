@@ -5,11 +5,6 @@
     transition: all 0.3s ease;
 }
 
-/* Ocultar sidebar */
-#sidebar.hidden {
-    margin-left: -250px;
-}
-
 #mainContent {
     padding: 1rem;
     overflow-x: hidden;

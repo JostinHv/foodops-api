@@ -1,0 +1,45 @@
+/* Estilos para la vista de Perfil */
+
+.card {
+    border: none;
+    box-shadow: var(--card-shadow, 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075));
+}
+
+.card-header {
+    background-color: var(--light-bg, #f8f9fa);
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
+    color: var(--text-dark, #212529);
+}
+
+.list-unstyled li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--light-bg, #f8f9fa); /* Usar un color claro para el separador */
+}
+
+.list-unstyled li:last-child {
+    border-bottom: none;
+}
+
+.list-unstyled li i {
+    color: var(--accent-color, #6c757d); /* Usar color de acento para iconos */
+}
+
+.rounded-circle.bg-light.d-flex.align-items-center.justify-content-center {
+    /* Estilo para el placeholder de foto de perfil */
+    color: var(--text-muted, #6c757d); /* Color del icono */
+    background-color: var(--light-bg, #f8f9fa); /* Color de fondo */
+    border: 1px solid rgba(0, 0, 0, 0.1); /* Borde sutil */
+}
+
+.badge.bg-primary {
+    background-color: var(--primary-color, #007bff) !important;
+    color: var(--text-light, #ffffff) !important;
+}
+
+h5, h6 {
+    color: var(--text-dark, #212529);
+}
+
+.text-muted {
+    color: var(--text-muted, #6c757d) !important;
+} 

@@ -17,10 +17,13 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!emailRegex.test(email)) {
                 e.preventDefault();
                 emailFeedback.textContent = 'Por favor ingrese un correo electrónico válido';
-                emailFeedback.style.color = 'red';
+                emailFeedback.classList.add('text-danger-feedback');
+                emailFeedback.classList.remove('text-sm');
                 emailInput.classList.add('is-invalid');
             } else {
                 emailFeedback.textContent = '';
+                emailFeedback.classList.remove('text-danger-feedback');
+                emailFeedback.classList.add('text-sm');
                 emailInput.classList.remove('is-invalid');
             }
         });

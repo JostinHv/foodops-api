@@ -32,4 +32,6 @@ interface IUsuarioRepository
     public function obtenerPorIdConRelaciones(int $id, array $relaciones = []): ?Model;
 
     public function obtenerPorTenantId(int $tenantId): Collection;
+
+    public function obtenerPorEmail(string $email);
 }

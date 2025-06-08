@@ -1,12 +1,12 @@
 body {
-    background-color: #FBF3F4;
+    background-color: var(--dark-bg, #432000);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .login-container {
     max-width: 400px;
     margin: 60px auto;
-    background: #fff;
+    background: var(--card-bg, #ffffff);
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.05);
@@ -23,14 +23,14 @@ body {
 }
 
 .login-container .btn-login {
-    background-color: #1f2937;
-    color: white;
+    background-color: var(--primary-color, #1f2937);
+    color: var(--text-light, white);
     width: 100%;
     margin-top: 10px;
 }
 
 .login-container .btn-login:hover {
-    background-color: #374151;
+    background-color: var(--secondary-dark, #374151);
 }
 
 .text-link {
@@ -39,4 +39,22 @@ body {
 
 .text-danger {
     font-size: 0.9rem;
+    color: var(--danger-color, red) !important;
+}
+
+.text-danger-feedback {
+    color: var(--danger-color, red);
+}
+
+/* Reglas responsivas */
+@media (max-width: 576px) {
+    .login-container {
+        margin: 30px 15px; /* Reducir margen en pantallas pequeñas */
+        padding: 20px; /* Reducir padding */
+        max-width: none; /* Permitir que ocupe el ancho disponible */
+    }
+
+    .login-container h2 {
+        font-size: 1.5rem; /* Ajustar tamaño del título */
+    }
 }

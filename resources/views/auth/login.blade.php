@@ -3,12 +3,13 @@
 @section('title', 'Iniciar Sesión - FoodOps')
 
 @push('styles')
+    <link rel="stylesheet" href="{{ asset('css/variables.css') }}">
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
 @endpush
 
 @section('content')
     <div class="container mt-3">
-        <a href="{{ route('home') }}" class="text-muted fs-8 text-decoration-none">
+        <a href="{{ route('home') }}" class="fs-8 text-decoration-none text-light">
             <i class="bi bi-arrow-left"></i> Volver al Inicio
         </a>
     </div>

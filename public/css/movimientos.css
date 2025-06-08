@@ -1,0 +1,44 @@
+.table pre {
+    max-height: 150px;
+    overflow-y: auto;
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.table th a {
+    color: inherit;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.table th a:hover {
+    color: #0d6efd;
+}
+
+.badge {
+    font-size: 0.8em;
+    padding: 0.4em 0.6em;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.table-responsive {
+    margin-top: 1rem;
+}
+
+.pagination {
+    margin-bottom: 0;
+} 

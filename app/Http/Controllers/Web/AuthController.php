@@ -122,12 +122,9 @@ class AuthController extends Controller
      */
     private function redirectToDashboard($userData): RedirectResponse
     {
-        \Log::log('info', 'Redirigiendo al usuario: ' . $userData['email'] . ' con ID: ' . $userData['id']);
         // Convertir el array de usuario a un objeto User
         $user = Usuario::with('roles')->find($userData['id']);
-        \Log::log('info', 'Redirigiendo al usuario con ID: ' . $user->id);
         if (!$user) {
-            \Log::log('info', 'Usuario no encontrado con ID: ' . $userData['id']);
             return redirect()->route('home');
         }
 

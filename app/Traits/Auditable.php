@@ -14,8 +14,14 @@ trait Auditable
         });
 
         static::updated(static function ($model) {
-            $original = $model->getOriginal();
             $changes = $model->getChanges();
+
+            if (empty($changes)) {
+                return; // No hay cambios relevantes para auditar
+            }
+
+            $original = array_intersect_key($model->getOriginal(), $changes);
+
             static::audit('UPDATE', $model, $original, $changes);
         });
 
@@ -28,6 +34,18 @@ trait Auditable
     {
         // Verificar que el usuario esté autenticado
         $userId = Auth::check() ? Auth::id() : null;
+
+        // Función para enmascarar la contraseña
+        $maskPassword = function ($data) use ($model) {
+            if (is_array($data) && $model->getTable() === 'usuarios' && isset($data['password'])) {
+                $data['password'] = '[ENMASCARADA]';
+            }
+            return $data;
+        };
+
+        // Aplicar enmascaramiento antes de guardar
+        $before = $maskPassword($before);
+        $after = $maskPassword($after);
 
         DB::table('movimientos_historial')->insert([
             'usuario_id' => $userId,

@@ -4,6 +4,7 @@
 @section('title', 'Sucursales')
 
 @push('styles')
+    <link rel="stylesheet" href="{{ asset('css/variables.css') }}">
     <link rel="stylesheet" href="{{ asset('css/admin-tenant/sucursales.css') }}">
 @endpush
 

@@ -3,6 +3,7 @@
 @section('title', 'Grupos de Restaurantes')
 
 @push('styles')
+    <link rel="stylesheet" href="{{ asset('css/variables.css') }}">
     <link rel="stylesheet" href="{{ asset('css/admin-tenant/grupo-restaurant.css') }}">
 @endpush
 
@@ -61,12 +62,12 @@
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
-                            <tr>
-                                <th>Grupo</th>
+                        <tr>
+                            <th>Grupo</th>
                             <th>Descripción</th>
                             <th>Estadísticas</th>
-                                <th>Acciones</th>
-                            </tr>
+                            <th>Acciones</th>
+                        </tr>
                         </thead>
                         <tbody>
                         @forelse($grupos ?? [] as $grupo)
@@ -123,43 +124,12 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <form action="{{ route('tenant.grupo-restaurant.store') }}" method="POST">
-                @csrf
-                <div class="modal-header">
-                <h5 class="modal-title" id="nuevoGrupoModalLabel">Crear Nuevo Grupo</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-                <div class="modal-body">
-                        <div class="mb-3">
-                    <label for="nombre" class="form-label">Nombre del Grupo</label>
-                            <input type="text" name="nombre" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label for="descripcion" class="form-label">Descripción</label>
-                            <textarea name="descripcion" class="form-control" rows="3"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" class="btn btn-dark">Crear Grupo</button>
-                </div>
-            </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal: Editar Grupo -->
-    <div class="modal fade" id="editarGrupoModal" tabindex="-1" aria-labelledby="editarGrupoModalLabel"
-         aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-                <form id="formEditarGrupo" action="" method="POST">
                     @csrf
-                    @method('PUT')
-            <div class="modal-header">
-                        <h5 class="modal-title" id="editarGrupoModalLabel">Editar Grupo</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div class="modal-body">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="nuevoGrupoModalLabel">Crear Nuevo Grupo</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
                         <div class="mb-3">
                             <label for="nombre" class="form-label">Nombre del Grupo</label>
                             <input type="text" name="nombre" class="form-control" required>
@@ -168,9 +138,40 @@
                             <label for="descripcion" class="form-label">Descripción</label>
                             <textarea name="descripcion" class="form-control" rows="3"></textarea>
                         </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-dark">Crear Grupo</button>
+                    </div>
+                </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- Modal: Editar Grupo -->
+    <div class="modal fade" id="editarGrupoModal" tabindex="-1" aria-labelledby="editarGrupoModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="formEditarGrupo" action="" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editarGrupoModalLabel">Editar Grupo</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre del Grupo</label>
+                            <input type="text" name="nombre" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">Descripción</label>
+                            <textarea name="descripcion" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                     </div>
                 </form>
@@ -185,7 +186,7 @@
                 <div class="modal-header">
                     <h5 class="modal-title" id="verGrupoModalLabel">Detalles del Grupo</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-</div>
+                </div>
                 <div class="modal-body">
                     <div class="mb-3">
                         <h6>Nombre del Grupo</h6>
@@ -201,5 +202,5 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/admin-tenant/grupo-restaurant.js') }}"></script>
+    <script src="{{ asset('js/admin-tenant/grupo-restaurant.js') }}"></script>
 @endpush

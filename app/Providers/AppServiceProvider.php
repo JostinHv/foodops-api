@@ -28,6 +28,7 @@ use App\Repositories\Implementations\TenantRepository;
 use App\Repositories\Implementations\TenantSuscripcionRepository;
 use App\Repositories\Implementations\UsuarioRepository;
 use App\Repositories\Implementations\UsuarioRolRepository;
+use App\Repositories\Implementations\MovimientoHistorialRepository;
 use App\Repositories\Interfaces\IAsignacionPersonalRepository;
 use App\Repositories\Interfaces\IBaseRepository;
 use App\Repositories\Interfaces\ICategoriaMenuRepository;
@@ -53,6 +54,7 @@ use App\Repositories\Interfaces\ITenantRepository;
 use App\Repositories\Interfaces\ITenantSuscripcionRepository;
 use App\Repositories\Interfaces\IUsuarioRepository;
 use App\Repositories\Interfaces\IUsuarioRolRepository;
+use App\Repositories\Interfaces\IMovimientoHistorialRepository;
 use App\Services\Implementations\AsignacionPersonalService;
 use App\Services\Implementations\Auth\AuthService;
 use App\Services\Implementations\Auth\JwtManager;
@@ -79,6 +81,7 @@ use App\Services\Implementations\TenantService;
 use App\Services\Implementations\TenantSuscripcionService;
 use App\Services\Implementations\UsuarioRolService;
 use App\Services\Implementations\UsuarioService;
+use App\Services\Implementations\MovimientoHistorialService;
 use App\Services\Interfaces\IAsignacionPersonalService;
 use App\Services\Interfaces\IAuthService;
 use App\Services\Interfaces\ICategoriaMenuService;
@@ -105,6 +108,7 @@ use App\Services\Interfaces\ITenantService;
 use App\Services\Interfaces\ITenantSuscripcionService;
 use App\Services\Interfaces\IUsuarioRolService;
 use App\Services\Interfaces\IUsuarioService;
+use App\Services\Interfaces\IMovimientoHistorialService;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider;
 use Illuminate\Support\ServiceProvider;
 
@@ -322,6 +326,16 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             IUsuarioRolRepository::class,
             UsuarioRolRepository::class,
+        );
+
+        $this->app->bind(
+            IMovimientoHistorialRepository::class,
+            MovimientoHistorialRepository::class,
+        );
+
+        $this->app->bind(
+            IMovimientoHistorialService::class,
+            MovimientoHistorialService::class,
         );
     }
 

@@ -3,11 +3,11 @@
     }
     
     #editarIGVModal .modal-header {
-        border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid var(--border-color);
     }
     
     #editarIGVModal .modal-footer {
-        border-top: 1px solid #dee2e6;
+    border-top: 1px solid var(--border-color);
     }
     
     #editarIGVModal .alert {
@@ -15,5 +15,211 @@
     }
     
     #resultadosCalculo {
-        border-left: 4px solid #0d6efd;
+    border-left: 4px solid var(--primary-color);
     }
+
+/* Estilos para la vista de IGV */
+.igv-card {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    transition: var(--transition-base);
+}
+
+.igv-card:hover {
+    box-shadow: var(--card-shadow-hover);
+}
+
+.igv-header {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    padding: 1rem;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.igv-body {
+    padding: 1.5rem;
+}
+
+.igv-footer {
+    background-color: var(--light-bg);
+    padding: 1rem;
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+}
+
+.igv-btn {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    transition: var(--transition-base);
+}
+
+.igv-btn:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+/* Sobrescribir colores de Bootstrap */
+.bg-primary {
+    background-color: var(--primary-color) !important;
+}
+
+.bg-success {
+    background-color: var(--accent-color) !important;
+}
+
+.bg-warning {
+    background-color: var(--warning-color) !important;
+}
+
+.bg-danger {
+    background-color: var(--danger-color) !important;
+}
+
+.bg-info {
+    background-color: var(--secondary-color) !important;
+}
+
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+.text-success {
+    color: var(--accent-color) !important;
+}
+
+.text-warning {
+    color: var(--warning-color) !important;
+}
+
+.text-danger {
+    color: var(--danger-color) !important;
+}
+
+.text-info {
+    color: var(--secondary-color) !important;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--text-light);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+    color: var(--text-light);
+}
+
+.btn-success {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: var(--text-light);
+}
+
+.btn-success:hover {
+    background-color: var(--accent-dark);
+    border-color: var(--accent-dark);
+    color: var(--text-light);
+}
+
+.btn-warning {
+    background-color: var(--warning-color);
+    border-color: var(--warning-color);
+    color: var(--text-dark);
+}
+
+.btn-warning:hover {
+    background-color: var(--warning-dark);
+    border-color: var(--warning-dark);
+    color: var(--text-dark);
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+    color: var(--text-light);
+}
+
+.btn-danger:hover {
+    background-color: var(--danger-dark);
+    border-color: var(--danger-dark);
+    color: var(--text-light);
+}
+
+.btn-info {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: var(--text-dark);
+}
+
+.btn-info:hover {
+    background-color: var(--secondary-dark);
+    border-color: var(--secondary-dark);
+    color: var(--text-dark);
+}
+
+/* Estilos para alertas */
+.alert-success {
+    background-color: var(--accent-light);
+    border-color: var(--accent-color);
+    color: var(--accent-dark);
+}
+
+.alert-warning {
+    background-color: var(--warning-light);
+    border-color: var(--warning-color);
+    color: var(--warning-dark);
+}
+
+.alert-danger {
+    background-color: var(--danger-light);
+    border-color: var(--danger-color);
+    color: var(--danger-dark);
+}
+
+.alert-info {
+    background-color: var(--primary-light);
+    border-color: var(--primary-color);
+    color: var(--text-dark);
+}
+
+/* Estilos para bordes de estado */
+.active-igv {
+    border-left: 4px solid var(--accent-color);
+}
+
+.inactive-igv {
+    border-left: 4px solid var(--danger-color);
+}
+
+/* Estilos para iconos */
+.igv-icon {
+    color: var(--text-muted);
+}
+
+.card:hover .igv-icon {
+    color: var(--primary-color);
+}
+
+/* Estilos para secciones */
+.section-title {
+    border-bottom: 2px solid var(--border-color);
+    color: var(--text-color);
+}
+
+/* Estilos para formularios */
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(var(--primary-rgb), 0.25);
+}
+
+.input-group-text {
+    background-color: var(--light-bg);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}

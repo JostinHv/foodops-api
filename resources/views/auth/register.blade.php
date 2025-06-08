@@ -3,6 +3,7 @@
 @section('title', 'Registro - FoodOps')
 
 @push('styles')
+    <link rel="stylesheet" href="{{ asset('css/variables.css') }}">
     <link rel="stylesheet" href="{{ asset('css/register.css') }}">
 @endpush
 
@@ -13,18 +14,18 @@
 
 @section('content')
     <div class="container mt-3">
-        <a href="{{ route('home') }}" class="text-muted fs-8 text-decoration-none">
+        <a href="{{ route('home') }}" class="fs-8 text-decoration-none text-light">
             <i class="bi bi-arrow-left"></i> Volver al Inicio
         </a>
     </div>
 
-    <div class="register-container mx-auto mt-5 p-4 bg-white rounded shadow-sm">
+    <div class="register-container">
         <div class="text-center mb-4">
-            <img src="{{ asset('images/logo.png') }}" alt="Logo" width="50">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="mb-2" width="40">
         </div>
 
-        <h3 class="text-center">Registro</h3>
-        <p class="text-muted text-center">Ingresa tus datos para registrarse</p>
+        <h3>Registro</h3>
+        <p class="text-muted text-center mb-4">Ingresa tus datos para registrarte</p>
 
         @if ($errors->any())
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -97,7 +98,6 @@
                 @error('password')
                 <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
-
             </div>
 
             <div class="mb-3">
@@ -114,11 +114,12 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-dark w-100" id="submitBtn">Registrarse</button>
+            <button type="submit" class="btn btn-dark" id="submitBtn">Registrarse</button>
         </form>
 
-        <p class="text-center mt-3 text-muted">¿Tienes una cuenta? <a href="{{ route('login') }}" class="text-danger">Iniciar
-                Sesión</a></p>
+        <p class="text-center mt-3 text-muted text-link">
+            ¿Tienes una cuenta? <a href="{{ route('login') }}" class="text-danger">Iniciar Sesión</a>
+        </p>
     </div>
 
     @push('scripts')

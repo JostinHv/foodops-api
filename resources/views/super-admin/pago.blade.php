@@ -3,66 +3,8 @@
 @section('title', 'Métodos de Pago')
 
 @push('styles')
-    <style>
-        .card {
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: none;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-        }
-        
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-        }
-
-        .status-badge {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            z-index: 1;
-        }
-
-        .method-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: #6c757d;
-            transition: color 0.2s;
-        }
-
-        .card:hover .method-icon {
-            color: #0d6efd;
-        }
-
-        .action-buttons {
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        .card:hover .action-buttons {
-            opacity: 1;
-        }
-
-        .form-floating > .form-control {
-            padding-left: 2.5rem;
-        }
-
-        .form-floating > label {
-            padding-left: 2.5rem;
-        }
-
-        .input-icon {
-            position: absolute;
-            left: 0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #6c757d;
-            z-index: 2;
-        }
-
-        .form-floating {
-            position: relative;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/variables.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/super-admin/pago.css') }}">
 @endpush
 
 @section('content')
@@ -95,7 +37,7 @@
                                 <i class="bi {{ $metodo->activo ? 'bi-check-circle' : 'bi-x-circle' }} me-1"></i>
                                 {{ $metodo->activo ? 'Activo' : 'Inactivo' }}
                             </span>
-                            
+
                             <div class="text-center mb-3">
                                 <i class="bi bi-credit-card method-icon"></i>
                                 <h5 class="card-title mb-1">{{ $metodo->nombre }}</h5>
@@ -105,17 +47,19 @@
                             </div>
 
                             <div class="action-buttons d-flex justify-content-center gap-2">
-                                <button class="btn btn-sm btn-outline-primary" 
-                                        data-bs-toggle="modal" 
+                                <button class="btn btn-sm btn-outline-primary"
+                                        data-bs-toggle="modal"
                                         data-bs-target="#editarMetodoPagoModal"
                                         data-id="{{ $metodo->id }}"
                                         data-nombre="{{ $metodo->nombre }}"
                                         data-descripcion="{{ $metodo->descripcion }}">
                                     <i class="bi bi-pencil"></i> Editar
                                 </button>
-                                <form action="{{ route('superadmin.pago.toggle-activo', $metodo->id) }}" method="POST" class="d-inline">
+                                <form action="{{ route('superadmin.pago.toggle-activo', $metodo->id) }}" method="POST"
+                                      class="d-inline">
                                     @csrf
-                                    <button type="submit" class="btn btn-sm {{ $metodo->activo ? 'btn-outline-danger' : 'btn-outline-success' }}">
+                                    <button type="submit"
+                                            class="btn btn-sm {{ $metodo->activo ? 'btn-outline-danger' : 'btn-outline-success' }}">
                                         <i class="bi bi-power"></i> {{ $metodo->activo ? 'Desactivar' : 'Activar' }}
                                     </button>
                                 </form>
@@ -150,27 +94,27 @@
                     <div class="modal-body">
                         <div class="form-floating mb-3">
                             <i class="bi bi-credit-card input-icon"></i>
-                            <input type="text" 
-                                   class="form-control @error('nombre') is-invalid @enderror" 
-                                   id="nombre" 
-                                   name="nombre" 
+                            <input type="text"
+                                   class="form-control @error('nombre') is-invalid @enderror"
+                                   id="nombre"
+                                   name="nombre"
                                    placeholder="Nombre del método de pago"
                                    required>
                             <label for="nombre">Nombre</label>
                             @error('nombre')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="form-floating mb-3">
                             <i class="bi bi-card-text input-icon"></i>
-                            <textarea class="form-control @error('descripcion') is-invalid @enderror" 
-                                      id="descripcion" 
-                                      name="descripcion" 
+                            <textarea class="form-control @error('descripcion') is-invalid @enderror"
+                                      id="descripcion"
+                                      name="descripcion"
                                       placeholder="Descripción del método de pago"
                                       style="height: 100px"></textarea>
                             <label for="descripcion">Descripción</label>
                             @error('descripcion')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
@@ -204,27 +148,27 @@
                     <div class="modal-body">
                         <div class="form-floating mb-3">
                             <i class="bi bi-credit-card input-icon"></i>
-                            <input type="text" 
-                                   class="form-control @error('nombre') is-invalid @enderror" 
-                                   id="editar_nombre" 
-                                   name="nombre" 
+                            <input type="text"
+                                   class="form-control @error('nombre') is-invalid @enderror"
+                                   id="editar_nombre"
+                                   name="nombre"
                                    placeholder="Nombre del método de pago"
                                    required>
                             <label for="editar_nombre">Nombre</label>
                             @error('nombre')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="form-floating mb-3">
                             <i class="bi bi-card-text input-icon"></i>
-                            <textarea class="form-control @error('descripcion') is-invalid @enderror" 
-                                      id="editar_descripcion" 
-                                      name="descripcion" 
+                            <textarea class="form-control @error('descripcion') is-invalid @enderror"
+                                      id="editar_descripcion"
+                                      name="descripcion"
                                       placeholder="Descripción del método de pago"
                                       style="height: 100px"></textarea>
                             <label for="editar_descripcion">Descripción</label>
                             @error('descripcion')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>

@@ -81,4 +81,9 @@ readonly class MesaService implements IMesaService
     {
         return $this->repository->cambiarEstadoMesa($id, $estadoMesaId);
     }
+
+    public function obtenerMesasDisponiblesPorSucursal(int $sucursalId): Collection
+    {
+        return $this->repository->obtenerMesasDisponiblesPorSucursal($sucursalId);
+    }
 }

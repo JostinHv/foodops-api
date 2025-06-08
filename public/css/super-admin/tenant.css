@@ -1,20 +1,112 @@
-/* Estilos para la gestión de tenants */
+/* Estilos para la vista de tenants */
 .tenant-card {
-    transition: transform 0.2s, box-shadow 0.2s;
-    border: none;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    transition: var(--transition-base);
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .tenant-card:hover {
+    box-shadow: var(--card-shadow-hover);
     transform: translateY(-2px);
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
 
+.tenant-header {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    padding: 1rem;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.tenant-body {
+    padding: 1.5rem;
+}
+
+.tenant-footer {
+    background-color: var(--light-bg);
+    padding: 1rem;
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.tenant-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.tenant-status.active {
+    background-color: var(--success-color);
+    color: var(--text-light);
+}
+
+.tenant-status.inactive {
+    background-color: var(--danger-color);
+    color: var(--text-light);
+}
+
+.tenant-status.pending {
+    background-color: var(--warning-color);
+    color: var(--text-dark);
+}
+
+/* Botones */
+.tenant-actions .btn {
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    transition: var(--transition-base);
+}
+
+.tenant-actions .btn-dark {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: var(--text-light);
+}
+
+.tenant-actions .btn-dark:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--text-light);
+    transform: translateY(-1px);
+    box-shadow: var(--card-shadow);
+}
+
+.tenant-actions .btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--text-light);
+}
+
+.tenant-actions .btn-primary:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--card-shadow);
+}
+
+.tenant-actions .btn-outline-danger {
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+.tenant-actions .btn-outline-danger:hover {
+    background-color: var(--danger-color);
+    color: var(--text-light);
+    transform: translateY(-1px);
+    box-shadow: var(--card-shadow);
+}
+
+/* Logo y placeholder */
 .tenant-logo {
     width: 40px;
     height: 40px;
     object-fit: cover;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
+    border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .tenant-logo-placeholder {
@@ -23,73 +115,283 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 4px;
+    background-color: var(--light-bg);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius);
+    color: var(--text-muted);
 }
 
-.tenant-status {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-}
-
+/* Acciones */
 .tenant-actions {
     opacity: 0;
-    transition: opacity 0.2s;
+    transition: var(--transition-base);
 }
 
 .tenant-card:hover .tenant-actions {
     opacity: 1;
 }
 
-/* Estilos para los modales */
+/* Modales */
 .modal-header {
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
+    background-color: var(--light-bg);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .modal-footer {
-    background-color: #f8f9fa;
-    border-top: 1px solid #dee2e6;
+    background-color: var(--light-bg);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-/* Estilos para los formularios */
+/* Formularios */
 .form-floating > label {
     padding-left: 1rem;
+    color: var(--text-muted);
 }
 
 .form-floating > .form-control {
     padding-left: 1rem;
+    border-color: rgba(0, 0, 0, 0.1);
 }
 
-/* Estilos para las alertas */
+.form-floating > .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(230, 99, 0, 0.25);
+}
+
+/* Alertas */
 .alert {
     border: none;
-    border-radius: 0.5rem;
+    border-radius: var(--border-radius);
+    padding: 1rem;
 }
 
 .alert-success {
-    background-color: #d1e7dd;
-    color: #0f5132;
+    background-color: rgba(40, 167, 69, 0.1);
+    color: var(--success-color);
 }
 
 .alert-danger {
-    background-color: #f8d7da;
-    color: #842029;
+    background-color: rgba(220, 53, 69, 0.1);
+    color: var(--danger-color);
 }
 
-/* Estilos para los badges */
+/* Badges */
 .badge {
     padding: 0.5em 0.75em;
     font-weight: 500;
+    border-radius: var(--border-radius);
 }
 
-/* Estilos para los botones de acción */
+.bg-primary {
+    --bs-bg-opacity: 1;
+    background-color: var(--primary-color) !important;
+}
+
+/* Botones de acción */
 .btn-group .btn {
     padding: 0.25rem 0.5rem;
+    transition: var(--transition-base);
 }
 
 .btn-group .btn i {
     font-size: 0.875rem;
-} 
+    color: var(--text-muted);
+}
+
+.btn-group .btn:hover i {
+    color: var(--primary-color);
+}
+
+/* Botones de estado */
+.btn-success {
+    background-color: var(--success-color) !important;
+    border-color: var(--success-color) !important;
+}
+
+.btn-warning {
+    background-color: var(--warning-color) !important;
+    border-color: var(--warning-color) !important;
+}
+
+.btn-success:hover {
+    background-color: #218838 !important;
+    border-color: #1e7e34 !important;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800 !important;
+    border-color: #d39e00 !important;
+}
+
+/* Tablas - Ajustes Responsive */
+.table-responsive .table {
+    table-layout: auto;
+    width: 100%;
+    min-width: 0;
+}
+
+.table-responsive td, .table-responsive th {
+    vertical-align: middle;
+    padding: 0.75rem;
+}
+
+/* Estilos específicos para la celda de Tenant (primera columna) */
+.table-responsive .table td:first-child {
+    max-width: 200px;
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* Estilos específicos para el contenido dentro de la celda de Tenant */
+.table-responsive .table td:first-child .d-flex {
+    align-items: center;
+}
+
+.table-responsive .table td:first-child .d-flex > div {
+    min-width: 0;
+    flex-grow: 1;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+/* Estilos específicos para el select de rol en la tabla */
+.user-role-select {
+    min-width: 120px;
+    width: auto;
+    max-width: 100%;
+}
+
+@media (max-width: 767.98px) {
+    .user-role-select {
+        min-width: auto;
+        width: 100px;
+    }
+}
+
+/* Responsive */
+@media (max-width: 991.98px) {
+    .tenant-card {
+        margin-bottom: 1rem;
+    }
+
+    .tenant-body {
+        padding: 1.25rem;
+    }
+
+    .tenant-actions {
+        opacity: 1;
+        margin-top: 1rem;
+        justify-content: center;
+    }
+
+    .tenant-actions .btn-primary,
+    .tenant-actions .btn-dark,
+    .tenant-actions .btn-outline-danger {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.8rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .tenant-card {
+        margin-bottom: 1rem;
+    }
+
+    .tenant-body {
+        padding: 1rem;
+    }
+
+    .tenant-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .tenant-actions .btn {
+        width: 100%;
+        margin: 0;
+    }
+
+    .tenant-header {
+        padding: 0.75rem;
+    }
+
+    .tenant-footer {
+        padding: 0.75rem;
+    }
+
+    .tenant-logo,
+    .tenant-logo-placeholder {
+        width: 35px;
+        height: 35px;
+    }
+
+    .tenant-actions .btn-primary,
+    .tenant-actions .btn-dark,
+    .tenant-actions .btn-outline-danger {
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .table-responsive td, .table-responsive th {
+        padding: 0.5rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .tenant-card {
+        margin: 0 -1rem 1rem;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+
+    .tenant-header {
+        border-radius: 0;
+    }
+
+    .tenant-footer {
+        border-radius: 0;
+    }
+
+    .tenant-body {
+        padding: 0.75rem;
+    }
+
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+
+    .d-flex.justify-content-between.align-items-center.mb-4 {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+
+    .d-flex.justify-content-between.align-items-center.mb-4 > div:first-child {
+        margin-bottom: 1rem;
+    }
+
+    .d-flex.justify-content-between.align-items-center.mb-4 > div:last-child {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .d-flex.justify-content-between.align-items-center.mb-4 .btn {
+        width: 100%;
+        margin: 0 !important;
+    }
+
+    .table-responsive td, .table-responsive th {
+        padding: 0.3rem;
+    }
+
+    .table-responsive .table td:first-child {
+        max-width: 150px;
+    }
+}
+
+.table-responsive .table {
+    word-break: break-word;
+    overflow-wrap: break-word;
+}

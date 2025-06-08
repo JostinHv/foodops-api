@@ -83,4 +83,13 @@ class TenantSuscripcion extends Model
         return $this->belongsTo(MetodoPago::class, 'metodo_pago_id');
     }
 
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class, 'tenant_id');
+
+
+
+
+    }
+
 }

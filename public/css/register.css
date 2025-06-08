@@ -1,9 +1,70 @@
 body {
-    background-color: #FBF3F4;
+    background-color: var(--dark-bg, #432000);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .register-container {
     max-width: 400px;
-    background-color: white;
+    margin: 60px auto;
+    background: var(--card-bg, #ffffff);
+    padding: 30px;
     border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+.register-container h3 {
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.register-container .form-label {
+    font-weight: 500;
+}
+
+.register-container .btn-dark {
+    background-color: var(--primary-color, #1f2937);
+    color: var(--text-light, white);
+    width: 100%;
+    margin-top: 10px;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 500;
+    transition: var(--transition-base);
+}
+
+.register-container .btn-dark:hover,
+.register-container .btn-dark:focus,
+.register-container .btn-dark:active {
+    background-color: var(--primary-dark, #c25200) !important;
+    color: var(--text-light, white) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.text-link {
+    font-size: 0.9rem;
+}
+
+.text-danger {
+    font-size: 0.9rem;
+    color: var(--danger-color, red) !important;
+}
+
+.text-danger-feedback {
+    color: var(--danger-color, red);
+}
+
+/* Reglas responsivas */
+@media (max-width: 576px) {
+    .register-container {
+        margin: 30px 15px;
+        padding: 20px;
+        max-width: none;
+    }
+
+    .register-container h3 {
+        font-size: 1.5rem;
+    }
 }

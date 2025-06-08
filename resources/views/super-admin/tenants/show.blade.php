@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Detalles del Tenant')
+@section('title', 'Detalles del Tenant - Super Admin')
+
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/variables.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/super-admin/tenant.css') }}">
+@endpush
 
 @section('content')
     <div class="container-fluid">
@@ -28,6 +33,15 @@
                 <a href="{{ route('superadmin.tenant') }}" class="btn btn-outline-secondary me-2">
                     <i class="bi bi-arrow-left me-2"></i>Volver
                 </a>
+                <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#editarTenantModal" data-tenant-id="{{ $tenant->id }}"
+                        data-tenant-dominio="{{ $tenant->dominio }}"
+                        data-tenant-nombre="{{ $tenant->datos_contacto['nombre_empresa'] ?? '' }}"
+                        data-tenant-email="{{ $tenant->datos_contacto['email'] ?? '' }}"
+                        data-tenant-telefono="{{ $tenant->datos_contacto['telefono'] ?? '' }}"
+                        data-tenant-direccion="{{ $tenant->datos_contacto['direccion'] ?? '' }}"
+                        data-tenant-activo="{{ $tenant->activo ? '1' : '0' }}">
+                    <i class="bi bi-pencil me-2"></i>Editar Tenant
+                </button>
                 <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#agregarUsuarioModal">
                     <i class="bi bi-person-plus me-2"></i>Agregar Usuario
                 </button>
@@ -131,7 +145,6 @@
                             <th>Rol</th>
                             <th>Estado</th>
                             <th>Último Acceso</th>
-                            <th class="text-end">Acciones</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -166,10 +179,9 @@
                                         class="d-flex align-items-center">
                                         @csrf
                                         @method('PUT')
-                                        <select class="form-select form-select-sm"
+                                        <select class="form-select form-select-sm user-role-select"
                                                 name="rol_id"
-                                                onchange="this.form.submit()"
-                                                style="width: 140px;">
+                                                onchange="this.form.submit()">
                                             @foreach($roles as $rol)
                                                 <option value="{{ $rol->id }}"
                                                     {{ $usuario->roles->contains('id', $rol->id) ? 'selected' : '' }}>
@@ -180,30 +192,27 @@
                                     </form>
                                 </td>
                                 <td>
-                                    <span class="badge {{ $usuario->activo ? 'bg-success' : 'bg-danger' }}">
+                                    <form action="{{ route('superadmin.tenant.usuarios.toggle-estado', ['tenantId' => $tenant->id, 'usuarioId' => $usuario->id]) }}"
+                                          method="POST"
+                                          class="d-inline">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit"
+                                                class="btn btn-sm {{ $usuario->activo ? 'btn-success' : 'btn-danger' }} estado-usuario-btn"
+                                                data-usuario-id="{{ $usuario->id }}"
+                                                data-estado-actual="{{ $usuario->activo ? '1' : '0' }}">
+                                            <i class="bi {{ $usuario->activo ? 'bi-person-check-fill' : 'bi-person-x-fill' }} me-1"></i>
                                         {{ $usuario->activo ? 'Activo' : 'Inactivo' }}
-                                    </span>
+                                        </button>
+                                    </form>
                                 </td>
                                 <td>
                                     {{ $usuario->ultimo_acceso ? $usuario->ultimo_acceso->diffForHumans() : 'Nunca' }}
                                 </td>
-                                <td class="text-end">
-                                    <form
-                                        action="{{ route('superadmin.tenant.usuarios.destroy', ['tenantId' => $tenant->id, 'usuarioId' => $usuario->id]) }}"
-                                        method="POST"
-                                        class="d-inline"
-                                        onsubmit="return confirm('¿Está seguro de eliminar este usuario?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
-                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center py-4">
+                                <td colspan="4" class="text-center py-4">
                                     <div class="text-muted">
                                         <i class="bi bi-people fs-2 mb-2"></i>
                                         <p class="mb-0">No hay usuarios registrados</p>
@@ -232,42 +241,46 @@
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                            <label for="email" class="form-label"><i class="bi bi-envelope me-1"></i>Email <span class="text-danger">*</span></label>
                             <input type="email"
                                    class="form-control"
                                    id="email"
                                    name="email"
-                                   required>
+                                   required
+                                   placeholder="ej. nuevo.usuario@empresa.com">
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="nombres" class="form-label">Nombres <span
+                                <label for="nombres" class="form-label"><i class="bi bi-person me-1"></i>Nombres <span
                                         class="text-danger">*</span></label>
                                 <input type="text"
                                        class="form-control"
                                        id="nombres"
                                        name="nombres"
-                                       required>
+                                       required
+                                       placeholder="ej. Juan">
                             </div>
                             <div class="col-md-6">
-                                <label for="apellidos" class="form-label">Apellidos <span
+                                <label for="apellidos" class="form-label"><i class="bi bi-person me-1"></i>Apellidos <span
                                         class="text-danger">*</span></label>
                                 <input type="text"
                                        class="form-control"
                                        id="apellidos"
                                        name="apellidos"
-                                       required>
+                                       required
+                                       placeholder="ej. Pérez">
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="celular" class="form-label">Celular</label>
+                            <label for="celular" class="form-label"><i class="bi bi-phone me-1"></i>Celular</label>
                             <input type="tel"
                                    class="form-control"
                                    id="celular"
-                                   name="celular">
+                                   name="celular"
+                                   placeholder="ej. +51 987 654 321">
                         </div>
                         <div class="mb-3">
-                            <label for="rol_id" class="form-label">Rol <span class="text-danger">*</span></label>
+                            <label for="rol_id" class="form-label"><i class="bi bi-person-gear me-1"></i>Rol <span class="text-danger">*</span></label>
                             <select class="form-select"
                                     id="rol_id"
                                     name="rol_id"
@@ -279,14 +292,16 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="password" class="form-label">Contraseña <span
+                            <label for="password" class="form-label"><i class="bi bi-lock me-1"></i>Contraseña <span
                                     class="text-danger">*</span></label>
                             <div class="input-group">
                                 <input type="password"
                                        class="form-control"
                                        id="password"
                                        name="password"
-                                       required>
+                                       required
+                                       autocomplete="new-password"
+                                       placeholder="Ingrese contraseña">
                                 <button class="btn btn-outline-secondary"
                                         type="button"
                                         onclick="togglePassword()">
@@ -321,11 +336,11 @@
                     <div class="modal-body">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label for="dominio" class="form-label">Dominio</label>
-                                <input type="text" class="form-control" id="dominio" name="dominio" required>
+                                <label for="dominio" class="form-label"><i class="bi bi-globe me-1"></i>Dominio</label>
+                                <input type="text" class="form-control" id="dominio" name="dominio" required placeholder="ej. miempresa">
                             </div>
                             <div class="col-md-6">
-                                <label for="plan_suscripcion_id" class="form-label">Plan de Suscripción</label>
+                                <label for="plan_suscripcion_id" class="form-label"><i class="bi bi-box-seam me-1"></i>Plan de Suscripción</label>
                                 <select class="form-select" id="plan_suscripcion_id" name="plan_suscripcion_id"
                                         required>
                                     <option value="">Seleccione un plan...</option>
@@ -340,30 +355,30 @@
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label for="nombre_empresa" class="form-label">Nombre de la Empresa</label>
+                                <label for="nombre_empresa" class="form-label"><i class="bi bi-building me-1"></i>Nombre de la Empresa</label>
                                 <input type="text" class="form-control" id="nombre_empresa"
-                                       name="datos_contacto[nombre_empresa]" required>
+                                       name="datos_contacto[nombre_empresa]" required placeholder="ej. Mi Empresa">
                             </div>
                             <div class="col-md-6">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="datos_contacto[email]"
-                                       required>
+                                <label for="editEmail" class="form-label"><i class="bi bi-envelope me-1"></i>Email</label>
+                                <input type="email" class="form-control" id="editEmail" name="datos_contacto[email]"
+                                       required placeholder="ej. contacto@miempresa.com">
                             </div>
                             <div class="col-md-6">
-                                <label for="telefono" class="form-label">Teléfono</label>
-                                <input type="tel" class="form-control" id="telefono" name="datos_contacto[telefono]">
+                                <label for="telefono" class="form-label"><i class="bi bi-phone me-1"></i>Teléfono</label>
+                                <input type="tel" class="form-control" id="telefono" name="datos_contacto[telefono]" placeholder="ej. +51 987 654 321">
                             </div>
                             <div class="col-md-6">
-                                <label for="direccion" class="form-label">Dirección</label>
-                                <input type="text" class="form-control" id="direccion" name="datos_contacto[direccion]">
+                                <label for="direccion" class="form-label"><i class="bi bi-geo-alt me-1"></i>Dirección</label>
+                                <input type="text" class="form-control" id="direccion" name="datos_contacto[direccion]" placeholder="ej. Av. Principal 123">
                             </div>
                             <div class="col-md-6">
-                                <label for="logo" class="form-label">Logo</label>
+                                <label for="logo" class="form-label"><i class="bi bi-image me-1"></i>Logo</label>
                                 <input type="file" class="form-control" id="logo" name="logo" accept="image/*">
                                 <div id="logo-preview" class="mt-2"></div>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Estado</label>
+                                <label class="form-label"><i class="bi bi-toggle-on me-1"></i>Estado</label>
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="activo" name="activo" value="1">
                                     <label class="form-check-label" for="activo">Activo</label>
@@ -385,85 +400,6 @@
     </div>
 
     @push('scripts')
-        <script>
-            function togglePassword() {
-                const passwordInput = document.getElementById('password');
-                const icon = document.querySelector('.input-group button i');
-
-                if (passwordInput.type === 'password') {
-                    passwordInput.type = 'text';
-                    icon.classList.replace('bi-eye', 'bi-eye-slash');
-                } else {
-                    passwordInput.type = 'password';
-                    icon.classList.replace('bi-eye-slash', 'bi-eye');
-                }
-            }
-
-            document.addEventListener('DOMContentLoaded', function () {
-                // Manejar el modal de edición
-                const editarTenantModal = document.getElementById('editarTenantModal');
-                if (editarTenantModal) {
-                    const modal = new bootstrap.Modal(editarTenantModal);
-
-                    editarTenantModal.addEventListener('show.bs.modal', function (event) {
-                        const button = event.relatedTarget;
-                        const tenantId = button.getAttribute('data-tenant-id');
-                        const form = this.querySelector('form');
-
-                        // Actualizar la URL del formulario
-                        form.action = `/superadmin/tenant/${tenantId}`;
-
-                        // Llenar los campos del formulario
-                        document.getElementById('dominio').value = button.getAttribute('data-tenant-dominio');
-                        document.getElementById('nombre_empresa').value = button.getAttribute('data-tenant-nombre');
-                        document.getElementById('email').value = button.getAttribute('data-tenant-email');
-                        document.getElementById('telefono').value = button.getAttribute('data-tenant-telefono');
-                        document.getElementById('direccion').value = button.getAttribute('data-tenant-direccion');
-                        document.getElementById('activo').checked = button.getAttribute('data-tenant-activo') === '1';
-
-                        // Cargar el plan actual del tenant
-                        fetch(`/superadmin/tenant/${tenantId}`)
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.tenant && data.tenant.plan_suscripcion_id) {
-                                    document.getElementById('plan_suscripcion_id').value = data.tenant.plan_suscripcion_id;
-                                }
-                            })
-                            .catch(error => console.error('Error al cargar el plan:', error));
-                    });
-                }
-
-                // Previsualización del logo
-                const logoInput = document.getElementById('logo');
-                const logoPreview = document.getElementById('logo-preview');
-
-                if (logoInput && logoPreview) {
-                    logoInput.addEventListener('change', function (e) {
-                        const file = e.target.files[0];
-                        if (file) {
-                            const reader = new FileReader();
-                            reader.onload = function (e) {
-                                logoPreview.innerHTML = `
-                        <img src="${e.target.result}"
-                            class="img-thumbnail"
-                            style="max-height: 100px"
-                            alt="Logo preview">`;
-                            };
-                            reader.readAsDataURL(file);
-                        }
-                    });
-                }
-
-                // Cerrar automáticamente los mensajes de alerta después de 5 segundos
-                const alerts = document.querySelectorAll('.alert.alert-dismissible');
-                alerts.forEach(alert => {
-                    setTimeout(() => {
-                        alert.classList.add('fade');
-                        setTimeout(() => alert.remove(), 150);
-                    }, 5000);
-                });
-            });
-        </script>
+{{--        <script src="{{ asset('js/super-admin/tenant-show.js') }}"></script>--}}
     @endpush
-
 @endsection

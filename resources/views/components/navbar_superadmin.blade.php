@@ -30,5 +30,11 @@
                 IGV
         </a>
     </li>
+    <li class="nav-item">
+            <a href="{{ route('superadmin.movimientos') }}" class="nav-link {{ request()->routeIs('superadmin.movimientos') ? 'active' : '' }}">
+                <i class="bi bi-clock-history me-2"></i>
+                Auditoría
+        </a>
+    </li>
 </ul>
 </div>

@@ -130,7 +130,6 @@ class UsuarioController extends Controller
             return redirect()->route('tenant.usuarios')
                 ->with('success', 'Usuario creado exitosamente');
         } catch (\Exception $exception) {
-            \Log::error('Error al crear usuario: ' . $exception->getMessage());
             return redirect()->back()
                 ->withErrors(['error' => 'Error al crear el usuario: ' . $exception->getMessage()])
                 ->withInput();
@@ -214,7 +213,6 @@ class UsuarioController extends Controller
                             'activo' => true
                         ]);
                     } else {
-                        \Log::log('info', 'Asignación creada para el usuario: ' . $usuario->id);
                         // Crear nueva asignación
                         $this->asignacionPersonalService->crear([
                             'tenant_id' => $usuario->tenant_id,
@@ -232,7 +230,6 @@ class UsuarioController extends Controller
             return redirect()->route('tenant.usuarios')
                 ->with('success', 'Usuario actualizado exitosamente');
         } catch (\Exception $exception) {
-            \Log::error('Error al actualizar usuario: ' . $exception->getMessage());
             return redirect()->back()
                 ->withErrors(['error' => 'Error al actualizar el usuario: ' . $exception->getMessage()])
                 ->withInput();
@@ -257,7 +254,6 @@ class UsuarioController extends Controller
             $usuario->load(['roles', 'restaurante', 'asignacionesPersonal', 'asignacionesPersonal.sucursal']);
             return response()->json(['usuario' => $usuario]);
         } catch (\Exception $exception) {
-            \Log::error('Error al obtener detalles del usuario: ' . $exception->getMessage());
             return response()->json(['error' => 'Error al obtener los detalles del usuario'], 500);
         }
     }
@@ -265,7 +261,6 @@ class UsuarioController extends Controller
     public function toggleActivo(Usuario $usuario): RedirectResponse
     {
         try {
-            \Log::error('Intentando cambiar estado del usuario: ' . $usuario->id);
             $resultado = $this->usuarioService->cambiarEstadoAutomatico($usuario->id);
             if (!$resultado) {
                 return redirect()->back()
@@ -274,7 +269,6 @@ class UsuarioController extends Controller
             return redirect()->route('tenant.usuarios')
                 ->with('success', 'Estado del usuario actualizado exitosamente');
         } catch (\Exception $exception) {
-            \Log::error('Error al cambiar estado del usuario: ' . $exception->getMessage());
             return redirect()->back()
                 ->withErrors(['error' => 'Error al cambiar el estado del usuario']);
         }

@@ -1,4 +1,148 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // Clase para validar imágenes
+    class ImageValidator {
+        constructor() {
+            this.maxFileSize = 2 * 1024 * 1024; // 2MB
+            this.allowedTypes = ['image/jpg','image/jpeg', 'image/png', 'image/gif'];
+            this.maxWidth = 1200;
+            this.maxHeight = 1200;
+        }
+
+        validateFile(file) {
+            return new Promise((resolve, reject) => {
+                // Validar tamaño
+                if (file.size > this.maxFileSize) {
+                    reject({
+                        valid: false,
+                        message: `El archivo excede el tamaño máximo permitido (${this.formatFileSize(this.maxFileSize)})`
+                    });
+                    return;
+                }
+
+                // Validar tipo
+                if (!this.allowedTypes.includes(file.type)) {
+                    reject({
+                        valid: false,
+                        message: 'Solo se permiten archivos de imagen (JPEG, PNG, GIF)'
+                    });
+                    return;
+                }
+
+                // Validar dimensiones
+                const img = new Image();
+                img.onload = () => {
+                    if (img.width > this.maxWidth || img.height > this.maxHeight) {
+                        reject({
+                            valid: false,
+                            message: `La imagen excede las dimensiones máximas permitidas (${this.maxWidth}x${this.maxHeight}px)`
+                        });
+                    } else {
+                        resolve({
+                            valid: true,
+                            file: file
+                        });
+                    }
+                };
+                img.onerror = () => {
+                    reject({
+                        valid: false,
+                        message: 'Error al cargar la imagen'
+                    });
+                };
+                img.src = URL.createObjectURL(file);
+            });
+        }
+
+        formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+    }
+
+    const imageValidator = new ImageValidator();
+
+    // Función para manejar la previsualización de imágenes
+    function handleImagePreview(input, previewContainer) {
+        const file = input.files[0];
+        if (!file) return;
+
+        // Mostrar progreso
+        showImageProgress(previewContainer);
+
+        imageValidator.validateFile(file)
+            .then(result => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    previewContainer.innerHTML = `
+                        <div class="image-upload-preview">
+                            <img src="${e.target.result}" alt="Preview">
+                            <div class="image-upload-remove" onclick="window.removeImage(this)">
+                                <i class="bi bi-x"></i>
+                            </div>
+                        </div>
+                        <div class="image-upload-info">
+                            <div class="image-limit-info">
+                                <i class="bi bi-check-circle"></i>
+                                <span>Imagen válida (${imageValidator.formatFileSize(file.size)})</span>
+                            </div>
+                        </div>`;
+                    hideImageProgress(previewContainer);
+                };
+                reader.readAsDataURL(file);
+            })
+            .catch(error => {
+                previewContainer.innerHTML = `
+                    <div class="image-upload-error show">
+                        <i class="bi bi-exclamation-circle"></i>
+                        ${error.message}
+                    </div>`;
+                input.value = '';
+                hideImageProgress(previewContainer);
+            });
+    }
+
+    function showImageProgress(container) {
+        if (!container) return;
+        if (!container.querySelector('.image-upload-progress')) {
+            container.innerHTML = `
+                <div class="image-upload-progress show">
+                    <div class="image-upload-progress-bar"></div>
+                </div>`;
+        }
+    }
+
+    function hideImageProgress(container) {
+        if (!container) return;
+        const progress = container.querySelector('.image-upload-progress');
+        if (progress) {
+            progress.remove();
+        }
+    }
+
+    // Hacer la función removeImage global
+    window.removeImage = function(button) {
+        const container = button.closest('.image-upload-container');
+        const input = container.querySelector('input[type="file"]');
+        const preview = container.querySelector('.image-upload-preview');
+        if (input) input.value = '';
+        if (preview) preview.remove();
+    };
+
+    // Configurar los inputs de imagen
+    const imageInputs = document.querySelectorAll('input[type="file"][accept*="image"]');
+    imageInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            const container = this.closest('.image-upload-container');
+            const previewContainer = container.querySelector('.image-upload-preview-container');
+            if (previewContainer) {
+                handleImagePreview(this, previewContainer);
+            }
+        });
+    });
+
     // Función para cargar los datos del item en el modal de edición
     const editarModal = document.getElementById('editarItemModal');
     editarModal.addEventListener('show.bs.modal', function (event) {
@@ -49,20 +193,33 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
             });
+
+            // Mostrar la imagen actual si existe
+            if (item.imagen) {
+                const imageContainer = form.querySelector('.image-upload-preview-container');
+                if (imageContainer) {
+                    imageContainer.innerHTML = `
+                        <div class="image-upload-preview">
+                            <img src="${item.imagen.url}" alt="Preview">
+                            <div class="image-upload-remove" onclick="removeImage(this)">
+                                <i class="bi bi-x"></i>
+                            </div>
+                        </div>`;
+                }
+            }
         })
         .catch(error => {
-            console.error('Error al cargar los datos del item:', error);
-            mostrarNotificacion('Error al cargar los datos del item: ' + error.message, 'danger');
+            console.error('Error:', error);
+            mostrarNotificacion('Error al cargar los datos del item', 'error');
         });
     });
 
-    // Función para cargar los detalles del item en el modal de visualización
-    const verModal = document.getElementById('verItemModal');
-    verModal.addEventListener('show.bs.modal', function (event) {
+    // Función para mostrar los detalles del item
+    const verItemModal = document.getElementById('verItemModal');
+    verItemModal.addEventListener('show.bs.modal', function (event) {
         const button = event.relatedTarget;
         const itemId = button.getAttribute('data-item');
 
-        // Cargar datos del item
         fetch(`/gerente/menu/items/${itemId}`, {
             method: 'GET',
             headers: {
@@ -70,113 +227,222 @@ document.addEventListener('DOMContentLoaded', function () {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
             }
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Error en la respuesta del servidor');
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
-            if (!data.item) {
-                throw new Error('No se encontraron datos del item');
-            }
-
             const item = data.item;
+            document.getElementById('item-nombre').textContent = item.nombre;
+            document.getElementById('item-descripcion').textContent = item.descripcion || 'Sin descripción';
+            document.getElementById('item-precio').textContent = `S/ ${parseFloat(item.precio).toFixed(2)}`;
+            document.getElementById('item-categoria').textContent = item.categoriaMenu?.nombre || 'Sin categoría';
+            
+            // Actualizar badges de estado
+            const estadoBadge = document.getElementById('item-estado');
+            estadoBadge.textContent = item.activo ? 'Activo' : 'Inactivo';
+            estadoBadge.className = `badge ${item.activo ? 'bg-success' : 'bg-warning'}`;
+            
+            const disponibleBadge = document.getElementById('item-disponible');
+            disponibleBadge.textContent = item.disponible ? 'Disponible' : 'No disponible';
+            disponibleBadge.className = `badge ${item.disponible ? 'bg-success' : 'bg-warning'}`;
 
-            // Actualizar los campos con los datos del item
-            const elementos = {
-                'item-nombre': item.nombre || 'No especificado',
-                'item-categoria': item.categoria_menu?.nombre || 'No especificada',
-                'item-precio': item.precio ? `S/ ${parseFloat(item.precio).toFixed(2)}` : 'No especificado',
-                'item-descripcion': item.descripcion || 'No especificada',
-                'item-estado': item.activo ? 'Activo' : 'Inactivo',
-                'item-disponible': item.disponible ? 'Disponible' : 'No disponible'
-            };
-
-            // Actualizar cada elemento
-            Object.entries(elementos).forEach(([id, value]) => {
-                const elemento = document.getElementById(id);
-                if (elemento) {
-                    elemento.textContent = value;
-                }
-            });
-
-            // Actualizar el estado con el color correspondiente
-            const estadoElement = document.getElementById('item-estado');
-            if (estadoElement) {
-                estadoElement.className = `badge ${item.activo ? 'bg-success' : 'bg-warning'}`;
-            }
-
-            // Actualizar la disponibilidad con el color correspondiente
-            const disponibleElement = document.getElementById('item-disponible');
-            if (disponibleElement) {
-                disponibleElement.className = `badge ${item.disponible ? 'bg-success' : 'bg-warning'}`;
+            // Mostrar la imagen si existe
+            const modalBody = this.querySelector('.modal-body');
+            const imageContainer = modalBody.querySelector('.item-image-container');
+            if (item.imagen && imageContainer) {
+                imageContainer.innerHTML = `
+                    <div class="item-image">
+                        <img src="${item.imagen.url}" alt="${item.nombre}" class="img-fluid rounded">
+                    </div>`;
             }
         })
         .catch(error => {
-            console.error('Error al cargar los detalles del item:', error);
-            mostrarNotificacion('Error al cargar los detalles del item: ' + error.message, 'danger');
+            console.error('Error:', error);
+            mostrarNotificacion('Error al cargar los detalles del item', 'error');
         });
     });
 
-    // Manejar el envío del formulario de edición
-    const formEditarItem = document.getElementById('formEditarItem');
-    if (formEditarItem) {
-        formEditarItem.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            
-            // Convertir los datos del formulario a un objeto
-            const data = {};
-            formData.forEach((value, key) => {
-                // Manejar campos booleanos
-                if (key === 'disponible' || key === 'activo') {
-                    data[key] = value === 'on' || value === 'true';
-                } else {
-                    data[key] = value;
-                }
-            });
+    // Función para crear un nuevo item
+    document.getElementById('formNuevoItem').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Obtener el archivo de imagen
+        const imagenInput = this.querySelector('input[type="file"]');
+        let imagenId = null;
 
-            fetch(this.action, {
+        // Si hay una imagen, subirla primero
+        if (imagenInput && imagenInput.files.length > 0) {
+            const imagenFormData = new FormData();
+            imagenFormData.append('imagen', imagenInput.files[0]);
+            imagenFormData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+
+            try {
+                const imagenResponse = await fetch('/gerente/menu/upload-imagen', {
+                    method: 'POST',
+                    body: imagenFormData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                });
+
+                if (!imagenResponse.ok) {
+                    throw new Error('Error al subir la imagen');
+                }
+
+                const imagenData = await imagenResponse.json();
+                imagenId = imagenData.imagen_id;
+            } catch (error) {
+                mostrarNotificacion('Error al subir la imagen', 'error');
+                return;
+            }
+        }
+
+        // Preparar los datos del item
+        const itemData = {
+            nombre: this.querySelector('[name="nombre"]').value,
+            descripcion: this.querySelector('[name="descripcion"]').value,
+            precio: this.querySelector('[name="precio"]').value,
+            categoria_menu_id: this.querySelector('[name="categoria_menu_id"]').value,
+            orden_visualizacion: this.querySelector('[name="orden_visualizacion"]').value,
+            disponible: this.querySelector('[name="disponible"]').checked,
+            activo: this.querySelector('[name="activo"]').checked,
+            _token: document.querySelector('meta[name="csrf-token"]').content
+        };
+
+        // Si se subió una imagen, agregar el ID
+        if (imagenId) {
+            itemData.imagen_id = imagenId;
+        }
+
+        // Enviar los datos del item
+        try {
+            const response = await fetch(this.action, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                     'Accept': 'application/json'
                 },
-                body: JSON.stringify(data)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(err => Promise.reject(err));
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.error) {
-                    throw new Error(data.error);
-                }
-                // Cerrar el modal
-                cerrarModal('editarItemModal');
-                // Mostrar notificación de éxito
-                mostrarNotificacion(data.message, 'success');
-                // Recargar la página después de un breve delay
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                let errorMessage = 'Error al actualizar el item';
-                if (error.errors) {
-                    errorMessage = Object.values(error.errors).flat().join('\n');
-                } else if (error.error) {
-                    errorMessage = error.error;
-                }
-                mostrarNotificacion(errorMessage, 'danger');
+                body: JSON.stringify(itemData)
             });
-        });
-    }
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(JSON.stringify(data));
+            }
+
+            mostrarNotificacion('Item creado exitosamente', 'success');
+            cerrarModal('nuevoItemModal');
+            setTimeout(() => window.location.reload(), 1000);
+        } catch (error) {
+            console.error('Error:', error);
+            try {
+                const errorData = JSON.parse(error.message);
+                if (errorData.errors) {
+                    Object.values(errorData.errors).forEach(messages => {
+                        messages.forEach(message => {
+                            mostrarNotificacion(message, 'error');
+                        });
+                    });
+                } else {
+                    mostrarNotificacion(errorData.error || 'Error al crear el item', 'error');
+                }
+            } catch (e) {
+                mostrarNotificacion('Error al crear el item', 'error');
+            }
+        }
+    });
+
+    // Función para actualizar un item
+    document.getElementById('formEditarItem').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Obtener el archivo de imagen
+        const imagenInput = this.querySelector('input[type="file"]');
+        let imagenId = null;
+
+        // Si hay una imagen, subirla primero
+        if (imagenInput && imagenInput.files.length > 0) {
+            const imagenFormData = new FormData();
+            imagenFormData.append('imagen', imagenInput.files[0]);
+            imagenFormData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+
+            try {
+                const imagenResponse = await fetch('/gerente/menu/upload-imagen', {
+                    method: 'POST',
+                    body: imagenFormData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                });
+
+                if (!imagenResponse.ok) {
+                    throw new Error('Error al subir la imagen');
+                }
+
+                const imagenData = await imagenResponse.json();
+                imagenId = imagenData.imagen_id;
+            } catch (error) {
+                mostrarNotificacion('Error al subir la imagen', 'error');
+                return;
+            }
+        }
+
+        // Preparar los datos del item
+        const itemData = {
+            nombre: this.querySelector('[name="nombre"]').value,
+            descripcion: this.querySelector('[name="descripcion"]').value,
+            precio: this.querySelector('[name="precio"]').value,
+            categoria_menu_id: this.querySelector('[name="categoria_menu_id"]').value,
+            orden_visualizacion: this.querySelector('[name="orden_visualizacion"]').value,
+            disponible: this.querySelector('[name="disponible"]').checked,
+            activo: this.querySelector('[name="activo"]').checked,
+            _token: document.querySelector('meta[name="csrf-token"]').content
+        };
+
+        // Si se subió una imagen, agregar el ID
+        if (imagenId) {
+            itemData.imagen_id = imagenId;
+        }
+
+        // Enviar los datos del item
+        try {
+            const response = await fetch(this.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(itemData)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(JSON.stringify(data));
+            }
+
+            mostrarNotificacion('Item actualizado exitosamente', 'success');
+            cerrarModal('editarItemModal');
+            setTimeout(() => window.location.reload(), 1000);
+        } catch (error) {
+            console.error('Error:', error);
+            try {
+                const errorData = JSON.parse(error.message);
+                if (errorData.errors) {
+                    Object.values(errorData.errors).forEach(messages => {
+                        messages.forEach(message => {
+                            mostrarNotificacion(message, 'error');
+                        });
+                    });
+                } else {
+                    mostrarNotificacion(errorData.error || 'Error al actualizar el item', 'error');
+                }
+            } catch (e) {
+                mostrarNotificacion('Error al actualizar el item', 'error');
+            }
+        }
+    });
 
     // Manejar el cambio de estado (activo/inactivo)
     const toggleActivoButtons = document.querySelectorAll('.toggle-activo');
@@ -478,63 +744,4 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     });
-
-    // Manejar el envío del formulario de nuevo item
-    const formNuevoItem = document.getElementById('formNuevoItem');
-    if (formNuevoItem) {
-        formNuevoItem.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            
-            // Convertir los datos del formulario a un objeto
-            const data = {};
-            formData.forEach((value, key) => {
-                // Manejar campos booleanos
-                if (key === 'disponible' || key === 'activo') {
-                    data[key] = value === 'on' || value === 'true';
-                } else {
-                    data[key] = value;
-                }
-            });
-
-            fetch(this.action, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(err => Promise.reject(err));
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.error) {
-                    throw new Error(data.error);
-                }
-                // Cerrar el modal
-                cerrarModal('nuevoItemModal');
-                // Mostrar notificación de éxito
-                mostrarNotificacion(data.message, 'success');
-                // Recargar la página después de un breve delay
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                let errorMessage = 'Error al crear el item';
-                if (error.errors) {
-                    errorMessage = Object.values(error.errors).flat().join('\n');
-                } else if (error.error) {
-                    errorMessage = error.error;
-                }
-                mostrarNotificacion(errorMessage, 'danger');
-            });
-        });
-    }
 }); 

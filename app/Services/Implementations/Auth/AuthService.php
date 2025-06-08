@@ -5,6 +5,7 @@ namespace App\Services\Implementations\Auth;
 use App\Repositories\Interfaces\IUsuarioRepository;
 use App\Services\Interfaces\IAuthService;
 use App\Services\Interfaces\IJwtManager;
+use App\Services\Interfaces\IUsuarioService;
 use Exception;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -26,29 +27,36 @@ class AuthService implements IAuthService
         'logout' => [
             'success' => 'Sesión cerrada exitosamente. ¡Hasta pronto!',
             'error' => 'Error al cerrar sesión. Por favor intente nuevamente.'
+        ],
+        'bloqueado' => [
+            'error' => 'Cuenta desactivada. Por favor, contacte al administrador.'
         ]
     ];
 
     private IUsuarioRepository $usuarioRepository;
     private IJwtManager $jwtManager;
     private LoginRateLimiter $rateLimiter;
+    private IUsuarioService $usuarioService;
 
     public function __construct
     (
         IUsuarioRepository $usuarioRepository,
         IJwtManager        $jwtManager,
         LoginRateLimiter   $rateLimiter,
+        IUsuarioService    $usuarioService
     )
     {
         $this->usuarioRepository = $usuarioRepository;
         $this->jwtManager = $jwtManager;
         $this->rateLimiter = $rateLimiter;
+        $this->usuarioService = $usuarioService;
     }
 
 
     public function login(array $credentials): array
     {
-        $rateLimitCheck = $this->rateLimiter->tooManyAttempts($credentials['email']);
+        $email = $credentials['email'] ?? null;
+        $rateLimitCheck = $this->rateLimiter->tooManyAttempts($email);
 
         if ($rateLimitCheck['blocked']) {
             return $this->createErrorResponse(
@@ -59,9 +67,15 @@ class AuthService implements IAuthService
         }
 
         if (!$token = auth()->attempt($credentials)) {
-            return $this->handleFailedLogin($credentials['email']);
+            return $this->handleFailedLogin($email);
         }
-
+        $usuario = $this->usuarioService->obtenerPorEmail($email);
+        $bloqueado = $this->usuarioService->estaBloqueado($usuario->id);
+        if ($bloqueado) {
+            return $this->createErrorResponse(
+                self::MESSAGES['bloqueado']['error']
+            );
+        }
         return $this->handleSuccessfulLogin($token);
     }
 

@@ -24,4 +24,6 @@ interface ICategoriaMenuRepository
     public function obtenerActivos(): Collection;
 
     public function obtenerUltimoActivo(): Collection;
+
+    public function obtenerCategoriasPorSucursal(int $sucursalId): Collection;
 }
