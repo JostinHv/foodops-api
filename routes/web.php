@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Web\AdminController;
 use App\Http\Controllers\Web\AuthController;
+use App\Http\Controllers\Web\CajeroController;
 use App\Http\Controllers\Web\ContactoController;
 use App\Http\Controllers\Web\GerenteFacturaController;
 use App\Http\Controllers\Web\GerenteMesaController;
@@ -243,3 +244,31 @@ Route::prefix('superadmin')->group(function () {
     });
 });
 
+//Rutas de cajero
+Route::prefix('cajero')->group(function () {
+    Route::middleware([WebAuthenticate::class, WebCheckRole::class . ':cajero'])->group(function () {
+        Route::get('/dashboard', static function () {
+            return view('cajero.dashboard');
+        })->name('cajero.dashboard');
+
+        Route::prefix('facturacion')->group(function () {
+            Route::get('/', [CajeroController::class, 'index'])->name('cajero.facturacion');
+        });
+
+        Route::prefix('caja')->group(function () {
+            Route::get('/', [CajeroController::class, 'caja'])->name('cajero.caja');
+        });
+
+        // Rutas de perfil
+        Route::get('/perfil', [PerfilController::class, 'index'])->name('cajero.perfil');
+        Route::post('/perfil', [PerfilController::class, 'actualizar'])->name('cajero.perfil.actualizar');
+        Route::post('/perfil/contrasenia', [PerfilController::class, 'actualizarContrasenia'])->name('cajero.perfil.contrasenia');
+    });
+});
+
+//Rutas de cocinero
+
+//Rutas provisionales
+/*Route::get('/cajero', function () {
+    return view('cajero.facturacion');
+})->name('cajero.facturacion');*/

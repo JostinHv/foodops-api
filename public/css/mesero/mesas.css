@@ -1,0 +1,48 @@
+.mesa-card {
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.mesa-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.orden-info, .reserva-info {
+    transition: all 0.2s ease;
+}
+
+.orden-info:hover, .reserva-info:hover {
+    background-color: #f8f9fa !important;
+}
+
+.badge {
+    font-size: 0.85rem;
+    padding: 0.35em 0.65em;
+}
+
+/* Colores para los estados */
+.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+.bg-success {
+    background-color: #28a745 !important;
+}
+
+.bg-warning {
+    background-color: #ffc107 !important;
+}
+
+/* Bordes laterales según estado */
+.border-danger {
+    border-left-color: #dc3545 !important;
+}
+
+.border-success {
+    border-left-color: #28a745 !important;
+}
+
+.border-warning {
+    border-left-color: #ffc107 !important;
+}

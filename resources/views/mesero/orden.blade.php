@@ -57,8 +57,7 @@
                     <div class="card h-100 orden-card"
                          data-orden-id="{{ $orden->id }}"
                          data-estado-id="{{ $orden->estadoOrden->id }}"
-                         data-fecha="{{ $orden->created_at->locale('es')->isoFormat('LLLL') }}" data-bs-toggle="modal"
-                    >
+                         data-fecha="{{ $orden->created_at->locale('es')->isoFormat('LLLL') }}" data-bs-toggle="modal">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <div>

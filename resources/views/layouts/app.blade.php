@@ -87,6 +87,8 @@
             @includeWhen(Auth::user()->roles->contains('nombre', 'administrador'), 'components.navbar_admin')
             @includeWhen(Auth::user()->roles->contains('nombre', 'gerente'), 'components.navbar_gerente')
             @includeWhen(Auth::user()->roles->contains('nombre', 'superadmin'), 'components.navbar_superadmin')
+            @includeWhen(Auth::user()->roles->contains('nombre', 'cajero'), 'components.navbar_cajero')
+            @includeWhen(Auth::user()->roles->contains('nombre', 'cocinero'), 'components.navbar_cocinero')
         </nav>
 
         {{-- Contenido principal --}}
