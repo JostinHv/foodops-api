@@ -65,4 +65,9 @@ readonly class SucursalService implements ISucursalService
     {
         return $this->repository->obtenerPorUsuarioId($usuarioId);
     }
+
+    public function gerenteTieneSucursal(int $usuarioId): bool
+    {
+        return $this->repository->gerenteTieneSucursal($usuarioId);
+    }
 }

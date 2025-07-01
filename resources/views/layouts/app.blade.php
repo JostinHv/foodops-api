@@ -14,6 +14,17 @@
 {{--    <script src="{{ asset('js/app.js') }}"></script>--}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    {{-- Meta tags para el sistema de notificaciones --}}
+    @auth
+        <meta name="user-id" content="{{ auth()->id() }}">
+        <meta name="user-role" content="{{ auth()->user()->roles->first()->nombre ?? '' }}">
+        <meta name="tenant-id" content="{{ auth()->user()->tenant_id ?? '' }}">
+        @if(auth()->user()->asignacionPersonal)
+            <meta name="sucursal-id" content="{{ auth()->user()->asignacionPersonal->sucursal_id ?? '' }}">
+        @endif
+    @endauth
+    
     @stack('meta')
     @stack('styles')
     @stack('scripts')
@@ -100,11 +111,18 @@
     {{-- Overlay para cerrar sidebar en mobile --}}
     <div id="sidebar-overlay"></div>
 
+    {{-- Scripts del sistema de notificaciones --}}
+    <script src="{{ asset('js/utils/NotificationManager.js') }}"></script>
+    <script src="{{ asset('js/utils/NotificationService.js') }}"></script>
     <script src="{{ asset('js/navbar.js') }}"></script>
 
     <script>
-        // Script para logout y recarga (mantener aquí si es específico de app.blade.php)
+        // Inicializar el servicio de notificaciones para usuarios autenticados
         document.addEventListener('DOMContentLoaded', function () {
+            // Inicializar el servicio de notificaciones
+            window.notificationService = new NotificationService(window.notificationManager);
+            
+            // Script para logout y recarga (mantener aquí si es específico de app.blade.php)
             if (window.performance && window.performance.navigation.type === window.performance.navigation.TYPE_BACK_FORWARD) {
                 window.location.reload();
             }
@@ -130,6 +148,16 @@
     <main class="container py-4">
         @yield('content')
     </main>
+    
+    {{-- Scripts básicos para vistas públicas --}}
+    <script src="{{ asset('js/utils/NotificationManager.js') }}"></script>
+    <script>
+        // Inicializar solo el gestor básico para vistas públicas
+        document.addEventListener('DOMContentLoaded', function () {
+            // Para vistas públicas, solo mostrar notificaciones básicas
+            window.publicNotificationManager = window.notificationManager;
+        });
+    </script>
 @endauth
 
 </body>

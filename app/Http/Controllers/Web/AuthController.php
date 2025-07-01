@@ -15,6 +15,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -77,6 +78,14 @@ class AuthController extends Controller
         if ($response['error'] === true) {
             return back()->withErrors(['credentials' => $response['message']])
                 ->withInput($request->except('password'));
+        }
+        // Asegurarnos de que el token sea el JWT completo
+        $accessToken = $response['data']['access_token'];
+
+        // Verificar que el token tenga 3 segmentos
+        if (count(explode('.', $accessToken)) !== 3) {
+            Log::error('Token inválido generado:', ['token_segments' => count(explode('.', $accessToken))]);
+            return back()->withErrors(['error' => 'Error de autenticación']);
         }
 
         $cookies = $this->authCookieService->createAuthCookies(

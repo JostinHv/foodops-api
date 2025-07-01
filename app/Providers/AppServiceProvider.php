@@ -110,6 +110,7 @@ use App\Services\Interfaces\IUsuarioRolService;
 use App\Services\Interfaces\IUsuarioService;
 use App\Services\Interfaces\IMovimientoHistorialService;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -344,6 +345,18 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Forzar la URL correcta para el disco público
+        $this->app->resolving('filesystem.disk', function ($disk, $app) {
+            if ($disk instanceof FilesystemAdapter && $disk->getAdapter()->getPathPrefix() === storage_path('app/public')) {
+                $disk->buildTemporaryUrlsUsing(function ($path, $expiration, $options) {
+                    return '/foodops/storage/' . ltrim($path, '/');
+                });
+            }
+        });
+
+        // Sobrescribir Storage::url para que siempre use el prefijo correcto
+        Storage::macro('url', function ($path) {
+            return '/foodops/storage/' . ltrim($path, '/');
+        });
     }
 }

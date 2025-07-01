@@ -185,4 +185,72 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+
+    // Validación de email en tiempo real
+    const emailInput = document.getElementById('email');
+    const submitButton = document.querySelector('#formUsuario button[type="submit"]');
+    const emailFeedback = document.getElementById('email-feedback');
+    let emailTimeout;
+
+    if (emailInput && submitButton) {
+        emailInput.addEventListener('input', function() {
+            clearTimeout(emailTimeout);
+            const email = this.value.trim();
+
+            // Deshabilitar el botón mientras se valida
+            submitButton.disabled = true;
+
+            // Validar formato de email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                this.setCustomValidity('Por favor, ingrese un email válido');
+                emailFeedback.textContent = 'Por favor, ingrese un email válido';
+                emailFeedback.className = 'form-text text-danger';
+                return;
+            }
+
+            // Esperar 500ms después de que el usuario deje de escribir
+            emailTimeout = setTimeout(() => {
+                // Verificar si el email ya existe
+                fetch('/check-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({ email: email })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.exists) {
+                        this.setCustomValidity('Este email ya está registrado');
+                        emailFeedback.textContent = 'Este email ya está registrado';
+                        emailFeedback.className = 'form-text text-danger';
+                        submitButton.disabled = true;
+                    } else {
+                        this.setCustomValidity('');
+                        emailFeedback.textContent = 'Email disponible';
+                        emailFeedback.className = 'form-text text-success';
+                        submitButton.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al verificar email:', error);
+                    this.setCustomValidity('Error al verificar el email');
+                    emailFeedback.textContent = 'Error al verificar el email';
+                    emailFeedback.className = 'form-text text-danger';
+                    submitButton.disabled = true;
+                });
+            }, 500);
+        });
+
+        // Validar el formulario antes de enviar
+        document.getElementById('formUsuario').addEventListener('submit', function(e) {
+            if (!emailInput.checkValidity()) {
+                e.preventDefault();
+                emailInput.reportValidity();
+            }
+        });
+    }
 });

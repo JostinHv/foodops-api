@@ -2,11 +2,13 @@
 
 namespace App\Services\Implementations;
 
+use App\Events\OrdenEvent;
 use App\Repositories\Interfaces\IAsignacionPersonalRepository;
 use App\Repositories\Interfaces\IItemMenuRepository;
 use App\Repositories\Interfaces\IItemOrdenRepository;
 use App\Repositories\Interfaces\IOrdenRepository;
 use App\Repositories\Interfaces\IUsuarioRepository;
+use App\Services\Interfaces\IMesaService;
 use App\Services\Interfaces\IOrdenService;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
@@ -23,6 +25,7 @@ readonly class OrdenService implements IOrdenService
         private IItemOrdenRepository          $itemOrdenRepo,
         private IAsignacionPersonalRepository $asignacionPersonalRepo,
         private IUsuarioRepository            $usuarioRepo,
+        private IMesaService $mesaService,
     )
     {
     }
@@ -52,9 +55,10 @@ readonly class OrdenService implements IOrdenService
         return $this->repository->eliminar($id);
     }
 
-    public function generarNumeroOrden(): int
+    public function generarNumeroOrden(int $sucursalId): int
     {
-        $ultimoNumero = $this->repository->obtenerUltimoNumeroOrden();
+        $ultimoNumero = $this->repository->obtenerUltimoNumeroOrden($sucursalId);
+        Log::info('Numero: ' . $ultimoNumero);
         if ($ultimoNumero) {
             return $ultimoNumero + 1;
         }
@@ -70,13 +74,16 @@ readonly class OrdenService implements IOrdenService
             DB::beginTransaction();
             $usuario = $this->usuarioRepo->obtenerPorIdConRelaciones($usuarioId, ['tenant', 'restaurante']);
             $asignacionPersonal = $this->asignacionPersonalRepo->buscarPorUsuarioId($usuarioId);
+            $nroOrden = $this->generarNumeroOrden($asignacionPersonal->sucursal->id );
+
+            $this->mesaService->actualizar($datos['mesa_id'], ['estado_mesa_id' => 2]);
             $ordenData = [
                 'tenant_id' => $usuario->tenant->id ?? null,
                 'restaurante_id' => $usuario->restaurante->id ?? null,
                 'sucursal_id' => $asignacionPersonal->sucursal->id ?? null,
                 'mesa_id' => $datos['mesa_id'],
                 'mesero_id' => $usuarioId,
-                'nro_orden' => $this->generarNumeroOrden(),
+                'nro_orden' => $nroOrden,
                 'nombre_cliente' => $datos['cliente'],
                 'tipo_servicio' => 'mesa',
                 'created_at' => now(),
@@ -100,6 +107,20 @@ readonly class OrdenService implements IOrdenService
             $this->itemOrdenRepo->crearItemsOrden($itemsOrden);
 
             DB::commit();
+
+            // Cargar las relaciones necesarias para el evento
+            $orden->load(['estadoOrden', 'mesa', 'itemsOrdenes']);
+
+            // Disparar evento de nueva orden
+            Log::info('Disparando evento OrdenEvent para orden creada', [
+                'orden_id' => $orden->id,
+                'tenant_id' => $orden->tenant_id,
+                'sucursal_id' => $orden->sucursal_id
+            ]);
+            event(new OrdenEvent($orden, 'creada', [
+                'mesero' => $usuario->nombre,
+                'items_count' => count($itemsOrden)
+            ]));
 
             Log::info('Orden creada exitosamente', [
                 'orden_id' => $orden->id,
@@ -155,7 +176,7 @@ readonly class OrdenService implements IOrdenService
                 throw new \RuntimeException('Orden no encontrada');
             }
 
-            // Actualizar el estado de la orden a "Servida" (estado_id = 3)
+            // Actualizar el estado de la orden a "Servida" (estado_id = 4)
             $actualizado = $this->actualizar($id, ['estado_orden_id' => 4]);
 
             if (!$actualizado) {
@@ -163,6 +184,13 @@ readonly class OrdenService implements IOrdenService
             }
 
             DB::commit();
+
+            // Cargar las relaciones necesarias para el evento
+            $orden->load(['estadoOrden', 'mesa', 'itemsOrdenes']);
+
+            // Disparar evento de orden servida
+            event(new OrdenEvent($orden, 'servida'));
+
             return true;
 
         } catch (Exception $e) {
@@ -196,6 +224,15 @@ readonly class OrdenService implements IOrdenService
             }
 
             DB::commit();
+
+            // Cargar las relaciones necesarias para el evento
+            $orden->load(['estadoOrden', 'mesa', 'itemsOrdenes']);
+
+            // Disparar evento de cambio de estado
+            event(new OrdenEvent($orden, 'estado_actualizado', [
+                'estado_anterior' => $orden->estadoOrden->nombre
+            ]));
+
             return true;
 
         } catch (Exception $e) {

@@ -33,5 +33,7 @@ interface IUsuarioRepository
 
     public function obtenerPorTenantId(int $tenantId): Collection;
 
+    public function obtenerTodosPorTenantId(int $tenantId): Collection;
+
     public function obtenerPorEmail(string $email);
 }

@@ -8,6 +8,7 @@ use App\Services\Interfaces\IJwtManager;
 use App\Services\Interfaces\IUsuarioService;
 use Exception;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
@@ -30,6 +31,9 @@ class AuthService implements IAuthService
         ],
         'bloqueado' => [
             'error' => 'Cuenta desactivada. Por favor, contacte al administrador.'
+        ],
+        'acceso' => [
+            'error' => 'Usted no esta asignado a ninguna sucursal. Por favor, contacte al administrador.'
         ]
     ];
 
@@ -69,11 +73,23 @@ class AuthService implements IAuthService
         if (!$token = auth()->attempt($credentials)) {
             return $this->handleFailedLogin($email);
         }
+
+        if (count(explode('.', $token)) !== 3) {
+            Log::info('Intento de crear token con formato inválido');
+            throw new \RuntimeException('Error al generar token JWT válido');
+        }
+
         $usuario = $this->usuarioService->obtenerPorEmail($email);
         $bloqueado = $this->usuarioService->estaBloqueado($usuario->id);
+        $tieneAcceso = $this->usuarioService->tieneAcceso($usuario);
         if ($bloqueado) {
             return $this->createErrorResponse(
                 self::MESSAGES['bloqueado']['error']
+            );
+        }
+        if (!$tieneAcceso) {
+            return $this->createErrorResponse(
+                self::MESSAGES['acceso']['error']
             );
         }
         return $this->handleSuccessfulLogin($token);

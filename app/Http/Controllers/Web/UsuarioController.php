@@ -39,7 +39,7 @@ class UsuarioController extends Controller
         $usuario = $this->usuarioService->obtenerPorId($usuarioId);
 
         // Obtener datos para la vista
-        $usuarios = $this->usuarioService->obtenerPorTenantId($usuario->tenant_id);
+        $usuarios = $this->usuarioService->obtenerUsuariosOperativosPorTenantId($usuario->tenant_id)->whereNotIn('id', [$usuarioId]);
         $roles = $this->rolService->obtenerRolesActivosPorId([3, 4, 5, 6]);
         $sucursales = $this->sucursalService->obtenerTodos();
 

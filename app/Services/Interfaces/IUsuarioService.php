@@ -25,10 +25,14 @@ interface IUsuarioService extends IActivoBoolService
 
     public function obtenerUltimoActivo(): Collection;
 
-    public function obtenerPorTenantId(int $tenantId): Collection;
+    public function obtenerUsuariosOperativosPorTenantId(int $tenantId): Collection;
+
+    public function obtenerTodosPorTenantId(int $tenantId): Collection;
 
     public function obtenerPorEmail(string $email): ?Model;
 
     public function estaBloqueado(int $usuarioId): bool;
+
+    public function tieneAcceso(Model $usuario): bool;
 
 }

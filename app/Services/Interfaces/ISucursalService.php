@@ -26,4 +26,6 @@ interface ISucursalService extends IActivoBoolService
     public function obtenerUltimoActivo(): Collection;
 
     public function obtenerPorUsuarioId(int $usuarioId): Collection;
+
+    public function gerenteTieneSucursal(int $usuarioId): bool;
 }

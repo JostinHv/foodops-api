@@ -51,7 +51,7 @@ class TenantController extends Controller
         // Obtener contadores para cada tenant
         $tenants->each(function ($tenant) {
             // Contar usuarios activos del tenant
-            $usuarios = $this->usuarioService->obtenerPorTenantId($tenant->id);
+            $usuarios = $this->usuarioService->obtenerTodosPorTenantId($tenant->id);
             $tenant->usuarios_count = $usuarios->where('activo', true)->count();
 
             // Contar restaurantes del tenant
@@ -179,7 +179,7 @@ class TenantController extends Controller
         $tenant = $this->tenantService->obtenerPorId($id);
 
         // Si no es AJAX, renderiza la vista Blade completa
-        $usuarios = $this->usuarioService->obtenerPorTenantId($id);
+        $usuarios = $this->usuarioService->obtenerTodosPorTenantId($id);
         $roles = $this->rolService->obtenerRolesActivosPorId([2, 3, 4, 5, 6]); // Asumiendo que los IDs de roles son 1, 2 y 3
         $planes = $this->planSuscripcionService->obtenerActivos(); // Esto parece redundante si ya cargamos el tenant con su plan
 

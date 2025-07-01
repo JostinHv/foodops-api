@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -21,9 +22,15 @@ class WebAuthenticate extends Middleware
     public function handle($request, Closure $next, ...$guards)
     {
         try {
+            // Para rutas de broadcasting, usar autenticación API
+//            if ($request->is('broadcasting/*')) {
+//                $guards = ['api'];
+//            }
+
             $this->setTokenFromCookie($request);
             $this->validateBearerToken($request);
             $this->authenticate($request, $guards);
+
             $response = $next($request);
 
             // Agregar headers para prevenir el caché
@@ -33,6 +40,21 @@ class WebAuthenticate extends Middleware
 
             return $response;
         } catch (Exception $e) {
+            Log::error('Error en WebAuthenticate middleware', [
+                'url' => $request->url(),
+                'method' => $request->method(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            // Para rutas de broadcasting, devolver error JSON
+            if ($request->is('broadcasting/*')) {
+                return response()->json([
+                    'error' => 'Unauthorized',
+                    'message' => 'No autorizado para acceder a este canal'
+                ], 403);
+            }
+
             return $this->buildErrorResponse();
         }
     }

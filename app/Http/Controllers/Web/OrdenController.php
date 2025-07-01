@@ -30,6 +30,7 @@ class OrdenController extends Controller
     private IEstadoOrdenService $estadoOrdenService;
     private IUsuarioService $usuarioService;
     private IAsignacionPersonalService $asignacionPersonalService;
+    private ICategoriaMenuService $categoriaMenuService;
 
     public function __construct(
         IOrdenService              $ordenService,
@@ -103,13 +104,40 @@ class OrdenController extends Controller
 
             // Formatear las fechas y tiempos antes de enviar la respuesta
             $ordenesFormateadas = $ordenes->map(function ($orden) {
-                $orden->tiempo_transcurrido = [
+                $tiempoTranscurrido = [
                     'humano' => $orden->created_at->locale('es')->diffForHumans(['parts' => 1]),
                     'minutos' => $orden->created_at->isToday() ? (int)$orden->created_at->diffInMinutes() : null,
                     'es_hoy' => $orden->created_at->isToday()
                 ];
-                $orden->created_at = $orden->created_at->toIso8601String();
-                return $orden;
+
+                return [
+                    'id' => $orden->id,
+                    'nro_orden' => $orden->nro_orden,
+                    'nombre_cliente' => $orden->nombre_cliente,
+                    'estado_orden_id' => $orden->estado_orden_id,
+                    'estado_orden' => [
+                        'id' => $orden->estadoOrden->id,
+                        'nombre' => $orden->estadoOrden->nombre
+                    ],
+                    'mesa' => [
+                        'id' => $orden->mesa->id,
+                        'nombre' => $orden->mesa->nombre
+                    ],
+                    'items_ordenes' => $orden->itemsOrdenes->map(function ($item) {
+                        return [
+                            'id' => $item->id,
+                            'cantidad' => $item->cantidad,
+                            'monto' => $item->monto,
+                            'item_menu' => [
+                                'id' => $item->itemMenu->id,
+                                'nombre' => $item->itemMenu->nombre,
+                                'precio' => $item->itemMenu->precio
+                            ]
+                        ];
+                    }),
+                    'tiempo_transcurrido' => $tiempoTranscurrido,
+                    'created_at' => $orden->created_at->toIso8601String()
+                ];
             });
 
             return response()->json([
@@ -211,7 +239,7 @@ class OrdenController extends Controller
                     ->route('login')
                     ->with('error', 'Debe iniciar sesión para realizar esta acción');
             }
-            $this->mesaService->actualizar($request->mesa_id, ['estado_mesa_id' => 2]);
+
             $this->ordenService->crearOrden(
                 $request->validated(),
                 $this->getCurrentUser()->getAuthIdentifier()

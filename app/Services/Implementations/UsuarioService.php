@@ -3,6 +3,8 @@
 namespace App\Services\Implementations;
 
 use App\Repositories\Interfaces\IUsuarioRepository;
+use App\Services\Interfaces\IAsignacionPersonalService;
+use App\Services\Interfaces\ISucursalService;
 use App\Services\Interfaces\IUsuarioService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +13,9 @@ readonly class UsuarioService implements IUsuarioService
 {
 
     public function __construct(
-        private IUsuarioRepository $repository
+        private IUsuarioRepository         $repository,
+        private IAsignacionPersonalService $asignacionPersonalService,
+        private ISucursalService           $sucursalService,
     )
     {
     }
@@ -61,10 +65,16 @@ readonly class UsuarioService implements IUsuarioService
         return $this->repository->obtenerUltimoActivo();
     }
 
-    public function obtenerPorTenantId(int $tenantId): Collection
+    public function obtenerUsuariosOperativosPorTenantId(int $tenantId): Collection
     {
         return $this->repository->obtenerPorTenantId($tenantId);
     }
+
+    public function obtenerTodosPorTenantId(int $tenantId): Collection
+    {
+        return $this->repository->obtenerTodosPorTenantId($tenantId);
+    }
+
 
     public function obtenerPorEmail(string $email): ?Model
     {
@@ -84,5 +94,14 @@ readonly class UsuarioService implements IUsuarioService
             return true;
         }
         return false;
+    }
+
+    public function tieneAcceso(Model $usuario): bool
+    {
+        $rol = $usuario->roles->first();
+        if ($rol->nombre === 'gerente') {
+            return $this->sucursalService->gerenteTieneSucursal($usuario->id);
+        }
+        return true;
     }
 }

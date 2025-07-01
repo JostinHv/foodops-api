@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -25,20 +26,41 @@ class ApiAuthenticate extends Middleware
     public function handle($request, Closure $next, ...$guards)
     {
         try {
+            $jwtCookie = $request->cookie('access_token');
+
             $this->setTokenFromCookie($request);
+
             $this->validateBearerToken($request);
+
             $this->authenticate($request, $guards);
+
             return $next($request);
         } catch (Exception $e) {
             return $this->buildErrorResponse('Token inválido');
         }
     }
 
+    /**
+     * @throws Exception
+     */
     private function setTokenFromCookie(Request $request): void
     {
         if ($jwtCookie = $request->cookie('access_token')) {
-            $token = JWTAuth::setToken($jwtCookie)->getToken();
-            $request->headers->set('Authorization', "Bearer {$token}");
+            try {
+
+                $token = JWTAuth::setToken($jwtCookie);
+
+                // Verificamos si el token se seteó correctamente
+                $tokenString = $token->getToken();
+
+                // Si llegamos aquí, el token es válido
+                $request->headers->set('Authorization', "Bearer {$tokenString}");
+
+            } catch (Exception $e) {
+                throw $e;
+            }
+        } else {
+            Log::warning('No se encontró cookie access_token');
         }
     }
 

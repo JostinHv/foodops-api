@@ -109,4 +109,17 @@ readonly class AsignacionPersonalService implements IAsignacionPersonalService
             return false;
         }
     }
+
+    public function obtenerAsignacionGerenteAsignadoSucursal(int $sucursalId): ?Model
+    {
+        try {
+            $asignacion = $this->repository->obtenerPorSucursalId($sucursalId)
+                ->where('tipo', 'gerente')
+                ->first();
+            return $asignacion ?: null;
+        } catch (\Exception $exception) {
+            Log::error('Error al verificar gerente asignado a sucursal: ' . $exception->getMessage());
+            return null;
+        }
+    }
 }

@@ -29,4 +29,6 @@ interface ISucursalRepository extends IActivoBoolRepository
 
     public function obtenerPorIdConRelaciones(int $id, array $relaciones = []): ?Model;
 
+    public function gerenteTieneSucursal(int $usuarioId): bool;
+
 }

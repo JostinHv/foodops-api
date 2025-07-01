@@ -34,7 +34,7 @@ class SucursalController extends Controller
         $usuario = $this->usuarioService->obtenerPorId($usuarioId);
         $sucursales = $this->sucursalService->obtenerTodos();
         $restaurantes = $this->restauranteService->obtenerRestaurantesPorTenant($usuario->tenant_id);
-        $gerentes = $this->usuarioService->obtenerPorTenantId($usuario->tenant_id);
+        $gerentes = $this->usuarioService->obtenerUsuariosOperativosPorTenantId($usuario->tenant_id);
         $gerentes = $gerentes->filter(function ($gerente) {
             return $gerente->roles->contains('nombre', 'gerente');
         });
@@ -52,7 +52,7 @@ class SucursalController extends Controller
         try {
             $request->validate([
                 'restaurante_id' => 'required|exists:restaurantes,id',
-                'usuario_id' => 'nullable|exists:usuarios,id',
+                'usuario_id' => 'required|exists:usuarios,id',
                 'nombre' => 'required|string|max:255',
                 'tipo' => 'nullable|string|max:50',
                 'latitud' => 'nullable|numeric',

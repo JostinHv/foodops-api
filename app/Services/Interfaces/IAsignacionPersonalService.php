@@ -24,4 +24,6 @@ interface IAsignacionPersonalService
     public function cambiarEstado(int $id, int $activo);
 
     public function asignarUsuarioSucursal(Model $usuario, int $sucursalId): bool;
+
+    public function obtenerAsignacionGerenteAsignadoSucursal(int $sucursalId): ?Model;
 }

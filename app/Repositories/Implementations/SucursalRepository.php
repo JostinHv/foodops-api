@@ -44,4 +44,11 @@ class SucursalRepository extends ActivoBoolRepository implements ISucursalReposi
     {
         return $this->modelo->where('usuario_id', $usuarioId)->get();
     }
+
+    public function gerenteTieneSucursal(int $usuarioId): bool
+    {
+        return $this->modelo->where('usuario_id', $usuarioId)
+            ->where('activo', true)
+            ->exists(); // Retorna true si tiene sucursal, false si no tiene
+    }
 }

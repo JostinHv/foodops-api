@@ -72,6 +72,16 @@ class UsuarioRepository extends ActivoBoolRepository implements IUsuarioReposito
     {
         return $this->modelo->where('tenant_id', $tenantId)
             ->with(['roles', 'fotoPerfil', 'restaurante'])
+            ->get()
+            ->filter(function ($usuario) {
+                return !$usuario->roles->whereIn('id', [1, 2])->count();
+            });
+    }
+
+    public function obtenerTodosPorTenantId(int $tenantId): Collection
+    {
+        return $this->modelo->where('tenant_id', $tenantId)
+            ->with(['roles', 'fotoPerfil', 'restaurante'])
             ->get();
     }
 

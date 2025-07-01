@@ -11,6 +11,78 @@ document.addEventListener('DOMContentLoaded', function () {
     const ordenCache = new Map();
     const CACHE_DURATION = 60000; // 1 minuto en milisegundos
 
+    // Configuración de Pusher
+    const pusherKey = document.querySelector('meta[name="pusher-app-key"]').content;
+    const pusherCluster = document.querySelector('meta[name="pusher-app-cluster"]').content;
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+    const jwtToken = localStorage.getItem('jwt_token');
+
+    console.log('Configuración de Pusher:', {
+        key: pusherKey,
+        cluster: pusherCluster,
+        hasJwtToken: !!jwtToken
+    });
+
+    const pusher = new Pusher(pusherKey, {
+        cluster: pusherCluster,
+        authEndpoint: "/broadcasting/auth",
+        auth: {
+            headers: {
+                'X-CSRF-Token': csrfToken,
+            }
+        },
+        logToConsole: true
+    });
+    // pusher.signin();
+
+    console.log('Pusher inicializado');
+
+    // Obtener el tenant_id y sucursal_id del usuario actual
+    const tenantId = document.querySelector('meta[name="tenant-id"]').content;
+    const sucursalId = document.querySelector('meta[name="sucursal-id"]').content;
+
+    console.log('Datos del usuario:', {
+        tenantId: tenantId,
+        sucursalId: sucursalId
+    });
+
+    // Suscribirse al canal de órdenes
+    const channelName = `private-tenant.${tenantId}.sucursal.${sucursalId}.ordenes`;
+    console.log('Intentando suscribirse al canal:', channelName);
+
+    const channel = pusher.subscribe(channelName);
+    
+    // Logs de conexión de Pusher
+    pusher.connection.bind('connected', function() {
+        console.log('✅ Pusher conectado exitosamente');
+        console.log('Estado de conexión:', pusher.connection.state);
+    });
+    
+    pusher.connection.bind('error', function(err) {
+        console.error('❌ Error de conexión Pusher:', err);
+        // Notificar error de conexión
+        if (window.notificationService) {
+            window.notificationService.handleError('Error de conexión con Pusher', 'Conexión');
+        }
+    });
+    
+    channel.bind('pusher:subscription_succeeded', function () {
+        console.log('✅ Suscripción exitosa al canal:', channelName);
+        console.log('Canal suscrito:', channel.name);
+    });
+    
+    channel.bind('pusher:subscription_error', function (status) {
+        console.error('❌ Error de suscripción:', status);
+        console.error('Detalles del error:', {
+            status: status.status,
+            data: status.data
+        });
+        // Notificar error de suscripción
+        if (window.notificationService) {
+            window.notificationService.handleError('Error al suscribirse al canal de órdenes', 'Suscripción');
+        }
+    });
+
     // Función para obtener el color del badge según el estado
     function obtenerColorEstado(estadoNombre) {
         const colores = {
@@ -131,6 +203,10 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .catch(error => {
                 console.error('Error al cargar los detalles:', error);
+                // Usar el sistema de notificaciones para mostrar el error
+                if (window.notificationService) {
+                    window.notificationService.handleError('Error al cargar los detalles de la orden', 'Carga de Datos');
+                }
                 const modalBody = document.querySelector('#detalleOrdenModal .modal-body');
                 if (modalBody) {
                     modalBody.innerHTML = `
@@ -248,7 +324,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Actualizar color al cargar y cuando cambie la selección
         estadoSelect.addEventListener('change', actualizarColorBoton);
 
-        formCambiarEstado.addEventListener('submit', function(e) {
+        formCambiarEstado.addEventListener('submit', function (e) {
             e.preventDefault();
             const form = this;
             // Obtener el ID de la orden de la URL del formulario
@@ -273,49 +349,36 @@ document.addEventListener('DOMContentLoaded', function () {
                     estado_orden_id: estadoId
                 })
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Limpiar caché para esta orden
-                    ordenCache.delete(ordenId);
-                    // Recargar los detalles
-                    cargarDetallesOrden(ordenId);
-                    // Actualizar la lista de órdenes
-                    actualizarOrdenes(document.getElementById('ordenarPor').value);
-                    // Mostrar mensaje de éxito
-                    const alertDiv = document.createElement('div');
-                    alertDiv.className = 'alert alert-success alert-dismissible fade show mt-3';
-                    alertDiv.innerHTML = `
-                        <i class="bi bi-check-circle me-2"></i>
-                        Estado actualizado correctamente
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-                    `;
-                    form.parentNode.insertBefore(alertDiv, form.nextSibling);
-                    // Eliminar el mensaje después de 3 segundos
-                    setTimeout(() => alertDiv.remove(), 3000);
-                } else {
-                    throw new Error(data.message || 'Error al actualizar el estado');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                const alertDiv = document.createElement('div');
-                alertDiv.className = 'alert alert-danger alert-dismissible fade show mt-3';
-                alertDiv.innerHTML = `
-                    <i class="bi bi-exclamation-triangle me-2"></i>
-                    Error al actualizar el estado: ${error.message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-                `;
-                form.parentNode.insertBefore(alertDiv, form.nextSibling);
-                // Eliminar el mensaje después de 3 segundos
-                setTimeout(() => alertDiv.remove(), 3000);
-            })
-            .finally(() => {
-                // Restaurar el botón
-                submitButton.disabled = false;
-                submitButton.innerHTML = `<i class="bi bi-check-circle me-1"></i>Actualizar`;
-                actualizarColorBoton();
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Limpiar caché para esta orden
+                        ordenCache.delete(ordenId);
+                        // Recargar los detalles
+                        cargarDetallesOrden(ordenId);
+                        // Actualizar la lista de órdenes
+                        actualizarOrdenes(document.getElementById('ordenarPor').value);
+                        // Mostrar mensaje de éxito usando el sistema de notificaciones
+                        if (window.notificationService) {
+                            window.notificationService.success('Estado Actualizado', 'El estado de la orden se ha actualizado correctamente');
+                        }
+                    } else {
+                        throw new Error(data.message || 'Error al actualizar el estado');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Mostrar error usando el sistema de notificaciones
+                    if (window.notificationService) {
+                        window.notificationService.handleError(error.message, 'Actualización de Estado');
+                    }
+                })
+                .finally(() => {
+                    // Restaurar el botón
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = `<i class="bi bi-check-circle me-1"></i>Actualizar`;
+                    actualizarColorBoton();
+                });
         });
 
         // Inicializar el color del botón
@@ -325,7 +388,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Evento para el formulario de marcar como servida
     const formMarcarServida = document.getElementById('formMarcarServida');
     if (formMarcarServida) {
-        formMarcarServida.addEventListener('submit', function(e) {
+        formMarcarServida.addEventListener('submit', function (e) {
             e.preventDefault();
             const form = this;
             const ordenId = form.action.split('/ordenes/')[1].split('/')[0];
@@ -338,59 +401,47 @@ document.addEventListener('DOMContentLoaded', function () {
                     'Accept': 'application/json'
                 }
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error en la respuesta del servidor');
-                }
-                // Si la respuesta es una redirección, recargamos la página
-                if (response.redirected) {
-                    window.location.href = response.url;
-                    return;
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data) {
-                    // Limpiar caché para esta orden
-                    ordenCache.delete(ordenId);
-                    // Cerrar el modal
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('detalleOrdenModal'));
-                    if (modal) {
-                        modal.hide();
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la respuesta del servidor');
                     }
-                    // Actualizar la lista de órdenes
-                    actualizarOrdenes(document.getElementById('ordenarPor').value);
-                    // Mostrar mensaje de éxito
-                    const alertDiv = document.createElement('div');
-                    alertDiv.className = 'alert alert-success alert-dismissible fade show mt-3';
-                    alertDiv.innerHTML = `
-                        <i class="bi bi-check-circle me-2"></i>
-                        Orden marcada como servida correctamente
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-                    `;
-                    document.querySelector('.container-fluid').insertBefore(alertDiv, document.querySelector('.container-fluid').firstChild);
-                    // Eliminar el mensaje después de 3 segundos
-                    setTimeout(() => alertDiv.remove(), 3000);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                const alertDiv = document.createElement('div');
-                alertDiv.className = 'alert alert-danger alert-dismissible fade show mt-3';
-                alertDiv.innerHTML = `
-                    <i class="bi bi-exclamation-triangle me-2"></i>
-                    Error al marcar la orden como servida: ${error.message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-                `;
-                document.querySelector('.container-fluid').insertBefore(alertDiv, document.querySelector('.container-fluid').firstChild);
-                // Eliminar el mensaje después de 3 segundos
-                setTimeout(() => alertDiv.remove(), 3000);
-            });
+                    // Si la respuesta es una redirección, recargamos la página
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                        return;
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data) {
+                        // Limpiar caché para esta orden
+                        ordenCache.delete(ordenId);
+                        // Cerrar el modal
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('detalleOrdenModal'));
+                        if (modal) {
+                            modal.hide();
+                        }
+                        // Actualizar la lista de órdenes
+                        actualizarOrdenes(document.getElementById('ordenarPor').value);
+                        // Mostrar mensaje de éxito usando el sistema de notificaciones
+                        if (window.notificationService) {
+                            window.notificationService.success('Orden Servida', 'La orden ha sido marcada como servida correctamente');
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Mostrar error usando el sistema de notificaciones
+                    if (window.notificationService) {
+                        window.notificationService.handleError(error.message, 'Marcar como Servida');
+                    }
+                });
         });
     }
 
     // Función para actualizar órdenes
     function actualizarOrdenes(criterio) {
+        console.log('Función actualizarOrdenes llamada con criterio:', criterio);
         fetch('/mesero/ordenes/ordenar', {
             method: 'POST',
             headers: {
@@ -400,36 +451,46 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: JSON.stringify({criterio: criterio})
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                listaOrdenes.innerHTML = '';
-                data.ordenes.forEach(orden => {
-                    listaOrdenes.innerHTML += generarTarjetaOrden(orden);
-                });
-
-                // Reasignar eventos a los nuevos botones
-                document.querySelectorAll('.ver-detalles').forEach(btn => {
-                    btn.addEventListener('click', function (e) {
-                        e.stopPropagation();
-                        const ordenId = this.dataset.ordenId;
-                        cargarDetallesOrden(ordenId);
+            .then(response => {
+                console.log('Respuesta del servidor:', response.status, response.statusText);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Datos recibidos del servidor:', data);
+                if (data.success) {
+                    console.log('Actualizando lista de órdenes con', data.ordenes.length, 'órdenes');
+                    listaOrdenes.innerHTML = '';
+                    data.ordenes.forEach(orden => {
+                        listaOrdenes.innerHTML += generarTarjetaOrden(orden);
                     });
-                });
-            } else {
-                console.error('Error en la respuesta:', data);
-                alert('Error al ordenar las órdenes: ' + (data.message || 'Error desconocido'));
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error al ordenar las órdenes. Por favor, intente nuevamente.');
-        });
+
+                    // Reasignar eventos a los nuevos botones
+                    document.querySelectorAll('.ver-detalles').forEach(btn => {
+                        btn.addEventListener('click', function (e) {
+                            e.stopPropagation();
+                            const ordenId = this.dataset.ordenId;
+                            cargarDetallesOrden(ordenId);
+                        });
+                    });
+                    console.log('Lista de órdenes actualizada exitosamente');
+                } else {
+                    console.error('Error en la respuesta:', data);
+                    // Mostrar error usando el sistema de notificaciones
+                    if (window.notificationService) {
+                        window.notificationService.handleError(data.message || 'Error desconocido', 'Actualización de Lista');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error en actualizarOrdenes:', error);
+                // Mostrar error usando el sistema de notificaciones
+                if (window.notificationService) {
+                    window.notificationService.handleError('Error al actualizar la lista de órdenes', 'Actualización');
+                }
+            });
     }
 
     // Eventos para los filtros
@@ -486,4 +547,62 @@ document.addEventListener('DOMContentLoaded', function () {
 
         cards.forEach(card => card.parentElement.appendChild(card));
     }
+
+    // Escuchar eventos de órdenes usando el sistema de notificaciones modular
+    channel.bind('orden.creada', function (data) {
+        console.log('🎉 EVENTO RECIBIDO: orden.creada');
+        console.log('📊 Datos completos del evento:', JSON.stringify(data, null, 2));
+        console.log('📋 Estructura de datos:', {
+            orden: data.orden,
+            datos_adicionales: data.datos_adicionales,
+            tipo_evento: 'orden.creada'
+        });
+        console.log('Actualizando lista de órdenes...');
+        
+        // Actualizar la lista de órdenes
+        actualizarOrdenes(document.getElementById('ordenarPor').value);
+
+        // Usar el sistema de notificaciones modular
+        if (window.notificationService) {
+            window.notificationService.handleNotification('orden.creada', data);
+        }
+    });
+
+    channel.bind('orden.estado_actualizado', function (data) {
+        console.log('🔄 EVENTO RECIBIDO: orden.estado_actualizado');
+        console.log('📊 Datos completos del evento:', JSON.stringify(data, null, 2));
+        console.log('📋 Estructura de datos:', {
+            orden: data.orden,
+            datos_adicionales: data.datos_adicionales,
+            tipo_evento: 'orden.estado_actualizado'
+        });
+        console.log('Actualizando lista de órdenes...');
+        
+        // Actualizar la lista de órdenes
+        actualizarOrdenes(document.getElementById('ordenarPor').value);
+
+        // Usar el sistema de notificaciones modular
+        if (window.notificationService) {
+            window.notificationService.handleNotification('orden.estado_actualizado', data);
+        }
+    });
+
+    channel.bind('orden.servida', function (data) {
+        console.log('✅ EVENTO RECIBIDO: orden.servida');
+        console.log('📊 Datos completos del evento:', JSON.stringify(data, null, 2));
+        console.log('📋 Estructura de datos:', {
+            orden: data.orden,
+            datos_adicionales: data.datos_adicionales,
+            tipo_evento: 'orden.servida'
+        });
+        console.log('Actualizando lista de órdenes...');
+        
+        // Actualizar la lista de órdenes
+        actualizarOrdenes(document.getElementById('ordenarPor').value);
+
+        // Usar el sistema de notificaciones modular
+        if (window.notificationService) {
+            window.notificationService.handleNotification('orden.servida', data);
+        }
+    });
 });

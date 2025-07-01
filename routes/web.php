@@ -22,12 +22,12 @@ use App\Http\Controllers\Web\TenantController;
 use App\Http\Controllers\Web\UsuarioController;
 use App\Http\Middleware\WebAuthenticate;
 use App\Http\Middleware\WebCheckRole;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/phpinfo', function () {
     phpinfo();
 });
-
 
 // Rutas de autenticación
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -46,6 +46,14 @@ Route::get('/politica-privacidad', [HomeController::class, 'politicaPrivacidad']
 Route::prefix('mesero')->group(function () {
 // Rutas protegidas por autenticación
     Route::middleware([WebAuthenticate::class, WebCheckRole::class . ':mesero'])->group(function () {
+
+        Route::get('/check-auth', static function () {
+            return response()->json([
+                'authenticated' => auth()->check(),
+                'user_id' => auth()->id(),
+            ]);
+        });
+
         Route::get('/', static function () {
             return view('mesero.dashboard');
         })->name('mesero.dashboard');

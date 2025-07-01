@@ -27,7 +27,7 @@ interface IOrdenRepository extends IBaseRepository
 
     public function obtenerItemsOrden(int $ordenId): Collection;
 
-    public function obtenerUltimoNumeroOrden(): int;
+    public function obtenerUltimoNumeroOrden(int $sucursalId): int;
 
     public function obtenerPorIdConRelaciones(int $id, array $relaciones = []): ?Model;
 

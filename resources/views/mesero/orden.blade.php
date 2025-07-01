@@ -7,6 +7,13 @@
 @endpush
 
 @section('content')
+    <!-- Meta tags para Pusher y datos del usuario -->
+    <meta name="tenant-id" content="{{ auth()->user()->tenant_id }}">
+    <meta name="sucursal-id" content="{{ auth()->user()->asignacionPersonal->sucursal_id}}">
+    <meta name="pusher-app-key" content="{{ config('broadcasting.connections.pusher.key') }}">
+    <meta name="pusher-app-cluster" content="{{ config('broadcasting.connections.pusher.options.cluster') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <div class="container-fluid">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
@@ -57,7 +64,8 @@
                     <div class="card h-100 orden-card"
                          data-orden-id="{{ $orden->id }}"
                          data-estado-id="{{ $orden->estadoOrden->id }}"
-                         data-fecha="{{ $orden->created_at->locale('es')->isoFormat('LLLL') }}" data-bs-toggle="modal">
+                         data-fecha="{{ $orden->created_at->locale('es')->isoFormat('LLLL') }}" data-bs-toggle="modal"
+                    >
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <div>
@@ -212,5 +220,6 @@
 @endsection
 
 @push('scripts')
+    <script src="https://js.pusher.com/8.3.0/pusher.min.js"></script>
     <script src="{{ asset('js/mesero/orden.js') }}"></script>
 @endpush

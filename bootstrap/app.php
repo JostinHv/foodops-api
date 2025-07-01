@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->encryptCookies(['access_token', 'refresh_token']);
 //        $middleware->api(
 //            append: [ApiAuthenticate::class,]
 //        )->alias(['auth' => ApiAuthenticate::class]
@@ -31,5 +32,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias(['role.api' => ApiCheckRole::class]);
         $middleware->alias(['role.web' => WebCheckRole::class]);
     })
+    ->withBroadcasting(
+        __DIR__ . '/../routes/channels.php',
+        ['middleware' => [ApiAuthenticate::class]],
+    )
     ->withExceptions(function (Exceptions $exceptions) {
     })->create();

@@ -49,10 +49,6 @@ class ItemOrdenRepository extends BaseRepository implements IItemOrdenRepository
             return DB::transaction(function () use ($itemsOrden) {
                 $this->modelo->insert($itemsOrden);
 
-                Log::info('Items de orden creados exitosamente', [
-                    'cantidad_items' => count($itemsOrden),
-                    'orden_id' => $itemsOrden[0]['orden_id'] ?? null
-                ]);
                 return true;
             });
         } catch (\Exception $e) {

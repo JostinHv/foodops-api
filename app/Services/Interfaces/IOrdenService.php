@@ -18,7 +18,7 @@ interface IOrdenService extends IBaseService
 
     public function eliminar(int $id): bool;
 
-    public function generarNumeroOrden(): int;
+    public function generarNumeroOrden(int $sucursalId): int;
 
     public function crearOrden(array $datos, mixed $usuarioId);
 

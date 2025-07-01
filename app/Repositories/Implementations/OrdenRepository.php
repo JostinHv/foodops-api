@@ -35,10 +35,14 @@ class OrdenRepository extends BaseRepository implements IOrdenRepository
         }
     }
 
-    public function obtenerUltimoNumeroOrden(): int
+    public function obtenerUltimoNumeroOrden(int $sucursalId): int
     {
-        $ultimoNumero = $this->modelo->max('nro_orden');
-        return $ultimoNumero ?: 0; // Retorna 0 si no hay órdenes
+        // Obtener el último registro ordenado por id descendente
+        $ultimaOrden = $this->modelo
+            ->where('sucursal_id', $sucursalId)
+            ->orderBy('id', 'desc')
+            ->first();
+        return (int)$ultimaOrden->nro_orden ?: 0; // Retorna 0 si no hay órdenes
     }
 
     public function obtenerOrdenesPorSucursal(mixed $sucursal_id): Collection

@@ -44,31 +44,15 @@ Route::prefix('artisan')->group(function () {
         return 'view:clear';
     });
 
-    Route::get('/cache-stats', function () {
-        $cacheDriver = config('cache.default');
-        $cacheSize = 'N/A';
-
-        if ($cacheDriver === 'file') {
-            $cacheDir = storage_path('framework/cache/data');
-            $size = 0;
-
-            foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($cacheDir)) as $file) {
-                if ($file->isFile()) {
-                    $size += $file->getSize();
-                }
-            }
-
-            $cacheSize = round($size / 1024 / 1024, 2) . ' MB';
-        }
-
-        return response()->json([
-            'driver' => $cacheDriver,
-            'status' => 'active',
-            'size' => $cacheSize,
-            'prefix' => config('cache.prefix')
+    Route::get('/migrate-refresh', function () {
+        $exitCode = Artisan::call('migrate:refresh', [
+            '--force' => true,
         ]);
+        return 'migrate:refresh';
     });
 
 });
+
+
 
 

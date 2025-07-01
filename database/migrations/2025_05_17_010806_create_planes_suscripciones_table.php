@@ -31,13 +31,12 @@ return new class extends Migration {
                 'intervalo' => 'mes',
                 'caracteristicas' => json_encode([
                     'limites' => [
-                        'usuarios' => 3,
+                        'usuarios' => 5,
                         'restaurantes' => 1,
                         'sucursales' => 1
                     ],
                     'adicionales' => [
                         'Gestión de órdenes básica',
-                        'Reportes mensuales',
                         'Soporte por email'
                     ]
                 ]),
@@ -58,10 +57,8 @@ return new class extends Migration {
                     ],
                     'adicionales' => [
                         'Gestión de órdenes avanzada',
-                        'Panel de análisis',
                         'Reportes semanales',
                         'Soporte prioritario',
-                        'Sistema de reservas'
                     ]
                 ]),
                 'activo' => true,
@@ -82,11 +79,8 @@ return new class extends Migration {
                     'adicionales' => [
                         'Gestión multi-sucursal',
                         'API personalizada',
-                        'Reportes en tiempo real',
                         'Soporte 24/7',
                         'Backup automático',
-                        'Panel administrativo avanzado',
-                        'Personalización completa'
                     ]
                 ]),
                 'activo' => true,

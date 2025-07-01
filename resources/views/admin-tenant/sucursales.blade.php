@@ -182,7 +182,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="usuario_id" class="form-label">Gerente</label>
-                                <select name="usuario_id" class="form-select">
+                                <select name="usuario_id" class="form-select" required>
                                     <option value="">Seleccionar gerente</option>
                                     @foreach($gerentes ?? [] as $gerente)
                                         <option value="{{ $gerente->id }}">

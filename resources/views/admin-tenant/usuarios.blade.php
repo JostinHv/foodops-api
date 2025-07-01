@@ -36,7 +36,10 @@
                     <div class="card-body">
                         <div class="fw-bold">Trabajadores Activos</div>
                         <h3 class="mb-1">{{ $usuariosActivos ?? 0 }}</h3>
-                        <small class="text-success">{{ round(($usuariosActivos / $totalUsuarios ?? 1) * 100) }}% del
+                        <small
+                            class="text-success">{{ $totalUsuarios > 0 ? round(($usuariosActivos / $totalUsuarios) * 100) : 0 }}
+                            %
+                            del
                             total</small>
                     </div>
                 </div>
@@ -188,6 +191,7 @@
                                 </label>
                                 <input type="email" class="form-control" id="email" name="email"
                                        placeholder="Ej: juan.perez@ejemplo.com" required>
+                                <div id="email-feedback" class="form-text"></div>
                             </div>
                             <div class="col-md-6">
                                 <label for="celular" class="form-label">
@@ -243,7 +247,7 @@
                                     <i class="bi bi-key me-2"></i>Contraseña
                                 </label>
                                 <input type="password" class="form-control" id="password" name="password"
-                                       placeholder="Mínimo 8 caracteres" required>
+                                       placeholder="Ingrese su contraseña" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="password_confirmation" class="form-label">
