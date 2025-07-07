@@ -3,8 +3,9 @@
 use App\Http\Controllers\Web\AdminController;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\CajeroController;
+use App\Http\Controllers\Web\CajeroFacturaController;
+use App\Http\Controllers\Web\CocineroOrdenController;
 use App\Http\Controllers\Web\ContactoController;
-use App\Http\Controllers\Web\GerenteFacturaController;
 use App\Http\Controllers\Web\GerenteMesaController;
 use App\Http\Controllers\Web\GerentePersonalController;
 use App\Http\Controllers\Web\GrupoRestauranteController;
@@ -18,11 +19,11 @@ use App\Http\Controllers\Web\PerfilController;
 use App\Http\Controllers\Web\PlanSuscripcionController;
 use App\Http\Controllers\Web\RestauranteController;
 use App\Http\Controllers\Web\SucursalController;
+use App\Http\Controllers\Web\SugerenciaController;
 use App\Http\Controllers\Web\TenantController;
 use App\Http\Controllers\Web\UsuarioController;
 use App\Http\Middleware\WebAuthenticate;
 use App\Http\Middleware\WebCheckRole;
-use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/phpinfo', function () {
@@ -179,16 +180,16 @@ Route::prefix('gerente')->group(function () {
             Route::post('/{id}/toggle-activo', [GerentePersonalController::class, 'toggleActivo'])->name('gerente.personal.toggle-activo');
             Route::post('/check-email', [GerentePersonalController::class, 'checkEmail'])->name('gerente.personal.check-email');
         });
-        Route::prefix('facturacion')->group(function () {
-            Route::get('/', [GerenteFacturaController::class, 'index'])->name('gerente.facturacion');
-            Route::post('/', [GerenteFacturaController::class, 'store'])->name('gerente.facturacion.store');
-            Route::get('/{id}', [GerenteFacturaController::class, 'show'])->name('gerente.facturacion.show');
-            Route::put('/{id}', [GerenteFacturaController::class, 'update'])->name('gerente.facturacion.update');
-            Route::delete('/{id}', [GerenteFacturaController::class, 'destroy'])->name('gerente.facturacion.destroy');
-            Route::post('/calcular-totales', [GerenteFacturaController::class, 'calcularTotales'])->name('gerente.facturacion.calcular-totales');
-            Route::get('/{id}/pdf', [GerenteFacturaController::class, 'generarPDF'])->name('gerente.facturacion.pdf');
-            Route::get('/{id}/pdf-pos', [GerenteFacturaController::class, 'generarPDFPOS'])->name('gerente.facturacion.pdf-pos');
-        });
+//        Route::prefix('facturacion')->group(function () {
+//            Route::get('/', [GerenteFacturaController::class, 'index'])->name('gerente.facturacion');
+//            Route::post('/', [GerenteFacturaController::class, 'store'])->name('gerente.facturacion.store');
+//            Route::get('/{id}', [GerenteFacturaController::class, 'show'])->name('gerente.facturacion.show');
+//            Route::put('/{id}', [GerenteFacturaController::class, 'update'])->name('gerente.facturacion.update');
+//            Route::delete('/{id}', [GerenteFacturaController::class, 'destroy'])->name('gerente.facturacion.destroy');
+//            Route::post('/calcular-totales', [GerenteFacturaController::class, 'calcularTotales'])->name('gerente.facturacion.calcular-totales');
+//            Route::get('/{id}/pdf', [GerenteFacturaController::class, 'generarPDF'])->name('gerente.facturacion.pdf');
+//            Route::get('/{id}/pdf-pos', [GerenteFacturaController::class, 'generarPDFPOS'])->name('gerente.facturacion.pdf-pos');
+//        });
 
         // Rutas de perfil
         Route::get('/perfil', [PerfilController::class, 'index'])->name('gerente.perfil');
@@ -252,6 +253,21 @@ Route::prefix('superadmin')->group(function () {
     });
 });
 
+// Rutas para sugerencias (superadmin)
+Route::prefix('superadmin')->middleware([WebAuthenticate::class, WebCheckRole::class . ':superadmin'])->group(function () {
+    Route::get('/sugerencias', [SugerenciaController::class, 'index'])->name('superadmin.sugerencias.index');
+    Route::get('/sugerencias/{id}', [SugerenciaController::class, 'show'])->name('superadmin.sugerencias.show');
+    Route::put('/sugerencias/{id}', [SugerenciaController::class, 'update'])->name('superadmin.sugerencias.update');
+    Route::delete('/sugerencias/{id}', [SugerenciaController::class, 'destroy'])->name('superadmin.sugerencias.destroy');
+});
+
+// Ruta para crear sugerencias (cualquier autenticado)
+Route::middleware([WebAuthenticate::class])->group(function () {
+    Route::get('/sugerencias/crear', [SugerenciaController::class, 'create'])->name('sugerencias.create');
+    Route::post('/sugerencias', [SugerenciaController::class, 'store'])->name('sugerencias.store');
+    Route::get('/sugerencias/historial', [SugerenciaController::class, 'historial'])->name('sugerencias.historial');
+});
+
 //Rutas de cajero
 Route::prefix('cajero')->group(function () {
     Route::middleware([WebAuthenticate::class, WebCheckRole::class . ':cajero'])->group(function () {
@@ -260,17 +276,49 @@ Route::prefix('cajero')->group(function () {
         })->name('cajero.dashboard');
 
         Route::prefix('facturacion')->group(function () {
-            Route::get('/', [CajeroController::class, 'index'])->name('cajero.facturacion');
+            Route::get('/', [CajeroFacturaController::class, 'index'])->name('cajero.facturacion');
+            Route::post('/', [CajeroFacturaController::class, 'store'])->name('cajero.facturacion.store');
+            Route::get('/{id}', [CajeroFacturaController::class, 'show'])->name('cajero.facturacion.show');
+            Route::put('/{id}', [CajeroFacturaController::class, 'update'])->name('cajero.facturacion.update');
+            Route::post('/calcular-totales', [CajeroFacturaController::class, 'calcularTotales'])->name('cajero.facturacion.calcular-totales');
+            Route::post('/{ordenId}/cambiar-estado', [CajeroFacturaController::class, 'cambiarEstadoOrden'])->name('cajero.facturacion.cambiar-estado');
+            Route::get('/{id}/pdf', [CajeroFacturaController::class, 'generarPDF'])->name('cajero.facturacion.pdf');
+            Route::get('/{id}/pdf-pos', [CajeroFacturaController::class, 'generarPDFPOS'])->name('cajero.facturacion.pdf-pos');
+            Route::get('/orden/{ordenId}', [CajeroFacturaController::class, 'showOrden'])->name('cajero.facturacion.orden.show');
+
+            // Rutas específicas para actualizaciones AJAX
+            Route::get('/api/ordenes', [CajeroFacturaController::class, 'getOrdenesActualizadas'])->name('cajero.facturacion.api.ordenes');
+            Route::get('/api/facturas', [CajeroFacturaController::class, 'getFacturasActualizadas'])->name('cajero.facturacion.api.facturas');
         });
 
         Route::prefix('caja')->group(function () {
             Route::get('/', [CajeroController::class, 'caja'])->name('cajero.caja');
+            Route::get('/apertura', [CajeroController::class, 'aperturaCaja'])->name('cajero.caja.apertura');
+            Route::post('/apertura', [CajeroController::class, 'storeAperturaCaja'])->name('cajero.caja.apertura.store');
+            Route::get('/cierre', [CajeroController::class, 'cierreCaja'])->name('cajero.caja.cierre');
+            Route::post('/cierre', [CajeroController::class, 'storeCierreCaja'])->name('cajero.caja.cierre.store');
+            Route::get('/movimientos', [CajeroController::class, 'movimientosCaja'])->name('cajero.caja.movimientos');
+            // Endpoints AJAX para estado de caja, validaciones, etc. (opcional)
         });
 
         // Rutas de perfil
         Route::get('/perfil', [PerfilController::class, 'index'])->name('cajero.perfil');
         Route::post('/perfil', [PerfilController::class, 'actualizar'])->name('cajero.perfil.actualizar');
         Route::post('/perfil/contrasenia', [PerfilController::class, 'actualizarContrasenia'])->name('cajero.perfil.contrasenia');
+    });
+});
+
+//Rutas de cocinero
+Route::prefix('cocinero')->group(function () {
+    Route::middleware([WebAuthenticate::class, WebCheckRole::class . ':cocinero'])->group(function () {
+        Route::prefix('ordenes')->group(function () {
+            Route::get('/', [CocineroOrdenController::class, 'index'])->name('cocinero.orden.index');
+            Route::get('/{orden}', [CocineroOrdenController::class, 'show'])->name('cocinero.orden.show');
+            Route::post('/ordenar', [CocineroOrdenController::class, 'ordenar'])->name('cocinero.orden.ordenar');
+            Route::post('/{id}/cambiar-estado', [CocineroOrdenController::class, 'cambiarEstado'])
+                ->name('cocinero.orden.cambiar-estado');
+            Route::post('/{id}/marcar-servida', [CocineroOrdenController::class, 'marcarServida'])->name('cocinero.orden.marcar-servida');
+        });
     });
 });
 

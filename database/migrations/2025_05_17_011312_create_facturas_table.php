@@ -20,7 +20,7 @@ return new class extends Migration {
             $table->decimal('monto_total_igv', 10, 2)->nullable();
             $table->string('estado_pago')->nullable();
             $table->date('fecha_pago')->nullable();
-            $table->date('hora_pago')->nullable();
+            $table->time('hora_pago')->nullable();
             $table->string('notas')->nullable();
             $table->timestamps();
         });

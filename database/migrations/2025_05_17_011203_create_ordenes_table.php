@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->foreignId('restaurante_id')->nullable()->constrained('restaurantes');
             $table->foreignId('sucursal_id')->nullable()->constrained('sucursales');
             $table->foreignId('mesa_id')->nullable()->constrained('mesas');
-            $table->foreignId('estado_orden_id')->default(1)->nullable()->constrained('estados_ordenes');
+            $table->foreignId('estado_orden_id')->default(9)->nullable()->constrained('estados_ordenes');
             $table->foreignId('mesero_id')->nullable()->constrained('usuarios');
             $table->foreignId('cajero_id')->nullable()->constrained('usuarios');
             $table->string('nro_orden')->unique()->nullable();

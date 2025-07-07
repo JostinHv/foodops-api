@@ -21,5 +21,26 @@
                 Caja
             </a>
         </li>
+        <li class="nav-item">
+            <a href="{{ route('cajero.caja.apertura') }}"
+               class="nav-link {{ request()->routeIs('cajero.caja.apertura') ? 'active' : '' }}">
+                <i class="bi bi-box-arrow-in-right me-2"></i>
+                Apertura de Caja
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('cajero.caja.cierre') }}"
+               class="nav-link {{ request()->routeIs('cajero.caja.cierre') ? 'active' : '' }}">
+                <i class="bi bi-box-arrow-left me-2"></i>
+                Cierre de Caja
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('cajero.caja.movimientos') }}"
+               class="nav-link {{ request()->routeIs('cajero.caja.movimientos') ? 'active' : '' }}">
+                <i class="bi bi-list-ul me-2"></i>
+                Movimientos de Caja
+            </a>
+        </li>
     </ul>
 </div>

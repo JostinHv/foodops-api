@@ -29,6 +29,12 @@ use App\Repositories\Implementations\TenantSuscripcionRepository;
 use App\Repositories\Implementations\UsuarioRepository;
 use App\Repositories\Implementations\UsuarioRolRepository;
 use App\Repositories\Implementations\MovimientoHistorialRepository;
+use App\Repositories\Implementations\CajaRepository;
+use App\Repositories\Implementations\MovimientoCajaRepository;
+use App\Repositories\Implementations\CierreCajaRepository;
+use App\Repositories\Implementations\EstadoCajaRepository;
+use App\Repositories\Implementations\TipoMovimientoCajaRepository;
+use App\Repositories\Implementations\SugerenciaRepository;
 use App\Repositories\Interfaces\IAsignacionPersonalRepository;
 use App\Repositories\Interfaces\IBaseRepository;
 use App\Repositories\Interfaces\ICategoriaMenuRepository;
@@ -55,6 +61,12 @@ use App\Repositories\Interfaces\ITenantSuscripcionRepository;
 use App\Repositories\Interfaces\IUsuarioRepository;
 use App\Repositories\Interfaces\IUsuarioRolRepository;
 use App\Repositories\Interfaces\IMovimientoHistorialRepository;
+use App\Repositories\Interfaces\ICajaRepository;
+use App\Repositories\Interfaces\IMovimientoCajaRepository;
+use App\Repositories\Interfaces\ICierreCajaRepository;
+use App\Repositories\Interfaces\IEstadoCajaRepository;
+use App\Repositories\Interfaces\ITipoMovimientoCajaRepository;
+use App\Repositories\Interfaces\ISugerenciaRepository;
 use App\Services\Implementations\AsignacionPersonalService;
 use App\Services\Implementations\Auth\AuthService;
 use App\Services\Implementations\Auth\JwtManager;
@@ -82,6 +94,12 @@ use App\Services\Implementations\TenantSuscripcionService;
 use App\Services\Implementations\UsuarioRolService;
 use App\Services\Implementations\UsuarioService;
 use App\Services\Implementations\MovimientoHistorialService;
+use App\Services\Implementations\CajaService;
+use App\Services\Implementations\MovimientoCajaService;
+use App\Services\Implementations\CierreCajaService;
+use App\Services\Implementations\EstadoCajaService;
+use App\Services\Implementations\TipoMovimientoCajaService;
+use App\Services\Implementations\SugerenciaService;
 use App\Services\Interfaces\IAsignacionPersonalService;
 use App\Services\Interfaces\IAuthService;
 use App\Services\Interfaces\ICategoriaMenuService;
@@ -109,6 +127,13 @@ use App\Services\Interfaces\ITenantSuscripcionService;
 use App\Services\Interfaces\IUsuarioRolService;
 use App\Services\Interfaces\IUsuarioService;
 use App\Services\Interfaces\IMovimientoHistorialService;
+use App\Services\Interfaces\ICajaService;
+use App\Services\Interfaces\IMovimientoCajaService;
+use App\Services\Interfaces\ICierreCajaService;
+use App\Services\Interfaces\IEstadoCajaService;
+use App\Services\Interfaces\ITipoMovimientoCajaService;
+use App\Services\Interfaces\ISugerenciaService;
+use App\Helpers\EstadoOrdenHelper;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
@@ -226,6 +251,10 @@ class AppServiceProvider extends ServiceProvider
             IUsuarioService::class,
             UsuarioService::class,
         );
+        $this->app->bind(
+            ISugerenciaService::class,
+            SugerenciaService::class,
+        );
 
         // Registra los repositorios en el contenedor de servicios
         $this->app->bind(
@@ -328,6 +357,10 @@ class AppServiceProvider extends ServiceProvider
             IUsuarioRolRepository::class,
             UsuarioRolRepository::class,
         );
+        $this->app->bind(
+            ISugerenciaRepository::class,
+            SugerenciaRepository::class,
+        );
 
         $this->app->bind(
             IMovimientoHistorialRepository::class,
@@ -338,25 +371,62 @@ class AppServiceProvider extends ServiceProvider
             IMovimientoHistorialService::class,
             MovimientoHistorialService::class,
         );
+
+        $this->app->bind(
+            ICajaRepository::class,
+            CajaRepository::class,
+        );
+        $this->app->bind(
+            IMovimientoCajaRepository::class,
+            MovimientoCajaRepository::class,
+        );
+        $this->app->bind(
+            ICierreCajaRepository::class,
+            CierreCajaRepository::class,
+        );
+        $this->app->bind(
+            IEstadoCajaRepository::class,
+            EstadoCajaRepository::class,
+        );
+        $this->app->bind(
+            ITipoMovimientoCajaRepository::class,
+            TipoMovimientoCajaRepository::class,
+        );
+
+        $this->app->bind(
+            ICajaService::class,
+            CajaService::class,
+        );
+        $this->app->bind(
+            IMovimientoCajaService::class,
+            MovimientoCajaService::class,
+        );
+        $this->app->bind(
+            ICierreCajaService::class,
+            CierreCajaService::class,
+        );
+        $this->app->bind(
+            IEstadoCajaService::class,
+            EstadoCajaService::class,
+        );
+        $this->app->bind(
+            ITipoMovimientoCajaService::class,
+            TipoMovimientoCajaService::class,
+        );
     }
 
     /**
      * Bootstrap any application Services.
      */
     public function boot(): void
-    {
-        // Forzar la URL correcta para el disco público
-        $this->app->resolving('filesystem.disk', function ($disk, $app) {
-            if ($disk instanceof FilesystemAdapter && $disk->getAdapter()->getPathPrefix() === storage_path('app/public')) {
-                $disk->buildTemporaryUrlsUsing(function ($path, $expiration, $options) {
-                    return '/foodops/storage/' . ltrim($path, '/');
-                });
-            }
+    {        
+        // Registrar el helper de estados de órdenes como una función global
+        \Blade::directive('estadoColor', function ($expression) {
+            return "<?php echo \App\Helpers\EstadoOrdenHelper::getColor($expression); ?>";
         });
-
-        // Sobrescribir Storage::url para que siempre use el prefijo correcto
-        Storage::macro('url', function ($path) {
-            return '/foodops/storage/' . ltrim($path, '/');
+        
+        \Blade::directive('estadoBgColor', function ($expression) {
+            return "<?php echo \App\Helpers\EstadoOrdenHelper::getBgColor($expression); ?>";
         });
     }
 }

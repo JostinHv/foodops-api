@@ -4,14 +4,21 @@ namespace App\Services\Implementations;
 
 use App\Repositories\Interfaces\IFacturaRepository;
 use App\Services\Interfaces\IFacturaService;
+use App\Services\Interfaces\ICajaService;
+use App\Services\Interfaces\IAsignacionPersonalService;
+use App\Services\Interfaces\IMovimientoCajaService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 readonly class FacturaService implements IFacturaService
 {
 
     public function __construct(
-        private IFacturaRepository $repository
+        private IFacturaRepository $repository,
+        private ICajaService $cajaService,
+        private IAsignacionPersonalService $asignacionPersonalService,
+        private IMovimientoCajaService $movimientoCajaService
     )
     {
     }
@@ -28,7 +35,12 @@ readonly class FacturaService implements IFacturaService
 
     public function crear(array $datos): Model
     {
-        return $this->repository->crear($datos);
+        $factura = $this->repository->crear($datos);
+        
+        // Registrar movimiento de caja automáticamente
+        $this->registrarMovimientoCaja($factura);
+        
+        return $factura;
     }
 
     public function actualizar(int $id, array $datos): bool
@@ -75,4 +87,33 @@ readonly class FacturaService implements IFacturaService
         ];
     }
 
+    private function registrarMovimientoCaja(Model $factura): void
+    {
+        try {
+            // Obtener la caja abierta de la sucursal
+            $asignacion = $this->asignacionPersonalService->obtenerPorUsuarioId(Auth::id());
+            if (!$asignacion) {
+                return; // No hay asignación de sucursal
+            }
+
+            $cajaAbierta = $this->cajaService->obtenerAbiertaPorSucursal($asignacion->sucursal_id);
+            if (!$cajaAbierta) {
+                return; // No hay caja abierta
+            }
+
+            // Registrar el movimiento de venta
+            $this->movimientoCajaService->registrarMovimiento([
+                'caja_id' => $cajaAbierta->id,
+                'factura_id' => $factura->id,
+                'tipo_movimiento_caja_id' => 1, // VENTA
+                'metodo_pago_id' => $factura->metodo_pago_id,
+                'monto' => $factura->monto_total,
+                'descripcion' => 'Venta - Factura ' . $factura->nro_factura,
+                'usuario_id' => Auth::id()
+            ]);
+        } catch (\Exception $e) {
+            // Log del error pero no fallar la creación de la factura
+            \Log::error('Error al registrar movimiento de caja: ' . $e->getMessage());
+        }
+    }
 }

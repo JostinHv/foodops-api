@@ -11,10 +11,11 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/components/estado-orden-badge.css') }}">
 {{--    <script src="{{ asset('js/app.js') }}"></script>--}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     {{-- Meta tags para el sistema de notificaciones --}}
     @auth
         <meta name="user-id" content="{{ auth()->id() }}">
@@ -24,7 +25,7 @@
             <meta name="sucursal-id" content="{{ auth()->user()->asignacionPersonal->sucursal_id ?? '' }}">
         @endif
     @endauth
-    
+
     @stack('meta')
     @stack('styles')
     @stack('scripts')
@@ -68,9 +69,15 @@
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li>
                         <a class="dropdown-item"
-                           href="{{ Auth::user()->roles->contains('nombre', 'mesero') ? route('mesero.perfil') : (Auth::user()->roles->contains('nombre', 'gerente') ? route('gerente.perfil') : (Auth::user()->roles->contains('nombre', 'administrador') ? route('tenant.perfil') : route('perfil'))) }}">
+                           href="{{ Auth::user()->roles->contains('nombre', 'cajero') ? route('cajero.perfil') : (Auth::user()->roles->contains('nombre', 'mesero') ? route('mesero.perfil') : (Auth::user()->roles->contains('nombre', 'gerente') ? route('gerente.perfil') : (Auth::user()->roles->contains('nombre', 'administrador') ? route('tenant.perfil') : route('perfil'))) )}}">
                             <i class="bi bi-person me-2"></i>
                             Mi Perfil
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{{ route('sugerencias.create') }}">
+                            <i class="bi bi-lightbulb me-2"></i>
+                            Enviar sugerencia
                         </a>
                     </li>
                     <li>
@@ -121,7 +128,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             // Inicializar el servicio de notificaciones
             window.notificationService = new NotificationService(window.notificationManager);
-            
+
             // Script para logout y recarga (mantener aquí si es específico de app.blade.php)
             if (window.performance && window.performance.navigation.type === window.performance.navigation.TYPE_BACK_FORWARD) {
                 window.location.reload();
@@ -148,7 +155,7 @@
     <main class="container py-4">
         @yield('content')
     </main>
-    
+
     {{-- Scripts básicos para vistas públicas --}}
     <script src="{{ asset('js/utils/NotificationManager.js') }}"></script>
     <script>

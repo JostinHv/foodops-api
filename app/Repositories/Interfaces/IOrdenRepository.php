@@ -32,4 +32,8 @@ interface IOrdenRepository extends IBaseRepository
     public function obtenerPorIdConRelaciones(int $id, array $relaciones = []): ?Model;
 
     public function obtenerOrdenesPorSucursal(mixed $sucursal_id);
+
+    public function obtenerPorSucursalYFecha(int $sucursalId, string $fecha): Collection;
+
+    public function obtenerPorSucursalFechaYEstado(int $sucursalId, string $fecha, ?int $estadoId = null): Collection;
 }

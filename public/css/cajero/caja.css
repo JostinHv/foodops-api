@@ -1,0 +1,86 @@
+/* Estilos generales */
+.card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.caja-card {
+    cursor: pointer;
+}
+
+.caja-card .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.caja-card .badge {
+    font-size: 0.8rem;
+    padding: 0.5em 0.8em;
+}
+
+.input-group {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.input-group-text {
+    border: none;
+    background-color: white;
+}
+
+.btn-primary, .btn-success, .btn-danger {
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+}
+
+.bi {
+    font-size: 1.1rem;
+}
+
+.badge.bg-success {
+    background-color: #198754 !important;
+}
+
+.badge.bg-secondary {
+    background-color: #6c757d !important;
+}
+
+.badge.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #000;
+}
+
+.table th {
+    font-size: 0.9rem;
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+.table td {
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .caja-card .card-title {
+        font-size: 1rem;
+    }
+    .caja-card .badge {
+        font-size: 0.75rem;
+        padding: 0.4em 0.6em;
+    }
+    .table th, .table td {
+        font-size: 0.8rem;
+    }
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+} 

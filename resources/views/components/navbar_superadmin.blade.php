@@ -36,5 +36,11 @@
                 Auditoría
         </a>
     </li>
+    <li class="nav-item">
+        <a href="{{ route('superadmin.sugerencias.index') }}" class="nav-link {{ request()->routeIs('superadmin.sugerencias.*') ? 'active' : '' }}">
+            <i class="bi bi-lightbulb me-2"></i>
+            Sugerencias
+        </a>
+    </li>
 </ul>
 </div>

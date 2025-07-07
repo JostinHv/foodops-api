@@ -25,7 +25,7 @@ interface IAsignacionPersonalRepository
 
     public function obtenerUltimoActivo(): Collection;
 
-    public function buscarPorUsuarioId(mixed $usuarioId): ?Model;
+    public function buscarPorUsuarioId(mixed $usuarioId): Model;
 
     public function obtenerPorUsuarioId(int $usuarioId): ?Model;
 

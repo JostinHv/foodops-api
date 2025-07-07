@@ -56,17 +56,33 @@ class OrdenController extends Controller
     /**
      * Muestra la lista de órdenes
      */
-    public function index(): View
+    public function index(Request $request): View
     {
         $usuario = $this->usuarioService->obtenerPorId($this->getCurrentUser()->getAuthIdentifier());
         $asignacionPersonal = $this->asignacionPersonalService->obtenerPorUsuarioId($usuario->id);
         if (!$asignacionPersonal) {
             return view('login');
         }
+        
         $sucursal = $asignacionPersonal->sucursal;
-        $ordenes = $this->ordenService->obtenerTodos()->where('tenant_id', $usuario->tenant_id)->where('sucursal_id', $sucursal->id)
-            ->load(['mesa', 'estadoOrden', 'itemsOrdenes.itemMenu', 'mesero'])
-            ->sortByDesc('created_at')
+        $fechaSeleccionada = $request->get('fecha', now()->format('Y-m-d'));
+        $estadoFiltro = $request->get('estado', ''); // Por defecto mostrar todas
+        
+        \Log::info('Fecha seleccionada (mesero): ' . $fechaSeleccionada);
+        \Log::info('Estado filtro (mesero): ' . $estadoFiltro);
+        
+        // Obtener el ID del estado por nombre
+        $estadoId = null;
+        if ($estadoFiltro && $estadoFiltro !== '') {
+            $estado = $this->estadoOrdenService->obtenerActivos()->firstWhere('nombre', $estadoFiltro);
+            $estadoId = $estado ? $estado->id : null;
+            \Log::info("Estado filtro (mesero): {$estadoFiltro}, ID encontrado: " . ($estadoId ?? 'null'));
+        }
+        
+        $ordenes = $this->ordenService->obtenerPorSucursalFechaYEstado($sucursal->id, $fechaSeleccionada, $estadoId)
+            ->filter(function ($orden) use ($usuario) {
+                return $orden->tenant_id == $usuario->tenant_id;
+            })
             ->map(function ($orden) {
                 $orden->tiempo_transcurrido = [
                     'humano' => $orden->created_at->locale('es')->diffForHumans(['parts' => 1]),
@@ -77,8 +93,9 @@ class OrdenController extends Controller
             });
 
         $estadosOrden = $this->estadoOrdenService->obtenerActivos();
-
-        return view('mesero.orden', compact('ordenes', 'estadosOrden'));
+        \Log::info("Cantidad de órdenes encontradas (mesero): " . $ordenes->count());
+        
+        return view('mesero.orden', compact('ordenes', 'estadosOrden', 'fechaSeleccionada'));
     }
 
     /**
@@ -88,11 +105,25 @@ class OrdenController extends Controller
     {
         try {
             $criterio = $request->input('criterio', 'reciente');
+            $fecha = $request->input('fecha', now()->format('Y-m-d'));
+            $estadoFiltro = $request->input('estado', '');
+
             $usuario = $this->usuarioService->obtenerPorId($this->getCurrentUser()->getAuthIdentifier());
             $asignacionPersonal = $this->asignacionPersonalService->obtenerPorUsuarioId($usuario->id);
             $sucursal = $asignacionPersonal->sucursal;
-            $ordenes = $this->ordenService->obtenerTodos()->where('tenant_id', $usuario->tenant_id)->where('sucursal_id', $sucursal->id)
-                ->load(['mesa', 'estadoOrden', 'itemsOrdenes.itemMenu', 'mesero']);
+
+            // Obtener el ID del estado por nombre
+            $estadoId = null;
+            if ($estadoFiltro && $estadoFiltro !== '') {
+                $estado = $this->estadoOrdenService->obtenerActivos()->firstWhere('nombre', $estadoFiltro);
+                $estadoId = $estado ? $estado->id : null;
+                \Log::info("Estado filtro (ordenar mesero): {$estadoFiltro}, ID encontrado: " . ($estadoId ?? 'null'));
+            }
+
+            $ordenes = $this->ordenService->obtenerPorSucursalFechaYEstado($sucursal->id, $fecha, $estadoId)
+                ->filter(function ($orden) use ($usuario) {
+                    return $orden->tenant_id == $usuario->tenant_id;
+                });
 
             // Aplicar ordenamiento según el criterio
             $ordenes = match ($criterio) {
@@ -307,7 +338,7 @@ class OrdenController extends Controller
                 8  // Estado adicional que libera mesa
             ];
 
-            if (in_array($request->estado_orden_id, $estadosQueLibenMesa)) {
+            if (in_array($request->estado_orden_id, $estadosQueLibenMesa, true)) {
                 // Liberar la mesa (estado_mesa_id = 1 significa "Libre")
                 $this->mesaService->actualizar($orden->mesa_id, ['estado_mesa_id' => 1]);
             }

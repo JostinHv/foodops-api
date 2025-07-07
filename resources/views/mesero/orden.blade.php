@@ -29,7 +29,17 @@
         <div class="card mb-4">
             <div class="card-body">
                 <div class="row g-3">
-                    <div class="col-md-4">
+                    <div class="col-md-2">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white">
+                                <i class="bi bi-calendar"></i>
+                            </span>
+                            <input type="date" id="filtroFecha" class="form-control"
+                                   value="{{ $fechaSeleccionada ?? date('Y-m-d') }}"
+                                   max="{{ date('Y-m-d') }}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
                         <div class="input-group">
                             <span class="input-group-text bg-white">
                                 <i class="bi bi-search"></i>
@@ -38,20 +48,25 @@
                                    placeholder="Buscar por mesa o cliente...">
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <select class="form-select" id="filtroEstado">
                             <option value="">Todos los estados</option>
                             @foreach($estadosOrden as $estado)
-                                <option value="{{ $estado->id }}">{{ $estado->nombre }}</option>
+                                <option value="{{ $estado->nombre }}">{{ $estado->nombre }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-2">
                         <select class="form-select" id="ordenarPor">
                             <option value="reciente">Más recientes</option>
                             <option value="antiguo">Más antiguas</option>
                             <option value="mesa">Por mesa</option>
                         </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-outline-secondary w-100" onclick="limpiarFiltros()">
+                            <i class="bi bi-arrow-clockwise me-1"></i>Limpiar
+                        </button>
                     </div>
                 </div>
             </div>
@@ -64,7 +79,7 @@
                     <div class="card h-100 orden-card"
                          data-orden-id="{{ $orden->id }}"
                          data-estado-id="{{ $orden->estadoOrden->id }}"
-                         data-fecha="{{ $orden->created_at->locale('es')->isoFormat('LLLL') }}" data-bs-toggle="modal"
+                         data-fecha="{{ $orden->created_at->toISOString() }}"
                     >
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start mb-3">
@@ -78,10 +93,7 @@
                                         @endif
                                     </p>
                                 </div>
-                                <span class="badge bg-{{ $orden->estadoOrden->nombre === 'Pendiente' ? 'danger' :
-                                                      ($orden->estadoOrden->nombre === 'En Proceso' ? 'warning' : 'success') }}">
-                                    {{ $orden->estadoOrden->nombre }}
-                                </span>
+                                <x-estado-orden-badge :estado="$orden->estadoOrden" />
                             </div>
 
                             <div class="mb-3">
@@ -150,35 +162,40 @@
                             <div id="orden-estado-tiempo">
                                 <!-- Se llenará con JavaScript -->
                             </div>
-                            <form id="formCambiarEstado" class="mt-3">
-                                @csrf
-                                <div class="d-flex flex-column gap-2">
-                                    <label for="estado_orden_id" class="form-label mb-0">
-                                        <i class="bi bi-arrow-repeat me-1"></i>Cambiar Estado
-                                    </label>
-                                    <div class="d-flex gap-2">
-                                        <select class="form-select" id="estado_orden_id" name="estado_orden_id">
-                                            @foreach($estadosOrden as $estado)
-                                                <option value="{{ $estado->id }}"
-                                                        data-color="{{
-                                                                    $estado->nombre === 'En Proceso' ? 'warning' :
-                                                                    ($estado->nombre === 'Preparada' ? 'info' :
-                                                                    ($estado->nombre === 'Cancelada' ? 'danger' :
-                                                                    ($estado->nombre === 'Servida' ? 'success' :
-                                                                    ($estado->nombre === 'Solicitando Pago' ? 'primary' :
-                                                                    ($estado->nombre === 'Pagada' ? 'success' :
-                                                                    ($estado->nombre === 'En disputa' ? 'danger' : 'secondary'))))))
-                                                                    }}">
-                                                    {{ $estado->nombre }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <button type="submit" class="btn btn-primary">
-                                            <i class="bi bi-check-circle me-1"></i>Actualizar
-                                        </button>
+                            <div id="bloque-cambiar-estado">
+                                <form id="formCambiarEstado" class="mt-3">
+                                    @csrf
+                                    <div class="d-flex flex-column gap-2">
+                                        <label for="estado_orden_id" class="form-label mb-0">
+                                            <i class="bi bi-arrow-repeat me-1"></i>Cambiar Estado
+                                        </label>
+                                        <div class="d-flex gap-2">
+                                            <select class="form-select" id="estado_orden_id" name="estado_orden_id">
+                                                @foreach($estadosOrden as $estado)
+                                                    <option value="{{ $estado->id }}"
+                                                            data-color="{{
+                                                                        $estado->nombre === 'En Proceso' ? 'warning' :
+                                                                        ($estado->nombre === 'Preparada' ? 'info' :
+                                                                        ($estado->nombre === 'Cancelada' ? 'danger' :
+                                                                        ($estado->nombre === 'Servida' ? 'success' :
+                                                                        ($estado->nombre === 'Solicitando Pago' ? 'primary' :
+                                                                        ($estado->nombre === 'Pagada' ? 'success' :
+                                                                        ($estado->nombre === 'En disputa' ? 'danger' : 'secondary'))))))
+                                                                        }}">
+                                                        {{ $estado->nombre }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="bi bi-check-circle me-1"></i>Actualizar
+                                            </button>
+                                        </div>
                                     </div>
+                                </form>
+                                <div id="msg-cambiar-estado-pagada" class="alert alert-warning mt-2 d-none" role="alert">
+                                    <i class="bi bi-lock me-1"></i> No se puede modificar el estado de una orden pagada.
                                 </div>
-                            </form>
+                            </div>
                         </div>
                     </div>
 

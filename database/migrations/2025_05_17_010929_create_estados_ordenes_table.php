@@ -26,6 +26,7 @@ return new class extends Migration {
             ['nombre' => 'Pagada', 'descripcion' => 'Orden pagada', 'activo' => true],
             ['nombre' => 'En disputa', 'descripcion' => 'Orden en disputa', 'activo' => true],
             ['nombre' => 'Cerrada', 'descripcion' => 'Orden cerrada', 'activo' => true],
+            ['nombre' => 'Pendiente', 'descripcion' => 'Orden pendiente', 'activo' => true],
         ]);
     }
 

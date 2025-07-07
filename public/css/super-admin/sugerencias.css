@@ -1,0 +1,15 @@
+table.table {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.table th, .table td {
+    vertical-align: middle;
+}
+.badge {
+    font-size: 0.95em;
+    padding: 0.5em 0.8em;
+}
+.modal-title {
+    font-weight: 600;
+} 

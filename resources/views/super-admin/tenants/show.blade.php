@@ -3,7 +3,6 @@
 @section('title', 'Detalles del Tenant - Super Admin')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/variables.css') }}">
     <link rel="stylesheet" href="{{ asset('css/super-admin/tenant.css') }}">
 @endpush
 

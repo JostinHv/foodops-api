@@ -22721,7 +22721,7 @@ namespace Illuminate\Http {
      *
      *
      */
-    class Request {
+    class Request {public mixed $estado_orden_id;
         /**
          *
          *

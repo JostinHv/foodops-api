@@ -1,0 +1,98 @@
+@import url('variables.css');
+
+.sugerencia-card, .gestion-sugerencias-card {
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    background: var(--light-bg);
+    border: none;
+    transition: var(--transition-base);
+}
+.sugerencia-card .card-header, .gestion-sugerencias-card .card-header {
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    color: var(--text-light);
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    border: none;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    box-shadow: var(--card-shadow-hover);
+}
+.sugerencia-card .form-label, .gestion-sugerencias-card .form-label {
+    font-weight: 500;
+    color: var(--primary-color);
+}
+.sugerencia-card textarea {
+    border-radius: 0.75rem;
+    background: #fff;
+    border: 1px solid var(--primary-light);
+    font-size: 1.1em;
+}
+.sugerencia-card .btn-primary, .gestion-sugerencias-card .btn-primary {
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    border: none;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transition: var(--transition-base);
+}
+.sugerencia-card .btn-primary:hover, .gestion-sugerencias-card .btn-primary:hover {
+    background: var(--primary-dark);
+}
+.sugerencia-card .btn-outline-secondary, .gestion-sugerencias-card .btn-outline-secondary {
+    border-radius: 0.75rem;
+}
+.sugerencia-card .form-text {
+    color: var(--primary-color);
+    font-size: 0.98em;
+}
+.sugerencia-card .invalid-feedback {
+    color: var(--danger-color);
+}
+.sugerencia-card .btn-outline-primary, .gestion-sugerencias-card .btn-outline-primary {
+    border-radius: 0.75rem;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    transition: var(--transition-base);
+}
+.sugerencia-card .btn-outline-primary:hover, .gestion-sugerencias-card .btn-outline-primary:hover {
+    background: var(--primary-color);
+    color: #fff;
+}
+.gestion-sugerencias-card .table {
+    background: #fff;
+    border-radius: 1rem;
+    overflow: hidden;
+    margin-bottom: 0;
+}
+.gestion-sugerencias-card .table th, .gestion-sugerencias-card .table td {
+    vertical-align: middle;
+    font-size: 1.05em;
+}
+.gestion-sugerencias-card .table-hover tbody tr:hover {
+    background: var(--primary-light);
+    color: var(--text-dark);
+}
+.gestion-sugerencias-card .badge, .sugerencia-card .badge {
+    font-size: 0.98em;
+    padding: 0.5em 0.9em;
+    border-radius: 0.7em;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+.gestion-sugerencias-card .badge-pendiente {
+    background: var(--warning-color);
+    color: var(--text-dark);
+    border: 1px solid var(--primary-light);
+}
+.gestion-sugerencias-card .badge-revisada {
+    background: var(--accent-color);
+    color: #fff;
+    border: 1px solid var(--accent-color);
+}
+.gestion-sugerencias-card .badge-resuelta {
+    background: var(--success-color);
+    color: #fff;
+    border: 1px solid var(--success-color);
+}
+.gestion-sugerencias-card .btn-outline-primary, .gestion-sugerencias-card .btn-outline-success, .gestion-sugerencias-card .btn-outline-danger {
+    border-radius: 0.7em;
+} 

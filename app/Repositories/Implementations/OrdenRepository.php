@@ -4,6 +4,7 @@ namespace App\Repositories\Implementations;
 
 use App\Models\Orden;
 use App\Repositories\Interfaces\IOrdenRepository;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -37,12 +38,16 @@ class OrdenRepository extends BaseRepository implements IOrdenRepository
 
     public function obtenerUltimoNumeroOrden(int $sucursalId): int
     {
-        // Obtener el último registro ordenado por id descendente
-        $ultimaOrden = $this->modelo
-            ->where('sucursal_id', $sucursalId)
-            ->orderBy('id', 'desc')
-            ->first();
-        return (int)$ultimaOrden->nro_orden ?: 0; // Retorna 0 si no hay órdenes
+        try {
+            $ultimaOrden = $this->modelo
+                ->where('sucursal_id', $sucursalId)
+                ->orderBy('id', 'desc')
+                ->first();
+            return $ultimaOrden ? (int)$ultimaOrden->nro_orden : 0;
+        } catch (Exception $e) {
+            throw new \RuntimeException('Error al obtener el último número de orden: ' . $e->getMessage());
+        }
+
     }
 
     public function obtenerOrdenesPorSucursal(mixed $sucursal_id): Collection
@@ -93,5 +98,31 @@ class OrdenRepository extends BaseRepository implements IOrdenRepository
             ->with(['sucursal', 'mesero', 'itemsOrdenes'])
             ->orderBy('nro_orden', 'asc')
             ->get();
+    }
+
+    public function obtenerPorSucursalYFecha(int $sucursalId, string $fecha): Collection
+    {
+        return $this->modelo->where('sucursal_id', $sucursalId)
+            ->whereDate('created_at', $fecha)
+            ->with(['mesa', 'estadoOrden', 'itemsOrdenes.itemMenu', 'mesero'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+    }
+
+    public function obtenerPorSucursalFechaYEstado(int $sucursalId, string $fecha, ?int $estadoId = null): Collection
+    {
+        $query = $this->modelo->where('sucursal_id', $sucursalId)
+            ->whereDate('created_at', $fecha)
+            ->with(['mesa', 'estadoOrden', 'itemsOrdenes.itemMenu', 'mesero']);
+
+        if ($estadoId !== null) {
+            $query->where('estado_orden_id', $estadoId);
+            \Log::info("Aplicando filtro de estado ID: {$estadoId} en sucursal: {$sucursalId}, fecha: {$fecha}");
+        }
+
+        $resultado = $query->orderBy('created_at', 'desc')->get();
+        \Log::info("Órdenes encontradas: " . $resultado->count() . " para sucursal: {$sucursalId}, fecha: {$fecha}, estado: " . ($estadoId ?? 'todos'));
+        
+        return $resultado;
     }
 }

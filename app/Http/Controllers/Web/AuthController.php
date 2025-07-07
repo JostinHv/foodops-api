@@ -152,6 +152,14 @@ class AuthController extends Controller
             return redirect()->route('gerente.menu');
         }
 
+        if ($user->roles->contains('nombre', 'cajero')) {
+            return redirect()->route('cajero.facturacion');
+        }
+
+        if ($user->roles->contains('nombre', 'cocinero')) {
+            return redirect()->route('cocinero.orden.index');
+        }
+
         // Verificar si el usuario tiene el rol mesero
         if ($user->roles->contains('nombre', 'mesero')) {
             return redirect()->route('mesero.orden.index');

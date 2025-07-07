@@ -28,12 +28,12 @@
                 Personal
             </a>
         </li>
-        <li class="nav-item">
-            <a href="{{ route('gerente.facturacion') }}"
-               class="nav-link {{ request()->routeIs('gerente.facturacion') ? 'active' : '' }}">
-                <i class="bi bi-receipt me-2"></i>
-                Facturación
-            </a>
-        </li>
+{{--        <li class="nav-item">--}}
+{{--            <a href="{{ route('gerente.facturacion') }}"--}}
+{{--               class="nav-link {{ request()->routeIs('gerente.facturacion') ? 'active' : '' }}">--}}
+{{--                <i class="bi bi-receipt me-2"></i>--}}
+{{--                Facturación--}}
+{{--            </a>--}}
+{{--        </li>--}}
     </ul>
 </div>

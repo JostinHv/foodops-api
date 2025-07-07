@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const listaOrdenes = document.getElementById('lista-ordenes');
     const buscarInput = document.getElementById('buscarOrden');
     const filtroEstado = document.getElementById('filtroEstado');
+    const filtroFecha = document.getElementById('filtroFecha');
     const ordenarSelect = document.getElementById('ordenarPor');
     const detalleModal = document.getElementById('detalleOrdenModal');
     const formCambiarEstado = document.getElementById('formCambiarEstado');
@@ -51,26 +52,26 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log('Intentando suscribirse al canal:', channelName);
 
     const channel = pusher.subscribe(channelName);
-    
+
     // Logs de conexión de Pusher
-    pusher.connection.bind('connected', function() {
+    pusher.connection.bind('connected', function () {
         console.log('✅ Pusher conectado exitosamente');
         console.log('Estado de conexión:', pusher.connection.state);
     });
-    
-    pusher.connection.bind('error', function(err) {
+
+    pusher.connection.bind('error', function (err) {
         console.error('❌ Error de conexión Pusher:', err);
         // Notificar error de conexión
         if (window.notificationService) {
             window.notificationService.handleError('Error de conexión con Pusher', 'Conexión');
         }
     });
-    
+
     channel.bind('pusher:subscription_succeeded', function () {
         console.log('✅ Suscripción exitosa al canal:', channelName);
         console.log('Canal suscrito:', channel.name);
     });
-    
+
     channel.bind('pusher:subscription_error', function (status) {
         console.error('❌ Error de suscripción:', status);
         console.error('Detalles del error:', {
@@ -85,13 +86,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Función para obtener el color del badge según el estado
     function obtenerColorEstado(estadoNombre) {
+        // Mapa de colores basado en el helper EstadoOrdenHelper
         const colores = {
+            'Pendiente': 'danger',
             'En Proceso': 'warning',
             'Preparada': 'info',
-            'Cancelada': 'danger',
-            'Servida': 'success',
+            'Servida': 'primary',
             'Solicitando Pago': 'primary',
             'Pagada': 'success',
+            'Cancelada': 'danger',
             'En disputa': 'danger',
             'Cerrada': 'secondary'
         };
@@ -105,7 +108,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="card h-100 orden-card"
                      data-orden-id="${orden.id}"
                      data-estado-id="${orden.estado_orden_id}"
-                     data-fecha="${orden.created_at}">
+                     data-fecha="${orden.created_at}"
+                     data-estado-nombre="${orden.estado_orden.nombre}">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <div>
@@ -248,9 +252,26 @@ document.addEventListener('DOMContentLoaded', function () {
         if (infoGeneral) infoGeneral.innerHTML = infoGeneralHTML;
         if (estadoTiempo) estadoTiempo.innerHTML = estadoTiempoHTML;
 
-        // Actualizar selector de estado si existe
+        // --- BLOQUE CAMBIAR ESTADO ---
+        const bloqueCambiarEstado = document.getElementById('bloque-cambiar-estado');
+        const msgCambiarEstadoPagada = document.getElementById('msg-cambiar-estado-pagada');
+        const formCambiarEstado = document.getElementById('formCambiarEstado');
         const estadoSelect = document.getElementById('estado_orden_id');
-        if (estadoSelect) {
+        const submitButton = formCambiarEstado ? formCambiarEstado.querySelector('button[type="submit"]') : null;
+
+        if (orden.estado_orden.id === 6) { // Pagada
+            if (bloqueCambiarEstado) bloqueCambiarEstado.classList.add('position-relative');
+            if (formCambiarEstado) formCambiarEstado.classList.add('d-none');
+            if (msgCambiarEstadoPagada) msgCambiarEstadoPagada.classList.remove('d-none');
+        } else {
+            if (formCambiarEstado) formCambiarEstado.classList.remove('d-none');
+            if (msgCambiarEstadoPagada) msgCambiarEstadoPagada.classList.add('d-none');
+            if (estadoSelect) estadoSelect.disabled = false;
+            if (submitButton) submitButton.disabled = false;
+        }
+
+        // Actualizar selector de estado si existe y no es pagada
+        if (estadoSelect && orden.estado_orden.id !== 6) {
             estadoSelect.value = orden.estado_orden.id;
         }
 
@@ -277,8 +298,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // Actualizar formulario de cambio de estado
-        const formCambiarEstado = document.getElementById('formCambiarEstado');
+        // Actualizar formulario de cambio de estado (solo una vez)
         if (formCambiarEstado) {
             formCambiarEstado.setAttribute('action', `/mesero/ordenes/${orden.id}/cambiar-estado`);
         }
@@ -291,23 +311,25 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Evento para el botón "Ver Detalles"
-    document.querySelectorAll('.ver-detalles').forEach(btn => {
-        btn.addEventListener('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            const ordenId = this.dataset.ordenId;
-            cargarDetallesOrden(ordenId);
-        });
-    });
+    // document.querySelectorAll('.ver-detalles').forEach(btn => {
+    //     btn.addEventListener('click', function (e) {
+    //         e.preventDefault();
+    //         e.stopPropagation();
+    //         const ordenId = this.dataset.ordenId;
+    //         cargarDetallesOrden(ordenId);
+    //     });
+    // });
 
     // Evento para cuando el modal se muestra
-    detalleModal.addEventListener('show.bs.modal', function (event) {
-        const button = event.relatedTarget;
-        if (button) {
-            const ordenId = button.dataset.ordenId;
-            cargarDetallesOrden(ordenId);
-        }
-    });
+    if (detalleModal) {
+        detalleModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            if (button) {
+                const ordenId = button.dataset.ordenId;
+                cargarDetallesOrden(ordenId);
+            }
+        });
+    }
 
     // Evento para el formulario de cambio de estado
     if (formCambiarEstado) {
@@ -360,7 +382,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         actualizarOrdenes(document.getElementById('ordenarPor').value);
                         // Mostrar mensaje de éxito usando el sistema de notificaciones
                         if (window.notificationService) {
-                            window.notificationService.success('Estado Actualizado', 'El estado de la orden se ha actualizado correctamente');
+                            window.notificationService.handleEstadoActualizado(data);
                         }
                     } else {
                         throw new Error(data.message || 'Error al actualizar el estado');
@@ -425,7 +447,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         actualizarOrdenes(document.getElementById('ordenarPor').value);
                         // Mostrar mensaje de éxito usando el sistema de notificaciones
                         if (window.notificationService) {
-                            window.notificationService.success('Orden Servida', 'La orden ha sido marcada como servida correctamente');
+                            window.notificationService.handleNotification('orden.servida', data);
                         }
                     }
                 })
@@ -442,6 +464,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // Función para actualizar órdenes
     function actualizarOrdenes(criterio) {
         console.log('Función actualizarOrdenes llamada con criterio:', criterio);
+        const fechaSeleccionada = filtroFecha ? filtroFecha.value : new Date().toISOString().slice(0, 10);
+        const estadoSeleccionado = filtroEstado ? filtroEstado.value : '';
+        
         fetch('/mesero/ordenes/ordenar', {
             method: 'POST',
             headers: {
@@ -449,7 +474,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                 'Accept': 'application/json'
             },
-            body: JSON.stringify({criterio: criterio})
+            body: JSON.stringify({
+                criterio: criterio,
+                fecha: fechaSeleccionada,
+                estado: estadoSeleccionado
+            })
         })
             .then(response => {
                 console.log('Respuesta del servidor:', response.status, response.statusText);
@@ -466,15 +495,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     data.ordenes.forEach(orden => {
                         listaOrdenes.innerHTML += generarTarjetaOrden(orden);
                     });
-
-                    // Reasignar eventos a los nuevos botones
-                    document.querySelectorAll('.ver-detalles').forEach(btn => {
-                        btn.addEventListener('click', function (e) {
-                            e.stopPropagation();
-                            const ordenId = this.dataset.ordenId;
-                            cargarDetallesOrden(ordenId);
-                        });
-                    });
+                    // No reasignar eventos a .ver-detalles aquí
                     console.log('Lista de órdenes actualizada exitosamente');
                 } else {
                     console.error('Error en la respuesta:', data);
@@ -505,7 +526,17 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if (filtroEstado) {
-        filtroEstado.addEventListener('change', filtrarOrdenes);
+        filtroEstado.addEventListener('change', function() {
+            // Actualizar desde el servidor cuando cambia el estado
+            actualizarOrdenes(document.getElementById('ordenarPor').value);
+        });
+    }
+
+    if (filtroFecha) {
+        filtroFecha.addEventListener('change', function() {
+            // Actualizar desde el servidor cuando cambia la fecha
+            actualizarOrdenes(document.getElementById('ordenarPor').value);
+        });
     }
 
     // Función para filtrar órdenes
@@ -515,21 +546,39 @@ document.addEventListener('DOMContentLoaded', function () {
         const ordenSeleccionado = ordenarSelect.value;
 
         document.querySelectorAll('.orden-card').forEach(card => {
-            const mesa = card.querySelector('.bi-table').nextSibling.textContent.toLowerCase();
-            const cliente = card.querySelector('.bi-person').nextSibling.textContent.toLowerCase();
+            // Buscar el texto de mesa y cliente de forma robusta
+            let mesa = '';
+            let cliente = '';
+            const mesaIcon = card.querySelector('.bi-table');
+            const clienteIcon = card.querySelector('.bi-person');
+            if (mesaIcon && mesaIcon.parentElement) {
+                mesa = mesaIcon.parentElement.textContent.replace(/Mesa/i, '').trim().toLowerCase();
+            }
+            if (clienteIcon && clienteIcon.parentElement) {
+                cliente = clienteIcon.parentElement.textContent.replace(/Sin especificar/i, '').trim().toLowerCase();
+            }
             const estadoId = card.dataset.estadoId;
 
             const coincideBusqueda = mesa.includes(busqueda) || cliente.includes(busqueda);
             const coincideEstado = !estadoSeleccionado || estadoId === estadoSeleccionado;
 
-            card.style.display = coincideBusqueda && coincideEstado ? '' : 'none';
+            card.parentElement.style.display = coincideBusqueda && coincideEstado ? '' : 'none';
         });
 
         // Ordenar las cards
         const cards = Array.from(document.querySelectorAll('.orden-card'));
         cards.sort((a, b) => {
-            const fechaA = new Date(a.dataset.fecha);
-            const fechaB = new Date(b.dataset.fecha);
+            // Manejar fechas de forma segura
+            let fechaA, fechaB;
+            try {
+                fechaA = new Date(a.dataset.fecha);
+                fechaB = new Date(b.dataset.fecha);
+                if (isNaN(fechaA.getTime())) fechaA = new Date();
+                if (isNaN(fechaB.getTime())) fechaB = new Date();
+            } catch (error) {
+                fechaA = new Date();
+                fechaB = new Date();
+            }
 
             switch (ordenSeleccionado) {
                 case 'reciente':
@@ -537,16 +586,29 @@ document.addEventListener('DOMContentLoaded', function () {
                 case 'antiguo':
                     return fechaA - fechaB;
                 case 'mesa':
-                    const mesaA = a.querySelector('.bi-table').nextSibling.textContent;
-                    const mesaB = b.querySelector('.bi-table').nextSibling.textContent;
+                    // Ordenar por nombre de mesa
+                    const mesaA = a.querySelector('.bi-table')?.parentElement?.textContent || '';
+                    const mesaB = b.querySelector('.bi-table')?.parentElement?.textContent || '';
                     return mesaA.localeCompare(mesaB);
                 default:
                     return 0;
             }
         });
 
-        cards.forEach(card => card.parentElement.appendChild(card));
+        // Reinsertar las cards ordenadas
+        const lista = document.getElementById('lista-ordenes');
+        cards.forEach(card => lista.appendChild(card.parentElement));
     }
+
+    // Función para limpiar todos los filtros
+    window.limpiarFiltros = function() {
+        if (buscarInput) buscarInput.value = '';
+        if (filtroEstado) filtroEstado.value = '';
+        if (ordenarSelect) ordenarSelect.value = 'reciente'; // Resetear a reciente por defecto
+        if (filtroFecha) filtroFecha.value = new Date().toISOString().slice(0, 10); // Resetear a hoy
+        // Actualizar desde el servidor con los filtros limpios
+        actualizarOrdenes(document.getElementById('ordenarPor').value);
+    };
 
     // Escuchar eventos de órdenes usando el sistema de notificaciones modular
     channel.bind('orden.creada', function (data) {
@@ -558,7 +620,7 @@ document.addEventListener('DOMContentLoaded', function () {
             tipo_evento: 'orden.creada'
         });
         console.log('Actualizando lista de órdenes...');
-        
+
         // Actualizar la lista de órdenes
         actualizarOrdenes(document.getElementById('ordenarPor').value);
 
@@ -577,7 +639,7 @@ document.addEventListener('DOMContentLoaded', function () {
             tipo_evento: 'orden.estado_actualizado'
         });
         console.log('Actualizando lista de órdenes...');
-        
+
         // Actualizar la lista de órdenes
         actualizarOrdenes(document.getElementById('ordenarPor').value);
 
@@ -596,7 +658,7 @@ document.addEventListener('DOMContentLoaded', function () {
             tipo_evento: 'orden.servida'
         });
         console.log('Actualizando lista de órdenes...');
-        
+
         // Actualizar la lista de órdenes
         actualizarOrdenes(document.getElementById('ordenarPor').value);
 

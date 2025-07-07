@@ -72,22 +72,29 @@ class NotificationService {
         switch (this.userRole) {
             case 'mesero':
                 // Los meseros solo ven notificaciones de su sucursal
-                return this.sucursalId && notificationData.orden && 
-                       parseInt(notificationData.orden.sucursal_id) === parseInt(this.sucursalId);
-            
+                return this.sucursalId && notificationData.orden &&
+                    parseInt(notificationData.orden.sucursal_id) === parseInt(this.sucursalId);
+            case 'cocinero':
+                // Los cocineros ven notificaciones de su sucursal
+                return this.sucursalId && notificationData.orden &&
+                    parseInt(notificationData.orden.sucursal_id) === parseInt(this.sucursalId);
+            case 'cajero':
+                // Los cajeros ven notificaciones de su sucursal (incluyendo facturas)
+                return this.sucursalId && notificationData.orden &&
+                    parseInt(notificationData.orden.sucursal_id) === parseInt(this.sucursalId);
             case 'gerente':
                 // Los gerentes ven notificaciones de su sucursal
-                return this.sucursalId && notificationData.orden && 
-                       parseInt(notificationData.orden.sucursal_id) === parseInt(this.sucursalId);
-            
+                return this.sucursalId && notificationData.orden &&
+                    parseInt(notificationData.orden.sucursal_id) === parseInt(this.sucursalId);
+
             case 'administrador':
                 // Los administradores ven notificaciones de su tenant
                 return true;
-            
+
             case 'superadmin':
                 // Los superadmin ven todas las notificaciones
                 return true;
-            
+
             default:
                 return false;
         }
@@ -103,7 +110,7 @@ class NotificationService {
 
         const title = 'Nueva Orden';
         const message = `Se ha creado una nueva orden #${data.orden.nro_orden} para la mesa ${data.orden.mesa}`;
-      
+
 
         this.notificationManager.success(title, message, {
             actions,
@@ -121,7 +128,7 @@ class NotificationService {
 
         const title = 'Estado Actualizado';
         const message = `La orden #${data.orden.nro_orden} ha cambiado a ${data.orden.estado}`;
-        
+
         this.notificationManager.info(title, message, {
             duration: 6000
         });
@@ -137,7 +144,7 @@ class NotificationService {
 
         const title = 'Orden Servida';
         const message = `La orden #${data.orden.nro_orden} ha sido servida`;
-        
+
         this.notificationManager.success(title, message, {
             duration: 5000
         });
@@ -153,9 +160,72 @@ class NotificationService {
 
         const title = 'Orden Cancelada';
         const message = `La orden #${data.orden.nro_orden} ha sido cancelada`;
-        
+
         this.notificationManager.warning(title, message, {
             duration: 7000
+        });
+    }
+
+    /**
+     * Maneja notificación de factura creada
+     */
+    handleFacturaCreada(data) {
+        if (!this.canReceiveNotification(data)) {
+            return;
+        }
+
+        const factura = data.datos_adicionales?.factura;
+        if (!factura) {
+            return;
+        }
+
+        const title = 'Factura Creada';
+        const message = `Se ha generado la factura #${factura.id} para la orden #${data.orden.nro_orden}`;
+
+        this.notificationManager.success(title, message, {
+            duration: 6000
+        });
+    }
+
+    /**
+     * Maneja notificación de factura pagada
+     */
+    handleFacturaPagada(data) {
+        if (!this.canReceiveNotification(data)) {
+            return;
+        }
+
+        const factura = data.datos_adicionales?.factura;
+        if (!factura) {
+            return;
+        }
+
+        const title = 'Factura Pagada';
+        const message = `La factura #${factura.nro_factura} ha sido marcada como pagada`;
+
+        this.notificationManager.success(title, message, {
+            duration: 5000
+        });
+    }
+
+    /**
+     * Maneja notificación de factura actualizada
+     */
+    handleFacturaActualizada(data) {
+        if (!this.canReceiveNotification(data)) {
+            return;
+        }
+
+        const factura = data.datos_adicionales?.factura;
+        if (!factura) {
+            return;
+        }
+
+        const title = 'Factura Actualizada';
+        const message = `La factura #${factura.nro_factura} ha sido actualizada`;
+
+        this.notificationManager.info(title, message, {
+            duration: 5000
         });
     }
 
@@ -165,7 +235,7 @@ class NotificationService {
     handleError(error, context = '') {
         const title = 'Error del Sistema';
         const message = context ? `${context}: ${error}` : error;
-        
+
         this.notificationManager.error(title, message, {
             persistent: true, // Los errores son persistentes
             actions: [{
@@ -203,7 +273,7 @@ class NotificationService {
         this.notificationManager.success(
             'Conexión Restaurada',
             'La conexión con el servidor se ha restaurado correctamente.',
-            { duration: 3000 }
+            {duration: 3000}
         );
     }
 
@@ -216,6 +286,9 @@ class NotificationService {
             'orden.estado_actualizado': this.handleEstadoActualizado.bind(this),
             'orden.servida': this.handleOrdenServida.bind(this),
             'orden.cancelada': this.handleOrdenCancelada.bind(this),
+            'factura.creada': this.handleFacturaCreada.bind(this),
+            'factura.pagada': this.handleFacturaPagada.bind(this),
+            'factura.actualizada': this.handleFacturaActualizada.bind(this),
             'connection.lost': this.handleConnectionLost.bind(this),
             'connection.restored': this.handleConnectionRestored.bind(this)
         };
@@ -227,4 +300,4 @@ class NotificationService {
             console.warn(`No hay manejador para el evento: ${eventType}`);
         }
     }
-} 
+}

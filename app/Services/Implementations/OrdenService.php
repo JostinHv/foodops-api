@@ -25,7 +25,7 @@ readonly class OrdenService implements IOrdenService
         private IItemOrdenRepository          $itemOrdenRepo,
         private IAsignacionPersonalRepository $asignacionPersonalRepo,
         private IUsuarioRepository            $usuarioRepo,
-        private IMesaService $mesaService,
+        private IMesaService                  $mesaService,
     )
     {
     }
@@ -57,12 +57,19 @@ readonly class OrdenService implements IOrdenService
 
     public function generarNumeroOrden(int $sucursalId): int
     {
-        $ultimoNumero = $this->repository->obtenerUltimoNumeroOrden($sucursalId);
-        Log::info('Numero: ' . $ultimoNumero);
-        if ($ultimoNumero) {
-            return $ultimoNumero + 1;
+        try {
+            $ultimoNumero = $this->repository->obtenerUltimoNumeroOrden($sucursalId);
+            Log::info('Numero: ' . $ultimoNumero);
+            if ($ultimoNumero) {
+                return $ultimoNumero + 1;
+            }
+            return 1; // Si no hay órdenes, comenzamos con el número 1
+        }catch (Exception $e){
+            Log::error('Error al generar número de orden', [
+                'error' => $e->getMessage()
+            ]);
+            throw new \RuntimeException('Error al generar número de orden: ' . $e->getMessage());
         }
-        return 1; // Si no hay órdenes, comenzamos con el número 1
     }
 
     /**
@@ -74,14 +81,16 @@ readonly class OrdenService implements IOrdenService
             DB::beginTransaction();
             $usuario = $this->usuarioRepo->obtenerPorIdConRelaciones($usuarioId, ['tenant', 'restaurante']);
             $asignacionPersonal = $this->asignacionPersonalRepo->buscarPorUsuarioId($usuarioId);
-            $nroOrden = $this->generarNumeroOrden($asignacionPersonal->sucursal->id );
-
-            $this->mesaService->actualizar($datos['mesa_id'], ['estado_mesa_id' => 2]);
+            Log::info("Creando orden para usuario: {$usuario->nombres}, asignación: {$asignacionPersonal?->id}");
+            $nroOrden = $this->generarNumeroOrden($asignacionPersonal->sucursal->id);
+            Log::info('Nro de orden generado: ' . $nroOrden);
+            $this->mesaService->actualizar($datos['mesa_id'], ['estado_mesa_id' => 2]); // Cambiar estado de la mesa a "Ocupada"
             $ordenData = [
                 'tenant_id' => $usuario->tenant->id ?? null,
                 'restaurante_id' => $usuario->restaurante->id ?? null,
                 'sucursal_id' => $asignacionPersonal->sucursal->id ?? null,
                 'mesa_id' => $datos['mesa_id'],
+                'estado_orden_id' => 9,
                 'mesero_id' => $usuarioId,
                 'nro_orden' => $nroOrden,
                 'nombre_cliente' => $datos['cliente'],
@@ -107,26 +116,12 @@ readonly class OrdenService implements IOrdenService
             $this->itemOrdenRepo->crearItemsOrden($itemsOrden);
 
             DB::commit();
-
             // Cargar las relaciones necesarias para el evento
             $orden->load(['estadoOrden', 'mesa', 'itemsOrdenes']);
-
-            // Disparar evento de nueva orden
-            Log::info('Disparando evento OrdenEvent para orden creada', [
-                'orden_id' => $orden->id,
-                'tenant_id' => $orden->tenant_id,
-                'sucursal_id' => $orden->sucursal_id
-            ]);
             event(new OrdenEvent($orden, 'creada', [
                 'mesero' => $usuario->nombre,
                 'items_count' => count($itemsOrden)
             ]));
-
-            Log::info('Orden creada exitosamente', [
-                'orden_id' => $orden->id,
-                'mesero_id' => $usuarioId,
-                'items' => count($itemsOrden)
-            ]);
 
             return $orden;
 
@@ -161,6 +156,11 @@ readonly class OrdenService implements IOrdenService
                 'estado' => $orden->estadoOrden->nombre,
             ];
         })->toArray();
+    }
+
+    public function obtenerPorSucursal(int $sucursalId): Collection
+    {
+        return $this->repository->obtenerPorSucursal($sucursalId);
     }
 
     /**
@@ -254,5 +254,15 @@ readonly class OrdenService implements IOrdenService
     public function obtenerItemsOrden(int $ordenId): Collection
     {
         return $this->repository->obtenerItemsOrden($ordenId);
+    }
+
+    public function obtenerPorSucursalYFecha(int $sucursalId, string $fecha): Collection
+    {
+        return $this->repository->obtenerPorSucursalYFecha($sucursalId, $fecha);
+    }
+
+    public function obtenerPorSucursalFechaYEstado(int $sucursalId, string $fecha, ?int $estadoId = null): Collection
+    {
+        return $this->repository->obtenerPorSucursalFechaYEstado($sucursalId, $fecha, $estadoId);
     }
 }

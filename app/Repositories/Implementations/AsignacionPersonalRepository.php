@@ -34,7 +34,7 @@ class AsignacionPersonalRepository extends ActivoBoolRepository implements IAsig
         }
     }
 
-    public function buscarPorUsuarioId(mixed $usuarioId): ?Model
+    public function buscarPorUsuarioId(mixed $usuarioId): Model
     {
         return $this->modelo->where('usuario_id', $usuarioId)->where('activo', true)->first();
     }
