@@ -583,7 +583,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Función para actualizar la lista de órdenes dinámicamente
     function actualizarListaOrdenes() {
         console.log('🔄 Actualizando lista de órdenes...');
-        
+
         // Hacer petición AJAX para obtener las órdenes actualizadas
         fetch('/cajero/facturacion/api/ordenes', {
             method: 'GET',
@@ -705,10 +705,11 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log('🎉 EVENTO RECIBIDO: orden.creada en Cajero');
         console.log('📊 Datos completos del evento:', JSON.stringify(data, null, 2));
 
+        actualizarListaOrdenes();
+
         if (window.notificationService) {
             window.notificationService.handleNotification('orden.creada', data);
         }
-        actualizarListaOrdenes();
     });
 
     channel.bind('orden.estado_actualizado', function (data) {
@@ -726,10 +727,11 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log('✅ EVENTO RECIBIDO: orden.servida en Cajero');
         console.log('📊 Datos completos del evento:', JSON.stringify(data, null, 2));
 
+        actualizarListaOrdenes();
+
         if (window.notificationService) {
             window.notificationService.handleNotification('orden.servida', data);
         }
-        actualizarListaOrdenes();
     });
 
     // Eventos para facturas
@@ -737,13 +739,15 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log('💰 EVENTO RECIBIDO: orden.factura_creada en Cajero');
         console.log('📊 Datos completos del evento:', JSON.stringify(data, null, 2));
 
-        if (window.notificationService) {
-            window.notificationService.handleNotification('factura.creada', data);
-        }
         // Actualizar ambas pestañas
         actualizarListaOrdenes();
         actualizarListaFacturas().then(r => {
         });
+
+        if (window.notificationService) {
+            window.notificationService.handleNotification('factura.creada', data);
+        }
+
     });
 
     channel.bind('orden.factura_actualizada', function (data) {
@@ -999,7 +1003,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Contador para evitar múltiples requests
     let requestCounter = 0;
     let currentRequest = null;
-    
+
     // Función para ver detalles de factura
     async function handleVerFactura(facturaId) {
         requestCounter++;
@@ -1275,7 +1279,7 @@ document.addEventListener('DOMContentLoaded', function () {
     async function actualizarListaFacturas() {
         try {
             console.log('🔄 Actualizando lista de facturas...');
-            
+
             // Mostrar indicador de carga
             const tablaFacturas = document.querySelector('#facturas table tbody');
             if (tablaFacturas) {
@@ -1355,7 +1359,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Poblar tabla con las facturas actualizadas
         facturas.forEach(factura => {
             console.log('📊 Procesando factura:', factura);
-            
+
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>

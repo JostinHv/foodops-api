@@ -40,10 +40,10 @@ class AuthCookieService
             $minutes,
             '/',
             null,
-            true,
+            false,
             true,
             false,
-            'none'
+            'lax'
         );
     }
 

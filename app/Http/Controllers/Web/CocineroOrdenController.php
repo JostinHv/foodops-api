@@ -66,10 +66,10 @@ class CocineroOrdenController extends Controller
         $sucursal = $asignacionPersonal->sucursal;
         $fechaSeleccionada = $request->get('fecha', now()->format('Y-m-d'));
         $estadoFiltro = $request->get('estado', 'Pendiente'); // Por defecto mostrar pendientes
-        
+
         \Log::info('Fecha seleccionada: ' . $fechaSeleccionada);
         \Log::info('Estado filtro: ' . $estadoFiltro);
-        
+
         // Obtener el ID del estado por nombre
         $estadoId = null;
         if ($estadoFiltro && $estadoFiltro !== '') {
@@ -77,7 +77,7 @@ class CocineroOrdenController extends Controller
             $estadoId = $estado ? $estado->id : null;
             \Log::info("Estado filtro: {$estadoFiltro}, ID encontrado: " . ($estadoId ?? 'null'));
         }
-        
+
         $ordenes = $this->ordenService->obtenerPorSucursalFechaYEstado($sucursal->id, $fechaSeleccionada, $estadoId)
             ->filter(function ($orden) use ($usuario) {
                 return $orden->tenant_id == $usuario->tenant_id;
@@ -282,7 +282,7 @@ class CocineroOrdenController extends Controller
 
             $estadosQueLibenMesa = [
                 3, // Entregada
-                6, // Cancelada
+                6, // Pagada
                 8  // Estado adicional que libera mesa
             ];
 

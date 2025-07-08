@@ -113,7 +113,6 @@ class NotificationService {
 
 
         this.notificationManager.success(title, message, {
-            actions,
             duration: 8000 // Más tiempo para órdenes importantes
         });
     }

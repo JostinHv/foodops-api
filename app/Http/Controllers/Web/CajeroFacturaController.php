@@ -8,6 +8,7 @@ use App\Services\Interfaces\IAsignacionPersonalService;
 use App\Services\Interfaces\IEstadoOrdenService;
 use App\Services\Interfaces\IFacturaService;
 use App\Services\Interfaces\IIgvService;
+use App\Services\Interfaces\IMesaService;
 use App\Services\Interfaces\IMetodoPagoService;
 use App\Services\Interfaces\IOrdenService;
 use App\Services\Interfaces\ISucursalService;
@@ -31,7 +32,8 @@ class CajeroFacturaController extends Controller
         private readonly IMetodoPagoService         $metodoPagoService,
         private readonly ISucursalService           $sucursalService,
         private readonly IAsignacionPersonalService $asignacionPersonalService,
-        private readonly IEstadoOrdenService        $estadoOrdenService
+        private readonly IEstadoOrdenService        $estadoOrdenService,
+        private readonly IMesaService               $mesaService,
     )
     {
     }
@@ -116,7 +118,7 @@ class CajeroFacturaController extends Controller
             }
 
             // Calcular montos
-            $monto_total = $orden->itemsOrdenes->sum('monto');
+            $monto_total = $mesaService->itemsOrdenes->sum('monto');
             $monto_total_igv = $monto_total * ($igv->valor_decimal) + $monto_total;
 
             // Preparar datos para crear la factura
@@ -135,6 +137,7 @@ class CajeroFacturaController extends Controller
 
             // Actualizar estado de la orden según el estado de pago
             $this->ordenService->cambiarEstadoOrden($validated['orden_id'], 6); // 6 = Pagada
+            $this->mesaService->cambiarEstadoMesa($orden->mesa_id, 1); // Cambiar estado de la mesa a Libre = 1
 
             // Emitir evento de factura creada usando el evento de orden
             $factura->load(['orden.mesa', 'metodoPago', 'igv']);
